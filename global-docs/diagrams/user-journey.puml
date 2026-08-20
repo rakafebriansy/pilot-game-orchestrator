@@ -1,0 +1,39 @@
+@startuml
+!theme mars
+
+title Alur Pengguna (User Journey) - Aksara Jawa Translator
+
+actor Pengguna as user
+participant "Aplikasi iOS" as app
+participant "Vision & CoreML" as ml
+
+user -> app : Buka Aplikasi
+activate app
+
+app -> app : Tampilkan Menu Utama
+user -> app : Pilih Mode Kamera (Real-time) atau Galeri
+
+alt Mode Kamera (Real-time)
+    app -> app : Aktifkan Kamera
+    user -> app : Arahkan kamera ke teks Aksara Jawa
+    app -> ml : Stream frame gambar
+    activate ml
+    ml -> ml : Deteksi karakter & Klasifikasi
+    ml --> app : Hasil teks Latin (Streaming)
+    deactivate ml
+    app -> user : Tampilkan teks terjemahan real-time
+else Mode Galeri
+    user -> app : Pilih foto berisi Aksara Jawa
+    app -> ml : Kirim gambar foto
+    activate ml
+    ml -> ml : Deteksi karakter & Klasifikasi
+    ml --> app : Hasil teks Latin lengkap
+    deactivate ml
+    app -> user : Tampilkan teks terjemahan di layar
+end
+
+user -> app : Salin teks atau simpan
+app -> user : Tampilkan notifikasi berhasil
+
+deactivate app
+@enduml

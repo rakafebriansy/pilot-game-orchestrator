@@ -1,0 +1,31 @@
+@startuml
+!theme mars
+
+package "Aksara Jawa Translator (iOS App)" {
+  [SwiftUI Views] as UI
+  [ViewModels] as VM
+  
+  package "Core Services" {
+    [CameraService] as Camera
+    [PhotoLibraryService] as Gallery
+    [MLVisionService] as ML
+  }
+  
+  package "Model" {
+    [AksaraJawaModel (.mlmodel)] as Model
+  }
+}
+
+UI --> VM : User Intent (Capture/Select)
+VM --> Camera : Start/Stop Stream
+VM --> Gallery : Pick Photo
+VM --> ML : Send Frame/Image
+
+ML --> Model : Run Inference (CoreML/Vision)
+Model --> ML : Returning Classification/Bounding Boxes
+ML --> VM : Return Latin Text Result
+VM --> UI : Update View State
+
+note right of ML : Uses VNImageRequestHandler & VNCoreMLModel
+
+@enduml
