@@ -1,43 +1,31 @@
-# Design System & UI Guidelines
+# Design System
 
-## Aksara Jawa Translator
+## Apa itu Design System
+Design System adalah kumpulan terpusat yang berisi komponen visual, pedoman desain (seperti palet warna, tipografi, dan *spacing*), serta standar pola interaksi UI/UX yang dapat digunakan kembali (*reusable*). Dokumen ini bertujuan untuk memastikan konsistensi tampilan dan pengalaman pengguna di seluruh bagian aplikasi.
 
-Mengingat belum ada Vibe/Estetika UI yang secara spesifik didefinisikan oleh pengguna, *design system* ini akan bersandar pada **Human Interface Guidelines (HIG)** dari Apple, dengan tujuan memberikan pengalaman *native* yang kuat dan bersih, serta memaksimalkan fitur aksesibilitas sistem.
+Dalam pendekatan *Vibe Coding* yang dikerjakan oleh AI Agent, Design System berfungsi sebagai pedoman gaya (*styling ground truth*). Saat AI meng-*generate* antarmuka (UI) atau komponen baru, AI akan merujuk secara ketat pada aturan-aturan di dokumen ini. Hal ini memastikan bahwa kode UI yang dihasilkan (misalnya kode Flutter atau CSS) akan secara otomatis selaras dengan identitas visual, *branding*, dan tema aplikasi, sehingga terhindar dari ketidakkonsistenan desain.
 
-### 1. Prinsip Desain
-*   **Native & Familiar:** Menggunakan komponen SwiftUI standar (*NavigationStack*, *Buttons*, *Forms*, *Sheets*) agar pengguna iOS merasa familier.
-*   **Aksesibel (Accessible First):** Dukungan penuh untuk *Dynamic Type* (ukuran teks menyesuaikan pengaturan iOS), label *VoiceOver* yang deskriptif, dan rasio kontras warna tinggi.
-*   **Fokus pada Kamera:** Karena aplikasi berbasis kamera/OCR, UI harus minimalis di layar pemindaian untuk memaksimalkan area tangkapan *Viewfinder*.
+Secara rinci, sebuah dokumen Design System wajib memuat komponen-komponen berikut:
+*   **Identitas Merek (*Brand Identity*):** Penjelasan mengenai filosofi desain, *vibe* atau nuansa aplikasi (contoh: *playful*, *minimalist*, korporat), serta *guideline* penggunaan aset merek.
+*   **Palet Warna (*Color Palette*):** Daftar lengkap warna yang akan diaplikasikan, mencakup peran *Primary*, *Secondary*, *Background*, *Surface*, *Error*, *Success*, dan *Warning*. Wajib menyertakan kode warnanya (*Hex/RGB*) serta adaptasi untuk *Dark Mode* dan *Light Mode*.
+*   **Tipografi (*Typography*):** Spesifikasi hierarki teks secara terstruktur, meliputi jenis huruf (*font family*), ukuran (*font sizes*), ketebalan (*font weights*), tingkat jarak huruf (*letter spacing*), dan tinggi baris (*line heights*) untuk elemen *Heading 1-6*, *Body*, *Subtitle*, *Caption*, dan teks pada tombol.
+*   **Sistem *Spacing*, Tata Letak, & Breakpoints (*Spacing & Layout System*):** Skala kelipatan angka standar untuk penentuan jarak *margin*, *padding*, sistem *grid*, penentuan titik batas responsif (*responsive breakpoints* untuk *mobile*, *tablet*, *desktop*), serta spesifikasi sudut elemen (*border radius*).
+*   **Aset & Ikonografi (*Iconography & Assets*):** Spesifikasi gaya visual ikon yang digunakan (seperti *outlined*, *filled*, atau *two-tone*), rasio ukuran standar ikon, dan acuan tata letak ilustrasi.
+*   **Komponen UI Utama (*UI Components Library*):** Rincian dan spesifikasi desain untuk setiap elemen *reusable* (seperti *buttons*, *text fields*, *dropdowns*, *cards*, *modals*, *bottom sheets*, dll.) beserta semua kemungkinan statusnya (*default*, *hover*, *pressed*, *disabled*, *focus*, *error*).
+*   **Animasi & Interaksi (*Micro-interactions/Animations*):** Standar perilaku gerakan antarmuka, mencakup durasi waktu (*duration*), kurva transisi (*easing curve*), dan *feedback* visual terhadap aksi dari pengguna.
+*   **Standar Aksesibilitas (a11y):** Persyaratan minimum aksesibilitas yang harus ditaati (seperti *color contrast ratio*, *focus states* yang jelas, dan ketersediaan label pembaca layar/*screen reader*).
 
-### 2. Palet Warna (Color Palette)
-Mengandalkan warna semantik bawaan iOS yang otomatis mendukung Dark Mode dan Light Mode:
-*   **Primary Accent:** `Color.accentColor` (Bisa disetel ke *Custom System Orange* atau *Brown* untuk memberikan nuansa klasik khas budaya Jawa, namun tetap terlihat modern).
-*   **Background:** `Color(uiColor: .systemBackground)` dan `Color(uiColor: .secondarySystemBackground)`.
-*   **Text:** `Color.primary` untuk teks utama, `Color.secondary` untuk subteks dan *captions*.
+### Aturan Khusus Ekosistem Multi-Project (Multi-Node)
+Jika ekosistem ini terdiri dari berbagai *platform* atau aplikasi yang memiliki interaksi (*Multi-Node*), strukturkan Design System ini menjadi dua tingkatan:
+1. **Global Tokens:** Aturan fundamental (warna, tipografi utama, aset jenama/logo) yang wajib dipatuhi secara universal oleh seluruh *node* demi konsistensi *brand*.
+2. **Node-Specific Components:** Bagilah daftar komponen UI spesifik ke dalam sub-bab masing-masing *node* (misalnya: sub-bab "Komponen Web-Admin" terpisah dari sub-bab "Komponen Mobile-App") guna mencegah kontaminasi rancangan dan kerancuan (*ambiguity*) ketika AI melakukan koding antarmuka di node tertentu.
 
-### 3. Tipografi (Typography)
-*   **Font Utama:** Apple System Font (San Francisco).
-*   **Ukuran Font:** 
-    *   Judul Halaman: `.largeTitle` atau `.title` dengan *weight bold*.
-    *   Teks Hasil Terjemahan: `.title2` atau `.title3` (agar mudah dibaca).
-    *   Instruksi UI: `.body`.
-*   **Dynamic Type:** Semua teks wajib menggunakan `.font(...)` *modifiers* semantik, bukan *fixed size*, agar bisa membesar sesuai *accessibility settings*.
+## Cara Melakukan Generate Design System
+Jelaskan "rasa" (*vibe*), tema, gaya visual (*modern*, minimalis, *playful*, dsb), serta preferensi estetika dari aplikasi Anda kepada AI Agent. Kemudian, mintalah AI Agent untuk mengajukan pertanyaan-pertanyaan spesifik terkait aset visual (seperti warna primer/sekunder, bentuk tombol, *dark/light mode*, tipografi) guna memperinci gambaran desain Anda. Berdasarkan interaksi tersebut, AI akan merumuskan dan menyusun pedoman komponen UI yang baku.
 
-### 4. Ikonografi (Iconography)
-Menggunakan **SF Symbols** secara eksklusif:
-*   Mode Kamera: `camera.fill` atau `camera.viewfinder`.
-*   Mode Galeri: `photo.fill.on.rectangle.fill`.
-*   Tombol Salin (Copy): `doc.on.doc`.
-*   Feedback Berhasil: `checkmark.circle.fill`.
+> **Kewajiban Uji Validasi HTML:** Desain yang dirumuskan di dokumen ini **TIDAK BOLEH** langsung dikoding ke dalam *framework* asli (Flutter, Next.js, SwiftUI, dll.). AI Agent **WAJIB** membuat sketsa purwarupanya terlebih dahulu dalam format HTML sederhana di direktori `nodes/[nama-node]/prototypes/` dari proyek yang bersangkutan.
+## [GANTI_DENGAN_NAMA_PROYEK]
 
-### 5. Komponen UI Inti
-*   **Viewfinder (Layar Kamera):** Membutuhkan *overlay* transparan dengan kotak pemandu batas teks (*bounding box guide*) agar pengguna tahu area mana yang diproses.
-*   **Bottom Sheet (Hasil Terjemahan):** Saat hasil OCR keluar, teks ditampilkan melalui `.sheet` atau panel di bawah agar tidak sepenuhnya menutupi kamera.
-*   **Floating Action Button (FAB) / Kamera Toolbar:** Tombol bundar besar di bagian bawah untuk men-trigger capture/galeri.
+> ⚠️ AI Agent: Hapus placeholder judul di atas dan ganti dengan nama proyek atau ekosistem yang sebenarnya.
 
-### 6. Animasi (Micro-Interactions)
-*   *Pulse Animation* pada area *viewfinder* saat ML sedang memproses *live-feed*.
-*   *Haptic Feedback* (`UIImpactFeedbackGenerator`) setiap kali teks Aksara Jawa terdeteksi dan hasil terjemahan berhasil diperbarui.
-
----
-*Digenerate oleh AI Agent. Spesifikasi desain di atas bersifat draf awal dan dapat diperluas setelah ideasi UI lebih spesifik.*
+*(Detail dari komponen, warna, tipografi, dan panduan Design System spesifik untuk aplikasi atau ekosistem ini akan ditambahkan di bawah batas ini)*
