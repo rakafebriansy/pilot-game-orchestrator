@@ -55,6 +55,7 @@ Hukum besi operasional Anda. Pelanggaran terhadap pedoman ini akan merusak integ
 ### C.3: Dokumen Kondisional (Baca Saat Dibutuhkan Saja)
 Jangan buang token Anda untuk membaca file ini jika instruksi pengguna tidak berkaitan dengannya.
 *   **Akan menulis atau memodifikasi source code (coding)?** Baca `../../global-guidelines/coding.md` (khususnya: **ZERO-COMMENT POLICY** dan **No Hacks**).
+*   **Akan mengedit file secara massal, menjalankan script perubahan, atau menggunakan perintah Git yang memodifikasi file (termasuk `sed`, `git restore`, `git checkout <file>`)?** Baca `../../global-guidelines/safe-file-operations.md`. Pelanggaran terhadap pedoman ini menghilangkan kesempatan review pengguna secara permanen.
 *   **Akan melakukan aktivitas Git (commit, branch, push, pengelolaan tiket)?** Baca `../../global-guidelines/version-control.md`.
 *   **Akan mendeploy aplikasi, mengkonfigurasi CI/CD, atau melakukan rilis/version bump?** Baca `../../global-guidelines/deployment.md` dan `../../global-guidelines/pipeline.md`.
 *   **Akan menulis unit test?** Baca `../../global-guidelines/testing.md`.
