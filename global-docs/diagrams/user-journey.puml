@@ -1,0 +1,73 @@
+@startuml UserJourney
+skinparam backgroundColor #0d1117
+skinparam defaultFontColor #e6edf3
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ArrowColor #58a6ff
+skinparam ArrowFontColor #79c0ff
+skinparam ArrowThickness 1.5
+
+skinparam state {
+    BackgroundColor #161b22
+    BorderColor #30363d
+    FontColor #f0f6fc
+    BorderThickness 1.5
+    StartColor #238636
+    EndColor #da3633
+}
+
+[*] --> MainMenu : 1. Luncurkan Game
+
+state MainMenu {
+    [*] --> TitleScreen : Tampilkan Title Art & Audio
+    TitleScreen --> ProfileSelect : Pilih Slot Ekspedisi
+}
+
+MainMenu --> SanctuaryHub : 2. Masuk Markas / Sanctuary
+
+state SanctuaryHub {
+    [*] --> GrimoireView : Susun Buku Sakti (15 Kartu)
+    GrimoireView --> MetaUpgradeTree : Upgrade Status / Unlock Kartu
+}
+
+SanctuaryHub --> MapExploration : 3. Masuki Menara Babel
+
+state MapExploration {
+    [*] --> NodeSelection : Lihat Peta Cabang Babel
+    NodeSelection --> MysteryEvent : Pilih Node '?' (Kejadian Naratif)
+    NodeSelection --> CampRest : Pilih Node Api Unggun (Pulihkan HP)
+    NodeSelection --> CombatNode : Pilih Node Pertempuran
+}
+
+MapExploration --> TacticalCombat : 4. Transisi Masuk Pertarungan
+
+state TacticalCombat {
+    [*] --> IntentPhase : 4.1 Musuh Pasang Telegraph Ubin (Merah)
+    IntentPhase --> PlayerPhase : 4.2 Pemain Mainkan 1 Kartu (Serang/Hindar)
+    PlayerPhase --> EnemyPhase : 4.3 Musuh Eksekusi Serangan Ubin
+    EnemyPhase --> ResetPhase : 4.4 Tarik Kartu Baru (Draw to 5)
+    ResetPhase --> IntentPhase : Sisa Musuh Masih Hidup
+}
+
+TacticalCombat --> WaveDraftReward : 5a. Semua Musuh Kalah (Wave Clear)
+TacticalCombat --> RunSummaryDefeat : 5b. HP Nabu Habis (Permadeath)
+
+state WaveDraftReward {
+    [*] --> CardPick3 : Pilih 1 dari 3 Kartu Baru
+    CardPick3 --> RelicInspect : Dapatkan Relic Tambahan
+}
+
+WaveDraftReward --> MapExploration : 6. Lanjut Jelajah Lantai Babel
+MapExploration --> BossEncounter : 7. Capai Puncak Chapter
+BossEncounter --> ChapterVictory : 8. Boss Dikalahkan
+
+state ChapterVictory {
+    [*] --> AscensionUnlock : Buka Tingkat Kesulitan Baru
+    AscensionUnlock --> LoreEntry : Ekstraksi Tablet Kisah Kuno
+}
+
+ChapterVictory --> SanctuaryHub : 9a. Selesai Run Sukses (Bawa Poin Meta)
+RunSummaryDefeat --> SanctuaryHub : 9b. Bawa Poin Ekspedisi untuk Meta-Upgrade
+
+@enduml

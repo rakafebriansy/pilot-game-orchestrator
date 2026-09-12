@@ -1,0 +1,85 @@
+@startuml DataClassERD
+skinparam backgroundColor #0d1117
+skinparam defaultFontColor #e6edf3
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ArrowColor #58a6ff
+skinparam ArrowFontColor #79c0ff
+skinparam ArrowThickness 1.5
+
+skinparam class {
+    BackgroundColor #161b22
+    BorderColor #388bfd
+    FontColor #f0f6fc
+    HeaderBackgroundColor #21262d
+}
+
+enum CombatPhase {
+    IntentPhase
+    PlayerPhase
+    EnemyPhase
+    RoundResetPhase
+}
+
+enum HighlightType {
+    None
+    DangerEnemyIntent
+    ValidCardTarget
+    MovementRange
+    HoverPreview
+}
+
+enum TileType {
+    NormalFloor
+    StealthBush
+    ObstaclePillar
+    HazardTrap
+}
+
+enum CardActionType {
+    Attack
+    Defense
+    Movement
+    Utility
+}
+
+class CardData <<ScriptableObject>> {
+    +string CardId
+    +string CardName
+    +CardActionType ActionType
+    +int BaseValue
+    +int Range
+    +Sprite CardIllustration
+}
+
+class EnemyData <<ScriptableObject>> {
+    +string EnemyId
+    +string EnemyName
+    +int MaxHealth
+    +int BaseAttackDamage
+    +int MoveSpeed
+    +Sprite EnemySprite
+}
+
+class TileHighlightRequest <<struct>> {
+    +Vector2Int[] Coordinates
+    +HighlightType Style
+}
+
+class UnitMovePayload <<struct>> {
+    +int UnitId
+    +Vector2Int FromCoord
+    +Vector2Int ToCoord
+}
+
+class DamagePayload <<struct>> {
+    +int TargetUnitId
+    +int DamageAmount
+    +int ShieldRemaining
+}
+
+CardData --> CardActionType : uses
+TileHighlightRequest --> HighlightType : uses
+
+@enduml

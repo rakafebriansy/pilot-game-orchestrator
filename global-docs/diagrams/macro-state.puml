@@ -1,0 +1,96 @@
+@startuml MacroGameState
+skinparam backgroundColor #0d1117
+skinparam defaultFontColor #e6edf3
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ArrowColor #58a6ff
+skinparam ArrowFontColor #79c0ff
+skinparam ArrowThickness 1.5
+
+skinparam state {
+    BackgroundColor #161b22
+    BorderColor #30363d
+    FontColor #f0f6fc
+    BorderThickness 1.5
+    StartColor #238636
+    EndColor #da3633
+}
+
+[*] --> BootState : Aplikasi Dimulai
+
+state BootState {
+    [*] --> LoadSettings : Load Audio, Input Keybinds & Graphic Settings
+    LoadSettings --> InitDatabase : Load ScriptableObjects Database
+}
+
+BootState --> MainMenuState : Inisialisasi Selesai
+
+state MainMenuState {
+    [*] --> IdleMenu : Tampilkan Judul & Animasi Latar
+    IdleMenu --> SettingsModal : Buka Menu Pengaturan
+    IdleMenu --> LoreCodexModal : Buka Tablet Mesopotamian Codex
+}
+
+MainMenuState --> SanctuaryState : Tekan 'Mulai Ekspedisi'
+
+state SanctuaryState {
+    [*] --> GrimoireDeckBuilder : Susun 15 Kartu Starter Nabu
+    GrimoireDeckBuilder --> MetaUpgradeTree : Beli Peningkatan Karakter Permanen
+}
+
+SanctuaryState --> MapTraversalState : Luncurkan Run (Masuki Menara Babel)
+
+state MapTraversalState {
+    [*] --> NodeMapDisplay : Render Jalur Node Chapter Menara Babel
+    
+    NodeMapDisplay --> NormalCombatNode : 1. Node Dungeon Biasa (Lawan Musuh)
+    NodeMapDisplay --> EliteCombatNode : 2. Node Dungeon Elit (Mini-Boss & Relic Langka)
+    NodeMapDisplay --> MysteryEventNode : 3. Node Ruang Misteri '?' (Pilihan Naratif Berisiko)
+    NodeMapDisplay --> CampfireRestNode : 4. Node Api Unggun (Pulihkan HP / Upgrade Kartu)
+    NodeMapDisplay --> MerchantShopNode : 5. Node Toko Pedagang Kuno (Beli/Hapus Kartu)
+    NodeMapDisplay --> BossClimaxNode : 6. Node Puncak Chapter (Boss Menara)
+    
+    MysteryEventNode --> NodeMapDisplay : Event Selesai
+    CampfireRestNode --> NodeMapDisplay : Istirahat Selesai
+    MerchantShopNode --> NodeMapDisplay : Transaksi Selesai
+}
+
+NormalCombatNode --> CombatState : Mulai Pertarungan Normal
+EliteCombatNode --> CombatState : Mulai Pertarungan Elit
+BossClimaxNode --> CombatState : Mulai Pertarungan Boss
+
+state CombatState {
+    [*] --> TurnFSM_Intent : Fase 1: Niat Musuh (Telegraph Merah)
+    TurnFSM_Intent --> TurnFSM_Player : Fase 2: Aksi Pemain (Mainkan 1 Kartu)
+    TurnFSM_Player --> TurnFSM_Enemy : Fase 3: Aksi Musuh (Eksekusi Serangan)
+    TurnFSM_Enemy --> TurnFSM_Reset : Fase 4: Reset & Tarik Kartu ke 5
+    TurnFSM_Reset --> TurnFSM_Intent : Loop: Musuh Masih Ada
+}
+
+CombatState --> DraftRewardState : Menang Wave Biasa / Elit
+CombatState --> ChapterVictoryState : Menang Lawan Boss Chapter
+CombatState --> RunSummaryState : Karakter Gugur (Player HP <= 0)
+
+state DraftRewardState {
+    [*] --> Present3Cards : Tampilkan 3 Kartu Acak (Drafting)
+    Present3Cards --> CardAddedToDeck : Pilih 1 Kartu Masuk Deck Ekspedisi
+}
+
+DraftRewardState --> MapTraversalState : Lanjut ke Node Berikutnya di Peta
+
+state ChapterVictoryState {
+    [*] --> AscensionUnlock : Buka Tingkat Tantangan Baru
+    AscensionUnlock --> ExtractLoreFragment : Ekstraksi Lempengan Prasasti Kuno
+}
+
+ChapterVictoryState --> RunSummaryState : Lanjut ke Rekapitulasi Ekspedisi
+
+state RunSummaryState {
+    [*] --> CalculateMetaCurrency : Konversi Poin Petualangan Jadi Mata Uang Markas
+    CalculateMetaCurrency --> UnlockAchievement : Periksa Capaian Prestasi
+}
+
+RunSummaryState --> SanctuaryState : Kembali ke Markas (Tingkat Kekuatan Baru!)
+
+@enduml

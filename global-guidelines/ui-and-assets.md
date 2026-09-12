@@ -2,6 +2,9 @@
 
 *(Pedoman teknis ini berlaku krusial untuk fase pengerjaan atas entitas proyek apa pun yang mengelola subsistem antarmuka visual)*
 
+## Standar & Aturan Seni Visual (Visual & Concept Art Rules)
+Untuk seluruh produksi aset visual game, *concept art*, ilustrasi kartu, *sprite* isometrik, hierarki visual medan laga, dan alur kerja pembuatan aset, Anda **WAJIB MUTLAK** mematuhi pedoman utama yang tertulis di dalam **[`global-docs/visual-art-rules.md`](file:///Users/raka/Developer/repositories/projects/tubbies-studio/pilot-game-dir/pilot-game-ai-orchestrator/global-docs/visual-art-rules.md)** (mencakup 3 Pilar Utama: *Clarity, Satisfaction, Style*; Hierarki Visual: *Value, Shape/Size, Detail Placement*; dan Alur Concept Art: *Project Prep, Generating Ideas, Navigating Feedback*).
+
 ## Kewajiban Penggunaan Prototipe (Pre-Coding)
 Sebelum Anda (AI Agent) secara langsung menulis *source code* antarmuka (*UI*) menggunakan *framework* utama aplikasi (seperti Flutter, SwiftUI, Next.js, dsb.), Anda **DIWAJIBKAN** merancang sketsa draf visualnya di dalam direktori spesifik *node* yaitu `nodes/[nama-node]/prototypes/`. 
 Anda **WAJIB MUTLAK** membaca dan mematuhi seluruh arsitektur *Rapid HTML-based Previewing* dan *Single-File Policy* yang tertulis di dalam file referensi **`nodes/[nama-node]/prototypes/README.md`** sebelum menyusun kode UI apa pun.

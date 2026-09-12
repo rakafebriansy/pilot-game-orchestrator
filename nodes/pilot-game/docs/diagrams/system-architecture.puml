@@ -1,0 +1,75 @@
+@startuml SystemArchitecture
+skinparam backgroundColor #0d1117
+skinparam defaultFontColor #e6edf3
+skinparam roundCorner 8
+skinparam shadowing false
+
+skinparam ArrowColor #58a6ff
+skinparam ArrowFontColor #79c0ff
+skinparam ArrowThickness 1.5
+
+skinparam package {
+    BackgroundColor #161b22
+    BorderColor #30363d
+    BorderThickness 1.5
+    FontColor #58a6ff
+    FontStyle bold
+}
+
+skinparam component {
+    BackgroundColor #21262d
+    BorderColor #388bfd
+    FontColor #f0f6fc
+    BorderThickness 1.2
+}
+
+package "📚 DATA LAYER (ScriptableObjects)" as DATA {
+    [CardData.asset\n(Attack, Defense, Mobility)] as CardData
+    [EnemyData.asset\n(HP, Telegraph Pattern, AI Type)] as EnemyData
+    [ConsumableData.asset\n(Instant Blink, Smoke, Hook)] as ItemData
+}
+
+package "🧠 LOGIC LAYER (Pure C# Mathematics)" as LOGIC {
+    [GridDataModel\n(15x15 Matrix, Obstacle Check)] as GridModel
+    [CombatMathEngine\n(Damage, Shield, Status Buffs)] as CombatMath
+    [EnemyAICalculator\n(Intent Prediction, Linear Attack)] as EnemyAI
+}
+
+package "⚡ COMMUNICATION HUB (Static Event Bus)" as BUS {
+    [CombatEvents.cs\n- OnEnemyIntentDecided\n- OnHighlightTilesRequested\n- OnCardPlayed\n- OnUnitMoved\n- OnUnitDamaged\n- OnPhaseChanged] as EventBus
+}
+
+package "👑 CORE FSM (Orchestrator)" as FSM {
+    [CombatStateMachine.cs\n(Intent -> Player -> Enemy -> Reset)] as TurnFSM
+}
+
+package "🎨 PRESENTATION / VIEW LAYER (MonoBehaviour)" as VIEW {
+    [GridTilemapView.cs\n(Unity 2D Tilemap, Red/Green Highlight)] as TilemapView
+    [UnitMovementView.cs\n(Smooth Grid Lerp, Hit Reactions)] as UnitView
+    [CardHandController.cs\n(UI Toolkit, Drag & Drop to Grid)] as CardUIView
+    [CombatHUDView.cs\n(HP Bar, Intent Badges, Energy)] as HUDView
+}
+
+' Data Injection
+CardData -down-> LOGIC : Read Rules
+EnemyData -down-> LOGIC : Read Stats
+
+' Logic to Event Bus
+EnemyAI -down-> EventBus : Publish Intent & Highlight
+GridModel -down-> EventBus : Publish Move Validation
+CombatMath -down-> EventBus : Publish Damage Calculation
+
+' FSM Orchestration
+TurnFSM -down-> EventBus : Broadcast Phase Transitions
+EventBus -up-> TurnFSM : Notify Card Played / Wave Cleared
+
+' Event Bus to Presentation
+EventBus -down-> TilemapView : Trigger Highlight / Clear
+EventBus -down-> UnitView : Trigger Lerp Move / Attack Anim
+EventBus -down-> CardUIView : Enable/Disable Interaction
+EventBus -down-> HUDView : Update Bars & Badges
+
+' Presentation to Event Bus
+CardUIView -up-> EventBus : OnCardPlayed(card, targetCoord)
+
+@enduml
