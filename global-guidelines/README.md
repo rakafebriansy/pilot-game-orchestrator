@@ -5,7 +5,7 @@ Direktori ini adalah urat nadi arsitektur instruksional bagi AI Agent. Ia menamp
 ## Struktur dan Jenis Pedoman
 Dokumen-dokumen di sini terbagi menjadi dua kategori utama:
 
-1. **Pedoman Universal (`coding.md`, `security.md`, dll.)**
+1. **Pedoman Universal (`coding.md`, `security.md`, `database.md`, dll.)**
    Berisi standar rekayasa perangkat lunak yang berlaku untuk bahasa pemrograman atau jenis aplikasi apa pun (Web, Mobile, Game, API).
 2. **Pedoman Spesifik Proyek (`project-context.md`)**
    Berisi aturan eksklusif dan hasil *scan* *codebase* yang hanya valid untuk *node* proyek spesifik yang sedang dikerjakan.
