@@ -7,27 +7,79 @@
 ---
 
 ## 🎯 1. Ringkasan & Tujuan
-Tiket ini mengimplementasikan lapisan presentasi unit karakter di arena:
-1. **`UnitMovementView.cs`**: Menggerakkan karakter secara halus antar-koordinat grid menggunakan interpolasi posisi (*MoveTowards/Lerp*) saat menerima event `CombatEvents.OnUnitMoved`.
-2. **`UnitAnimatorPresenter.cs`**: Merespons event serangan, hit impact, dan animasi kematian tanpa memanggil logika pertempuran langsung (*Decoupled View*).
-3. **`FloatingHealthBarView.cs`**: Menampilkan bar HP dinamis di atas kepala karakter.
+Tiket ini mengimplementasikan entitas visual karakter protagonis Nabu dan musuh dasar di Unity:
+1. **`UnitMovementView.cs`**: Menggerakkan transform karakter antar-ubin grid secara mulus (*MoveTowards/Lerp*) saat menerima event `CombatEvents.OnUnitMoved`.
+2. **`UnitAnimatorPresenter.cs`**: Merespons event animasi (Attack, Hit, Die) tanpa dependensi langsung ke logika matematika (*Decoupled View*).
+3. **`FloatingHealthBarView.cs`**: Menampilkan bar HP dan Shield dinamis di atas kepala unit menggunakan *World Space Canvas*.
 4. **Pembuatan Prefab Unit**: `Nabu_Player_Prefab.prefab` dan `Enemy_Conscript_Prefab.prefab`.
 
 ---
 
-## 📂 2. Struktur File & Lokasi
+## 🖥️ 2. Panduan Lengkap Unity Editor (Step-by-Step GUI Setup)
+
+### Langkah 2.1: Pembuatan GameObject Karakter Nabu
+1. Di panel **Hierarchy**, klik kanan > **Create Empty**, beri nama `Nabu_Player`.
+2. Atur **Transform Position:** `X: 2.5, Y: 2.5, Z: 0` *(Titik tengah ubin [2,2])*.
+3. Di panel **Inspector**, tambahkan komponen berikut via tombol **Add Component**:
+   * **Sprite Renderer**:
+     * **Sprite:** Pasang sprite placeholder Nabu (atau kotak biru).
+     * **Sorting Layer:** Pilih `Units` *(PENTING: agar karakter berdiri di atas ubin lantai!)*.
+     * **Order in Layer:** `0`.
+   * **Animator**:
+     * **Controller:** Pasang `Nabu_AnimatorController.controller`.
+   * **UnitMovementView**:
+     * **Unit Id:** `1` *(ID 1 selalu dialokasikan untuk Nabu/Player)*.
+     * **Move Speed:** `8`.
+   * **UnitAnimatorPresenter**:
+     * **Unit Id:** `1`.
+
+---
+
+### Langkah 2.2: Setup World Space Canvas HealthBar di Atas Kepala
+1. Klik kanan pada GameObject `Nabu_Player` di Hierarchy > pilih **UI > Canvas**.
+2. Ganti nama Canvas child tersebut menjadi `HealthBar_Canvas`.
+3. Di panel Inspector komponen **Canvas**:
+   * **Render Mode:** Pilih `World Space`.
+   * **Event Camera:** Seret `Main Camera` ke slot ini.
+4. Di komponen **Rect Transform**:
+   * **Pos X:** `0`, **Pos Y:** `1.1`, **Pos Z:** `0` *(Tepat melayang di atas sprite)*.
+   * **Width:** `100`, **Height:** `14`.
+   * **Scale:** `X: 0.01, Y: 0.01, Z: 0.01` *(Wajib diskalakan 0.01 agar sesuai ukuran piksel grid)*.
+5. Di bawah `HealthBar_Canvas`, buat 3 elemen UI Image via klik kanan > **UI > Image**:
+   * **Image 1 (`Background`):**
+     * Color: Hitam semi-transparan (`#00000088`), Width: 100, Height: 12.
+   * **Image 2 (`HealthFill`):**
+     * Color: Merah / Hijau (`#22C55E`), Image Type: `Filled`, Fill Method: `Horizontal`, Fill Origin: `Left`.
+   * **Image 3 (`ShieldFill`):**
+     * Color: Biru Muda Cyan (`#06B6D4`), Image Type: `Filled`, Fill Method: `Horizontal`.
+6. Klik GameObject `HealthBar_Canvas`, lalu klik **Add Component** > ketik `FloatingHealthBarView` > tekan Enter.
+7. Hubungkan slot Inspector:
+   * **Unit Id:** `1`.
+   * **Max Health:** `20`.
+   * **Health Fill Image:** Seret `HealthFill` ke slot ini.
+   * **Shield Fill Image:** Seret `ShieldFill` ke slot ini.
+
 ```text
-Assets/
-├── Scripts/
-│   └── Units/
-│       ├── UnitMovementView.cs
-│       ├── UnitAnimatorPresenter.cs
-│       └── FloatingHealthBarView.cs
-└── Prefabs/
-    └── Units/
-        ├── Nabu_Player_Prefab.prefab
-        └── Enemy_Conscript_Prefab.prefab
+[Hierarchy]
+└── Nabu_Player                  [SpriteRenderer (Units), Animator, UnitMovementView, UnitAnimatorPresenter]
+    └── HealthBar_Canvas         [Canvas (World Space), FloatingHealthBarView]
+        ├── Background           [Image]
+        ├── HealthFill           [Image (Filled: Horizontal)]
+        └── ShieldFill           [Image (Filled: Horizontal)]
 ```
+
+---
+
+### Langkah 2.3: Pembuatan Prefab Unit
+1. Buat folder `Assets/Prefabs/Units/` di Project Window.
+2. Seret GameObject `Nabu_Player` dari Hierarchy ke folder `Assets/Prefabs/Units/` untuk membuat `Nabu_Player_Prefab.prefab`.
+3. Di Hierarchy, duplikasi `Nabu_Player` (`Ctrl+D`), ubah namanya menjadi `Enemy_Conscript`.
+4. Di Inspector `Enemy_Conscript`:
+   * Ubah sprite menjadi sprite prajurit musuh.
+   * Di `UnitMovementView`, set **Unit Id** = `2`.
+   * Di `UnitAnimatorPresenter`, set **Unit Id** = `2`.
+   * Di `FloatingHealthBarView`, set **Unit Id** = `2` dan **Max Health** = `18`.
+5. Seret `Enemy_Conscript` ke folder `Assets/Prefabs/Units/` untuk membuat `Enemy_Conscript_Prefab.prefab`.
 
 ---
 
@@ -220,18 +272,14 @@ namespace PilotGame.Units
 
 ---
 
-## 🛠️ 4. Langkah Pembuatan Prefab di Unity Editor
-1. Buat GameObject `Nabu_Player` di Scene.
-2. Tambahkan komponen: `SpriteRenderer`, `Animator`, `UnitMovementView`, `UnitAnimatorPresenter`.
-3. Buat Canvas child (World Space) di atas kepala dan pasang script `FloatingHealthBarView`.
-4. Tarik ke `Assets/Prefabs/Units/Nabu_Player_Prefab.prefab`.
-5. Duplikasi untuk `Enemy_Conscript_Prefab.prefab` dengan `_unitId = 2`.
-
----
-
-## 🧪 5. Langkah Verifikasi
-1. Di Play Mode, jalankan baris pengujian event:
+## 🧪 4. Langkah Verifikasi di Unity Editor
+1. Pasang prefab `Nabu_Player_Prefab` di posisi `(2.5, 2.5, 0)`.
+2. Klik tombol **Play** di Unity Editor.
+3. Buka Console atau jalankan test broadcast:
    ```csharp
-   CombatEvents.OnUnitMoved?.Invoke(new UnitMovePayload(1, new Vector2Int(0, 0), new Vector2Int(4, 4)));
+   // Uji Gerak:
+   CombatEvents.OnUnitMoved?.Invoke(new UnitMovePayload(1, new Vector2Int(2, 2), new Vector2Int(5, 2)));
+   // Uji Damage:
+   CombatEvents.OnUnitDamaged?.Invoke(new DamagePayload(1, 6, 0));
    ```
-2. Amati karakter Nabu meluncur mulus (bukan teleport patah-patah) dari (0,0) ke (4,4).
+4. Di **Game View**, amati Nabu berjalan halus ke petak (5,2) dan bar HP berkurang dari 100% menjadi 70%.

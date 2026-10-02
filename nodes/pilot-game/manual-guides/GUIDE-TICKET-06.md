@@ -14,18 +14,50 @@ Tiket ini mengimplementasikan sistem manajemen dek dan tangan pemain (*Hand & De
 
 ---
 
-## 📂 2. Struktur File & Lokasi
+## 🖥️ 2. Panduan Lengkap Unity Editor (Step-by-Step GUI Setup)
+
+### Langkah 2.1: Pembuatan Aset Panel Settings UI Toolkit
+1. Di Project Window, buat folder `Assets/UI/Settings/`.
+2. Klik kanan di folder tersebut > pilih **Create > UI Toolkit > Panel Settings Asset**.
+3. Beri nama: `CombatPanelSettings.asset`.
+4. Di panel **Inspector** pada `CombatPanelSettings`:
+   * **Scale Mode:** `Scale With Screen Size`.
+   * **Reference Resolution:** `X: 1920, Y: 1080`.
+   * **Screen Match Mode:** `Match Width Or Height`.
+   * **Match:** `0.5`.
+   * **Sorting Order:** `100` *(Memastikan UI selalu berada paling depan di atas seluruh elemen pertempuran)*.
+
+---
+
+### Langkah 2.2: Pembuatan Dokumen UXML & USS di UI Builder
+1. Di Project Window, buat folder:
+   * `Assets/UI/UXML/`
+   * `Assets/UI/USS/`
+2. Klik kanan di folder `Assets/UI/USS/` > **Create > UI Toolkit > Style Sheet**, beri nama `CombatHandUI.uss`.
+3. Klik kanan di folder `Assets/UI/UXML/` > **Create > UI Toolkit > UI Document**, beri nama `CombatHandUI.uxml`.
+4. Klik dua kali file `CombatHandUI.uxml` untuk membukanya di jendela **UI Builder**:
+   * Di panel kiri atas (StyleSheets), klik tombol **`+`** > pilih **Add Existing USS** > pilih `CombatHandUI.uss`.
+   * Di panel Library (kiri bawah), tarik elemen **VisualElement** ke Hierarchy UI Builder.
+   * Di panel Inspector (kanan), beri nama Name = `hand-container` dan tambahkan Class = `hand-container`.
+   * Simpan file via menu **File > Save** di UI Builder (`Ctrl+S` / `Cmd+S`), lalu tutup UI Builder.
+
+---
+
+### Langkah 2.3: Setup GameObject UI Document di Hierarchy Scene
+1. Di panel **Hierarchy**, klik kanan > **UI Toolkit > UI Document**.
+2. Ganti nama GameObject menjadi `[UI_CardHand]`.
+3. Di panel **Inspector** pada komponen **UI Document**:
+   * **Panel Settings:** Seret `CombatPanelSettings.asset` ke slot ini.
+   * **Source Asset:** Seret `CombatHandUI.uxml` ke slot ini.
+4. Klik tombol **Add Component** > ketik `DeckManager` > tekan Enter.
+   * Di Inspector `DeckManager`, tambahkan 5 kartu dari `Assets/ScriptableObjects/Cards/` ke list **Starter Deck**.
+5. Klik tombol **Add Component** > ketik `CardHandController` > tekan Enter.
+   * **Deck Manager:** Seret komponen `DeckManager` ke slot ini.
+   * **Main Camera:** Seret `Main Camera` ke slot ini.
+
 ```text
-Assets/
-├── Scripts/
-│   └── UI/
-│       ├── DeckManager.cs
-│       └── CardHandController.cs
-└── UI/
-    ├── UXML/
-    │   └── CombatHandUI.uxml
-    └── USS/
-        └── CombatHandUI.uss
+[Hierarchy]
+└── [UI_CardHand]                 [UIDocument, DeckManager, CardHandController]
 ```
 
 ---
@@ -88,7 +120,7 @@ namespace PilotGame.UI
             {
                 if (_drawPile.Count == 0)
                 {
-                    if (_discardPile.Count == 0) break; // Tidak ada kartu tersisa
+                    if (_discardPile.Count == 0) break;
                     ReshuffleDiscardIntoDraw();
                 }
 
@@ -226,66 +258,89 @@ namespace PilotGame.UI
 
 ---
 
-### C. `Assets/UI/USS/CombatHandUI.uss`
+### C. `Assets/UI/UXML/CombatHandUI.uxml`
+```xml
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/USS/CombatHandUI.uss" />
+    <ui:VisualElement name="hand-root" class="hand-root">
+        <ui:VisualElement name="hand-container" class="hand-container" />
+    </ui:VisualElement>
+</ui:UXML>
+```
+
+---
+
+### D. `Assets/UI/USS/CombatHandUI.uss`
 ```css
-.hand-container {
+.hand-root {
+    width: 100%;
+    height: 100%;
     position: absolute;
-    bottom: 20px;
-    left: 50%;
-    translate: -50% 0;
+    justify-content: flex-end;
+    align-items: center;
+    pointer-events: none;
+}
+
+.hand-container {
+    margin-bottom: 24px;
     flex-direction: row;
     align-items: flex-end;
     justify-content: center;
-    gap: 12px;
+    gap: 16px;
+    pointer-events: auto;
 }
 
 .card-element {
-    width: 140px;
-    height: 200px;
+    width: 150px;
+    height: 220px;
     background-color: #1a1e29;
-    border-radius: 8px;
+    border-radius: 10px;
     border-color: #d4af37;
     border-width: 2px;
-    padding: 8px;
+    padding: 10px;
     transition-duration: 0.15s;
+    transition-timing-function: ease-out;
 }
 
 .card-element:hover {
-    translate: 0 -25px;
-    scale: 1.08;
+    translate: 0 -30px;
+    scale: 1.1;
     border-color: #ffaa00;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
 }
 
 .card-title {
     color: #ffffff;
-    font-size: 14px;
+    font-size: 15px;
     -unity-font-style: bold;
-    margin-top: 4px;
+    margin-top: 6px;
     text-align: center;
 }
 
 .card-desc {
     color: #b0b8c4;
     font-size: 11px;
-    margin-top: 8px;
+    margin-top: 10px;
     white-space: normal;
 }
 
 .card-cost {
     position: absolute;
-    top: 4px;
-    left: 4px;
+    top: 6px;
+    left: 6px;
     background-color: #d97706;
     color: white;
     border-radius: 4px;
-    padding: 2px 6px;
-    font-size: 10px;
+    padding: 2px 8px;
+    font-size: 11px;
+    -unity-font-style: bold;
 }
 ```
 
 ---
 
-## 🧪 4. Langkah Verifikasi
-1. Buka Scene pertempuran, pastikan kartu starter muncul di dasar layar.
-2. Arahkan kursor ke kartu: kartu akan melayang ke atas dengan efek hover mulus.
-3. Klik dan seret kartu ke ubin arena untuk memicu broadcast aksi.
+## 🧪 4. Langkah Verifikasi di Unity Editor
+1. Tekan tombol **Play** di Unity Editor.
+2. 5 kartu starter akan berbaris rapi di bagian bawah tengah layar.
+3. Sorot mouse ke setiap kartu untuk mengamati animasi melayang naik (*hover elevate*).
+4. Klik dan tahan kartu, lalu lepaskan di arena untuk memverifikasi penerimaan input pointer.

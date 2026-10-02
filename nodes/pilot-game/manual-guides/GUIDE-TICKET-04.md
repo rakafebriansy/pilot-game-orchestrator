@@ -16,16 +16,82 @@ Serta script `GridTilemapView.cs` yang berlangganan event `CombatEvents.OnHighli
 
 ---
 
-## 📂 2. Struktur File & Lokasi
+## 🖥️ 2. Panduan Lengkap Unity Editor (Step-by-Step GUI Setup)
+
+### Langkah 2.1: Konfigurasi Sorting Layers di Project Settings
+Sebelum membuat Tilemap di Scene, kita wajib mendaftarkan Sorting Layers standar:
+1. Di menu bar atas Unity Editor, pilih **Edit > Project Settings**.
+2. Di panel kiri, pilih **Tags and Layers**.
+3. Buka dropdown **Sorting Layers**, lalu klik tombol **`+`** untuk menambahkan layer berurutan dari atas ke bawah:
+   * `Default` (Bawaan Unity)
+   * `Floor` (Untuk lantai arena dasar)
+   * `Environment` (Untuk pilar rintangan & semak)
+   * `Units` (Untuk karakter Nabu & musuh)
+   * `Overlay` (Untuk visual highlight merah/hijau/biru)
+   * `UI` (Untuk HUD dan kartu)
+4. Tutup jendela Project Settings.
+
+---
+
+### Langkah 2.2: Pembuatan Hierarchy Tilemap di Scene
+1. Buka Scene baru atau scene kerja (`MainBattleScene.unity`).
+2. Di panel **Hierarchy**, klik kanan pada area kosong > pilih **2D Object > Tilemap > Rectangular**.
+3. Sebuah GameObject bernama `Grid` akan otomatis terbuat dengan child `Tilemap`.
+4. Ganti nama GameObject `Grid` menjadi `ArenaGridRoot`.
+5. Klik `ArenaGridRoot` di Hierarchy, periksa panel **Inspector**:
+   * Komponen **Grid**:
+     * **Cell Size:** `X: 1, Y: 1, Z: 0`
+     * **Cell Layout:** `Rectangle`
+     * **Cell Swizzle:** `XYZ`
+6. Buat 3 child Tilemap di dalam `ArenaGridRoot`:
+   * **Child 1:** Ganti nama menjadi `BaseFloor_Tilemap`
+     * Di Inspector komponen **Tilemap Renderer**:
+       * **Sorting Layer:** Pilih `Floor`
+       * **Order in Layer:** `0`
+   * **Child 2:** Klik kanan `ArenaGridRoot` > **2D Object > Tilemap > Rectangular**, beri nama `Obstacles_Tilemap`
+     * Di Inspector komponen **Tilemap Renderer**:
+       * **Sorting Layer:** Pilih `Environment`
+       * **Order in Layer:** `1`
+   * **Child 3:** Klik kanan `ArenaGridRoot` > **2D Object > Tilemap > Rectangular**, beri nama `HighlightOverlay_Tilemap`
+     * Di Inspector komponen **Tilemap Renderer**:
+       * **Sorting Layer:** Pilih `Overlay`
+       * **Order in Layer:** `2`
+
+Struktur akhir di panel Hierarchy:
 ```text
-Assets/
-├── Scripts/
-│   └── Arena/
-│       └── GridTilemapView.cs
-└── Prefabs/
-    └── Arena/
-        └── ArenaGrid_Prefab.prefab
+[Hierarchy]
+└── ArenaGridRoot                 [Grid, GridTilemapView]
+    ├── BaseFloor_Tilemap         [Tilemap, Tilemap Renderer -> Layer: Floor]
+    ├── Obstacles_Tilemap         [Tilemap, Tilemap Renderer -> Layer: Environment]
+    └── HighlightOverlay_Tilemap  [Tilemap, Tilemap Renderer -> Layer: Overlay]
 ```
+
+---
+
+### Langkah 2.3: Pembuatan Aset Tile (Sprites to Tiles)
+1. Di Project Window, buat folder `Assets/Art/Tiles/HighlightTiles/`.
+2. Siapkan 4 sprite ubin berwarna 16x16 atau 32x32:
+   * `Sprite_RedSquare.png` (Merah semi-transparan untuk Intent Musuh)
+   * `Sprite_GreenSquare.png` (Hijau semi-transparan untuk Jangkauan Kartu)
+   * `Sprite_BlueSquare.png` (Biru semi-transparan untuk Jangkauan Gerak)
+   * `Sprite_YellowSquare.png` (Kuning semi-transparan untuk Kursor Hover)
+3. Klik kanan di folder `HighlightTiles/` > **Create > 2D > Tiles > Tile**.
+4. Beri nama: `Tile_DangerRed.asset`.
+5. Di Inspector `Tile_DangerRed.asset`, seret `Sprite_RedSquare` ke slot field **Sprite**.
+6. Ulangi untuk `Tile_ValidGreen.asset`, `Tile_MoveBlue.asset`, dan `Tile_HoverYellow.asset`.
+
+---
+
+### Langkah 2.4: Memasang Komponen & Wiring di Inspector
+1. Klik GameObject `ArenaGridRoot` di Hierarchy.
+2. Di panel **Inspector**, klik tombol **Add Component** di bagian bawah > ketik `GridTilemapView` > tekan Enter.
+3. Hubungkan referensi slot (*Drag-and-Drop Wiring*):
+   * Seret child `HighlightOverlay_Tilemap` dari Hierarchy ke slot field **Highlight Tilemap**.
+   * Seret `Tile_DangerRed.asset` dari Project View ke slot **Danger Tile Sprite**.
+   * Seret `Tile_ValidGreen.asset` dari Project View ke slot **Valid Tile Sprite**.
+   * Seret `Tile_MoveBlue.asset` dari Project View ke slot **Move Tile Sprite**.
+   * Seret `Tile_HoverYellow.asset` dari Project View ke slot **Hover Tile Sprite**.
+4. Tarik GameObject `ArenaGridRoot` dari Hierarchy ke folder `Assets/Prefabs/Arena/` di Project Window untuk menyimpannya sebagai `ArenaGrid_Prefab.prefab`.
 
 ---
 
@@ -111,24 +177,11 @@ namespace PilotGame.Arena
 
 ---
 
-## 🛠️ 4. Langkah Setup Hierarchy di Unity Editor
-1. Di Hierarchy Scene, buat GameObject baru bernama `ArenaGridRoot`.
-2. Tambahkan komponen **Grid** (Cell Size: `1, 1, 0`).
-3. Di bawah `ArenaGridRoot`, buat 3 child GameObject dengan komponen **Tilemap** dan **TilemapRenderer**:
-   * `BaseFloor_Tilemap` → Sorting Layer: `Floor`, Order: 0
-   * `Obstacles_Tilemap` → Sorting Layer: `Environment`, Order: 1
-   * `HighlightOverlay_Tilemap` → Sorting Layer: `Overlay`, Order: 2
-4. Pasang script `GridTilemapView.cs` pada `ArenaGridRoot`.
-5. Seret `HighlightOverlay_Tilemap` ke slot field `_highlightTilemap`.
-6. Tarik `ArenaGridRoot` ke Project View folder `Assets/Prefabs/Arena/` untuk menjadikannya Prefab `ArenaGrid_Prefab.prefab`.
-
----
-
-## 🧪 5. Langkah Verifikasi
-1. Buka Play Mode di Unity Editor.
-2. Buat script pengujian sementara untuk memicu highlight:
+## 🧪 4. Langkah Verifikasi di Unity Editor
+1. Klik tombol **Play** di toolbar atas Unity Editor.
+2. Buat script sementara atau panggil via Inspector debug:
    ```csharp
-   Vector2Int[] area = new Vector2Int[] { new Vector2Int(5, 5), new Vector2Int(5, 6), new Vector2Int(5, 7) };
-   CombatEvents.OnHighlightTilesRequested?.Invoke(new TileHighlightRequest(area, HighlightType.DangerEnemyIntent));
+   Vector2Int[] sampleArea = new Vector2Int[] { new Vector2Int(4, 4), new Vector2Int(4, 5), new Vector2Int(4, 6) };
+   CombatEvents.OnHighlightTilesRequested?.Invoke(new TileHighlightRequest(sampleArea, HighlightType.DangerEnemyIntent));
    ```
-3. Periksa secara visual di Game View bahwa 3 ubin merah muncul tepat di koordinat (5,5), (5,6), dan (5,7).
+3. Lihat panel **Game View**: Tiga ubin merah akan muncul tepat di posisi grid (4,4), (4,5), dan (4,6) di atas lapisan lantai tanpa tertutup latar belakang.

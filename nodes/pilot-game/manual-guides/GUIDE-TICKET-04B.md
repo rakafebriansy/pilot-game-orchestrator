@@ -14,15 +14,90 @@ Tiket ini mengonfigurasi estetika visual atmosfer Menara Babel sesuai arahan sen
 
 ---
 
-## 📂 2. Struktur File & Lokasi
-```text
-Assets/
-└── Scripts/
-    ├── Environment/
-    │   └── TorchFlicker.cs
-    └── Audio/
-        └── AudioManager.cs
-```
+## 🖥️ 2. Panduan Lengkap Unity Editor (Step-by-Step GUI Setup)
+
+### Langkah 2.1: Konfigurasi URP 2D Renderer di Project Settings
+1. Di menu bar atas, buka **Edit > Project Settings > Graphics**.
+2. Pastikan field **Scriptable Render Pipeline Settings** terisi dengan `URP-2D-Asset`.
+3. Klik file aset `URP-2D-Asset` tersebut di Project Window untuk melihat konfigurasi 2D Renderer Data:
+   * Di panel Inspector, pastikan **Default Material Type** disetel ke `Lit`.
+   * Di bagian **Post-processing**, pastikan checkbox **Enabled** tercentang.
+
+---
+
+### Langkah 2.2: Setup Kamera Utama (Main Camera)
+1. Di panel **Hierarchy**, klik GameObject `Main Camera`.
+2. Di panel **Inspector** pada komponen **Camera**:
+   * **Projection:** `Orthographic`
+   * **Size:** `8.5` *(Nilai ini pas membingkai grid 15×15 dengan ruang untuk UI bawah)*
+   * **Transform Position:** `X: 7.5, Y: 7.5, Z: -10` *(Menengahkan pandangan tepat di titik pusat arena)*
+   * **Background Type:** `Solid Color`, warna: `#0b0e14` (Hitam pekat kebiruan gelap)
+3. Pada komponen **Universal Additional Camera Data**:
+   * Centang opsi **Post Processing** = `True`.
+   * Centang opsi **Render Shadows** = `True`.
+
+---
+
+### Langkah 2.3: Setup URP 2D Lights di Scene
+1. **Global Ambient Light (Pencahayaan Redup):**
+   * Di Hierarchy, klik kanan > **Light > 2D > Global Light 2D**.
+   * Ganti nama menjadi `GlobalLight_Ambient`.
+   * Di Inspector:
+     * **Color:** Biru gelap keabu-abuan (`#2A3B4C`).
+     * **Intensity:** `0.35` (Memberikan suasana gelap temaram ala dungeon perpustakaan kuno).
+2. **Point Light 2D Obor (Torch Light):**
+   * Di Hierarchy, klik kanan > **Light > 2D > Point Light 2D**.
+   * Ganti nama menjadi `Torch_Wall_Left`.
+   * Di Inspector:
+     * **Transform Position:** `X: 1, Y: 7.5, Z: 0`.
+     * **Light Type:** `Point`.
+     * **Outer Radius:** `3.5`.
+     * **Inner Radius:** `0.8`.
+     * **Color:** Kuning-Oranye hangat (`#FF8C1A`).
+     * **Intensity:** `1.1`.
+   * Klik tombol **Add Component** > ketik `TorchFlicker` > tekan Enter.
+3. Duplikasi `Torch_Wall_Left` (`Ctrl+D` / `Cmd+D`), ganti nama menjadi `Torch_Wall_Right` dan posisikan di `X: 14, Y: 7.5, Z: 0`.
+
+---
+
+### Langkah 2.4: Setup Global Volume Post-Processing
+1. Di panel Hierarchy, klik kanan > **Volume > Global Volume**.
+2. Ganti nama menjadi `PostProcessing_Volume`.
+3. Di panel Inspector pada komponen **Volume**:
+   * **Mode:** `Global`
+   * **Profile:** Klik tombol **New** di samping field Profile (akan otomatis membuat aset profile di folder scene).
+4. Klik tombol **Add Override** untuk menambahkan 3 efek berikut:
+   * **Override 1: Bloom**
+     * Centang **Threshold** = `0.9`
+     * Centang **Intensity** = `1.2`
+     * Centang **Scatter** = `0.7`
+     * Centang **Tint** = Kuning-Oranye (`#FFA500`)
+   * **Override 2: Vignette**
+     * Centang **Intensity** = `0.35`
+     * Centang **Smoothness** = `0.45`
+     * Centang **Rounded** = `True`
+   * **Override 3: Color Adjustments**
+     * Centang **Post Exposure** = `-0.15`
+     * Centang **Contrast** = `15`
+     * Centang **Saturation** = `10`
+
+---
+
+### Langkah 2.5: Setup AudioManager di Scene
+1. Di Hierarchy, klik kanan > **Create Empty**, beri nama `[AudioManager]`.
+2. Di Inspector, klik **Add Component** > tambahkan dua komponen **Audio Source**:
+   * **Audio Source 1 (BGM):**
+     * Centang **Loop** = `True`
+     * Centang **Play On Awake** = `False`
+     * **Spatial Blend:** `0` (2D Sound)
+     * **Volume:** `0.7`
+   * **Audio Source 2 (SFX):**
+     * Centang **Loop** = `False`
+     * Centang **Play On Awake** = `False`
+     * **Spatial Blend:** `0` (2D Sound)
+     * **Volume:** `1.0`
+3. Klik **Add Component** > ketik `AudioManager` > tekan Enter.
+4. Hubungkan Audio Source 1 ke slot `_bgmSource` dan Audio Source 2 ke slot `_sfxSource`.
 
 ---
 
@@ -134,17 +209,9 @@ namespace PilotGame.Audio
 
 ---
 
-## 🛠️ 4. Konfigurasi Volume Post-Processing di URP
-1. Di Hierarchy Scene, buat GameObject bernama `GlobalVolume`.
-2. Tambahkan komponen **Volume** (Mode: `Global`).
-3. Buat Profile baru dan tambahkan Overrides berikut:
-   * **Bloom**: Threshold = `0.9`, Intensity = `1.2`, Tint = Kuning-Oranye (`#FFA500`).
-   * **Vignette**: Intensity = `0.35`, Smoothness = `0.4`.
-   * **Color Adjustments**: Contrast = `15`, Post Exposure = `-0.2` (suasana dark fantasy).
-
----
-
-## 🧪 5. Langkah Verifikasi
-1. Jalankan Play Mode di Unity Editor.
-2. Amati obor di dinding arena berkedip lembut secara dinamis.
-3. Amati efek Bloom yang menyala pada highlight kuning-oranye tanpa membuat layar over-exposed.
+## 🧪 4. Langkah Verifikasi di Unity Editor
+1. Tekan tombol **Play** di Unity Editor.
+2. Amati visual di **Game View**:
+   * Suasana arena gelap misterius dengan sudut layar gelap melengkung (*Vignette*).
+   * Obor di sisi kiri dan kanan memancarkan cahaya oranye hangat yang berdenyut lembut alami.
+   * Audio BGM suasana Menara Babel berputar secara mulus (*looping*).

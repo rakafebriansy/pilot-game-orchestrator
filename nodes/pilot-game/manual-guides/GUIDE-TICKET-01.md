@@ -13,18 +13,59 @@ Semua file di tiket ini adalah **Pure C#** tanpa ketergantungan pada `MonoBehavi
 
 ---
 
-## 📂 2. Struktur File & Lokasi
-Buat struktur direktori dan file berikut di Unity Editor:
-```text
-Assets/
-└── Scripts/
-    └── Core/
-        ├── Data/
-        │   ├── CombatTypes.cs
-        │   └── CombatPayloads.cs
-        └── Events/
-            └── CombatEvents.cs
-```
+## 🖥️ 2. Panduan Lengkap Unity Editor (Step-by-Step GUI Setup)
+
+Sebelum mengetik kode program, ikuti langkah-langkah pengaturan proyek di antarmuka Unity Editor berikut:
+
+### Langkah 2.1: Verifikasi Package Manager
+Pastikan package inti sudah terpasang di Unity:
+1. Di menu bar atas Unity Editor, buka **Window > Package Manager**.
+2. Ubah dropdown di kiri atas menjadi **Packages: Unity Registry**.
+3. Cari dan pastikan package berikut terpasang (bercentang hijau):
+   * **Universal RP** (com.unity.render-pipelines.universal)
+   * **2D Tilemap Editor** (com.unity.2d.tilemap)
+   * **UI Toolkit** (com.unity.ui)
+   * **Test Framework** (com.unity.test-framework)
+4. Jika belum terpasang, klik tombol **Install** di pojok kanan bawah.
+
+---
+
+### Langkah 2.2: Pembuatan Struktur Folder di Project Window
+1. Buka tab **Project** (biasanya di bagian bawah editor).
+2. Klik kanan pada folder `Assets` > pilih **Create > Folder**, beri nama `Scripts`.
+3. Di dalam `Assets/Scripts/`, buat folder `Core`.
+4. Di dalam `Assets/Scripts/Core/`, buat dua subfolder:
+   * `Data`
+   * `Events`
+5. Struktur folder akhir di Project Window akan terlihat seperti ini:
+   ```text
+   Assets/
+   └── Scripts/
+       └── Core/
+           ├── Data/
+           └── Events/
+   ```
+
+---
+
+### Langkah 2.3: Pembuatan File C# Script via Unity GUI
+1. Masuk ke folder `Assets/Scripts/Core/Data/`.
+2. Klik kanan pada area kosong > pilih **Create > C# Script** > beri nama `CombatTypes` (tekan Enter).
+3. Klik kanan lagi > pilih **Create > C# Script** > beri nama `CombatPayloads` (tekan Enter).
+4. Pindah ke folder `Assets/Scripts/Core/Events/`.
+5. Klik kanan > pilih **Create > C# Script** > beri nama `CombatEvents` (tekan Enter).
+6. Buka file-file tersebut di IDE pilihan Anda (Visual Studio / VS Code / Rider) untuk memasukkan kode di Bagian 3.
+
+---
+
+### Langkah 2.4: Pembuatan Assembly Definition (Asmdef)
+Untuk memastikan arsitektur tetap bersih dan modular, serta mempercepat waktu kompilasi di Unity:
+1. Di folder `Assets/Scripts/Core/`, klik kanan > pilih **Create > Assembly Definition**.
+2. Beri nama: `PilotGame.Core`.
+3. Klik file `PilotGame.Core.asmdef` tersebut, lalu lihat panel **Inspector** di sebelah kanan:
+   * Centang **Auto Referenced** = `True`.
+   * Di bagian **Platforms**, biarkan default (Any Platform).
+   * Klik tombol **Apply** di bagian bawah Inspector.
 
 ---
 
@@ -253,12 +294,9 @@ namespace PilotGame.Core.Events
 
 ---
 
-## 🧪 5. Langkah Verifikasi
-1. Buka Unity Editor.
-2. Pastikan file tersimpan di direktori `Assets/Scripts/Core/Data/` dan `Assets/Scripts/Core/Events/`.
-3. Periksa jendela **Console** di Unity: Pastikan tidak ada error kompilasi C#.
-4. Buat script pengujian sederhana jika ingin menguji broadcast event di Play Mode:
-   ```csharp
-   CombatEvents.OnPhaseChanged += phase => Debug.Log($"[Test] Fase berubah ke: {phase}");
-   CombatEvents.OnPhaseChanged?.Invoke(CombatPhase.PlayerPhase);
-   ```
+## 🧪 5. Langkah Verifikasi di Unity Editor
+1. Kembali ke Unity Editor.
+2. Amati ikon lingkaran kecil berputar di pojok kanan bawah Unity (proses kompilasi C#).
+3. Buka tab **Console** (`Ctrl+Shift+C` / `Cmd+Shift+C` atau menu **Window > General > Console**).
+4. **Kriteria Sukses:** Console harus bersih dari error merah (*0 Compilation Errors*).
+5. Jika muncul pesan warning, klik tombol **Clear** di pojok kiri atas Console.

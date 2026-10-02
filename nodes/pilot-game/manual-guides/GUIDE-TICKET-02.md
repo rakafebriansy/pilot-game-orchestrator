@@ -12,23 +12,53 @@ Tiket ini mendefinisikan template dasar **ScriptableObject (SO)** di Unity untuk
 2. **`EnemyData.cs`** — konfigurasi statistik, archetype, dan hierarki musuh.
 3. **`ConsumableData.cs`** — item konsumsi sekali pakai (*Free Action*).
 
-Data-driven design menggunakan ScriptableObject memungkinkan Game Designer mengubah nilai statistik langsung dari Unity Inspector tanpa menyentuh baris kode logika.
+---
+
+## 🖥️ 2. Panduan Lengkap Unity Editor (Step-by-Step GUI Setup)
+
+### Langkah 2.1: Pembuatan Folder & Script di Project Window
+1. Buka tab **Project**, masuk ke folder `Assets/Scripts/`.
+2. Klik kanan > **Create > Folder**, beri nama `Cards`.
+3. Di dalam `Assets/Scripts/Cards/`, buat 3 C# script via klik kanan > **Create > C# Script**:
+   * `CardData`
+   * `EnemyData`
+   * `ConsumableData`
+4. Buat juga folder untuk menyimpan aset data hasil instansiasi:
+   * `Assets/ScriptableObjects/Cards/`
+   * `Assets/ScriptableObjects/Enemies/`
+   * `Assets/ScriptableObjects/Consumables/`
 
 ---
 
-## 📂 2. Struktur File & Lokasi
-```text
-Assets/
-├── Scripts/
-│   └── Cards/
-│       ├── CardData.cs
-│       ├── EnemyData.cs
-│       └── ConsumableData.cs
-└── ScriptableObjects/
-    ├── Cards/
-    ├── Enemies/
-    └── Consumables/
-```
+### Langkah 2.2: Pengaturan Impor Sprite Pixel Art di Inspector
+Sebelum memasukkan gambar/ikon ke ScriptableObject, pastikan tekstur pixel art dikonfigurasi dengan benar:
+1. Masukkan gambar sprite (.png) ke folder `Assets/Art/Sprites/`.
+2. Klik file sprite tersebut di Project Window.
+3. Di panel **Inspector**, ubah pengaturan berikut:
+   * **Texture Type:** `Sprite (2D and UI)`
+   * **Sprite Mode:** `Single`
+   * **Pixels Per Unit (PPU):** `16` (atau disesuaikan dengan grid art)
+   * **Filter Mode:** `Point (no filter)` *(PENTING: agar pixel art tajam dan tidak blur!)*
+   * **Compression:** `None` (pada tab Default di bagian bawah)
+4. Klik tombol **Apply** di kanan bawah Inspector.
+
+---
+
+### Langkah 2.3: Pembuatan File `.asset` ScriptableObject via Unity GUI
+Setelah script di Bagian 3 diketik dan di-save:
+1. Masuk ke folder `Assets/ScriptableObjects/Cards/`.
+2. Klik kanan pada area kosong Project View > pilih **Create > PilotGame > Data > Card Data**.
+3. Beri nama file: `Card_PageCutter.asset`.
+4. Klik file `Card_PageCutter.asset` tersebut, lalu isi nilai pada panel **Inspector**:
+   * `CardId`: `card_page_cutter`
+   * `CardName`: `Page Cutter`
+   * `Description`: `Tebasan lembaran kitab kuno yang memberikan 6 damage ke musuh di depannya.`
+   * `ActionType`: `Attack`
+   * `AreaType`: `SingleTarget`
+   * `EnergyCost`: `1`
+   * `BaseDamage`: `6`
+   * `Range`: `1`
+   * `CardArt`: Seret sprite ikon pedang/kitab ke slot ini.
 
 ---
 
@@ -64,13 +94,13 @@ namespace PilotGame.Cards
         public CardActionType ActionType = CardActionType.Attack;
         public TargetAreaType AreaType = TargetAreaType.SingleTarget;
         public CombatPhase PhaseRestriction = CombatPhase.PlayerPhase;
-        public int EnergyCost = 1; // Default 1 aksi per turn
+        public int EnergyCost = 1;
 
         [Header("Parameter Tempur")]
         public int BaseDamage = 0;
         public int BaseShield = 0;
-        public int Range = 1; // Jangkauan jarak Manhattan dari karakter
-        public int AreaRadius = 0; // Digunakan jika AreaType == RadiusArea
+        public int Range = 1;
+        public int AreaRadius = 0;
 
         [Header("Status Effect")]
         public StatusEffectType InflictedStatus = StatusEffectType.Shielded;
@@ -173,19 +203,7 @@ namespace PilotGame.Cards
 
 ---
 
-## 🛠️ 4. Langkah Pembuatan Aset di Unity Editor
-1. Klik kanan di folder `Assets/ScriptableObjects/Cards/` → pilih **Create > PilotGame > Data > Card Data**.
-2. Beri nama file: `Card_PageCutter.asset`.
-3. Isi Inspector dengan data:
-   * `CardId`: `"card_page_cutter"`
-   * `CardName`: `"Page Cutter"`
-   * `ActionType`: `Attack`
-   * `BaseDamage`: `6`
-   * `Range`: `1`
-4. Buat minimal 4 kartu sampel lainnya (`Card_TomeBash`, `Card_QuickStep`, `Card_BookmarkBarrier`, `Card_InkSplatter`).
-
----
-
-## 🧪 5. Langkah Verifikasi
-1. Pastikan tidak ada error kompilasi di Unity Editor.
-2. Klik setiap file `.asset` yang dibuat dan pastikan semua field tersimpan secara presisi di Unity Inspector.
+## 🧪 4. Langkah Verifikasi di Unity Editor
+1. Periksa folder `Assets/ScriptableObjects/Cards/` di Project View.
+2. Klik file `Card_PageCutter.asset`.
+3. Pastikan Inspector menampilkan data kartu dengan benar tanpa ada field yang kosong atau error serialization.

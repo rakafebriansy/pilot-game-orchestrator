@@ -17,21 +17,51 @@ Serta merakit seluruh prefab dari TICKET-01 s/d TICKET-06C ke dalam **`MainBattl
 
 ---
 
-## 📂 2. Struktur File & Lokasi
+## 🖥️ 2. Panduan Lengkap Unity Editor (Step-by-Step GUI Setup)
+
+### Langkah 2.1: Pembuatan Scene Utama `MainBattleScene.unity`
+1. Di Project Window, buka folder `Assets/Scenes/`.
+2. Klik kanan > **Create > Scene**, beri nama: `MainBattleScene`.
+3. Klik dua kali `MainBattleScene` untuk membukanya di editor.
+
+---
+
+### Langkah 2.2: Penyusunan Pohon Hierarchy Scene
+Susun GameObjects di panel **Hierarchy** sesuai hierarki berikut:
+
 ```text
-Assets/
-├── Scripts/
-│   └── Core/
-│       └── FSM/
-│           ├── ICombatState.cs
-│           ├── CombatStateMachine.cs
-│           ├── IntentPhaseState.cs
-│           ├── PlayerPhaseState.cs
-│           ├── EnemyPhaseState.cs
-│           └── RoundResetPhaseState.cs
-└── Scenes/
-    └── MainBattleScene.unity
+[Hierarchy - MainBattleScene]
+├── Main Camera                  [Camera, Universal Additional Camera Data, CameraShaker]
+├── GlobalVolume                 [Volume (Bloom, Vignette, Color Adjustments)]
+├── [AudioManager]               [AudioManager, 2x AudioSource]
+├── [VFXPoolManager]             [VFXPoolManager]
+├── ArenaEnvironment_Prefab      [Grid, 3x Tilemap (Floor, Obstacles, Overlay), GridTilemapView]
+├── Nabu_Player_Prefab           [Transform (2.5, 2.5, 0), SpriteRenderer (Units), UnitMovementView, HealthBar]
+├── Enemy_Conscript_Prefab       [Transform (6.5, 2.5, 0), SpriteRenderer (Units), UnitMovementView, HealthBar]
+├── [UI_CombatHUD]               [UIDocument (CombatHUD.uxml), CombatHUDPresenter]
+├── [UI_CardHand]                [UIDocument (CombatHandUI.uxml), DeckManager, CardHandController]
+└── [GameController]             [CombatStateMachine, HitStopManager]
 ```
+
+---
+
+### Langkah 2.3: Konfigurasi Inspector & Wiring Komponen pada `[GameController]`
+1. Di Hierarchy, klik kanan > **Create Empty**, beri nama `[GameController]`.
+2. Di panel **Inspector**, klik tombol **Add Component** > ketik `CombatStateMachine` > tekan Enter.
+3. Hubungkan slot referensi di Inspector `CombatStateMachine`:
+   * **Deck Manager:** Seret GameObject `[UI_CardHand]` ke slot ini.
+   * **Hand Controller:** Seret GameObject `[UI_CardHand]` ke slot ini.
+4. Klik **Add Component** > ketik `HitStopManager` > tekan Enter.
+
+---
+
+### Langkah 2.4: Konfigurasi Main Camera
+1. Klik `Main Camera` di Hierarchy:
+   * **Position:** `X: 7.5, Y: 7.5, Z: -10`.
+   * **Projection:** `Orthographic`.
+   * **Size:** `8.5`.
+   * **Post Processing:** Centang `True`.
+2. Klik **Add Component** > ketik `CameraShaker` > tekan Enter.
 
 ---
 
@@ -321,7 +351,7 @@ namespace PilotGame.Core.FSM
             _deck.DrawToFullHand();
 
             yield return new WaitForSeconds(0.8f);
-            _fsm.ChangeState(_fsm.IntentState); // Putaran berikutnya!
+            _fsm.ChangeState(_fsm.IntentState);
         }
 
         public void UpdateState() { }
@@ -332,25 +362,13 @@ namespace PilotGame.Core.FSM
 
 ---
 
-## 🛠️ 4. Langkah Integrasi `MainBattleScene.unity`
+## 🧪 4. Langkah Verifikasi di Unity Editor (Playable Loop)
 1. Buka Scene `MainBattleScene.unity`.
-2. Masukkan prefab ke hierarchy:
-   * `ArenaEnvironment_Prefab.prefab` (Domain 1)
-   * `Nabu_Player_Prefab.prefab` di posisi (2.5, 2.5, 0)
-   * `Enemy_Conscript_Prefab.prefab` di posisi (6.5, 2.5, 0)
-   * `CombatHUD_Document` (UI Toolkit UIDocument)
-   * `VFXPoolManager`
-3. Buat GameObject `[GameController]` dan pasang script `CombatStateMachine.cs`, `DeckManager.cs`, `CardHandController.cs`.
-4. Hubungkan seluruh reference inspector.
-
----
-
-## 🧪 5. Langkah Verifikasi (Playable Vertical Slice)
-1. Klik **Play** di Unity Editor.
-2. Amati alur giliran berjalan otomatis:
-   * *Intent Phase:* Musuh memunculkan telegraf ubin merah dan badge intent.
-   * *Player Phase:* Banner bertuliskan *"YOUR TURN"*, tangan berisi 5 kartu.
-   * Seret kartu `Super Punch` ke musuh: animasi serangan dimainkan, partikel pukulan meledak, musuh menerima damage dan kamera berguncang dengan jeda hit-stop.
-   * *Enemy Phase:* Musuh menyerang balik.
-   * *Round Reset:* Ronde berulang ke putaran berikutnya.
-3. Selamat! **Vertical Slice Pertempuran Taktis Fase 1 Selesai Penuh!** 🎉
+2. Klik tombol **Play** di toolbar atas Unity Editor.
+3. Amati urutan gameplay berjalan otomatis:
+   * **Intent Phase (0.0s - 1.4s):** Musuh menyalakan ubin merah dan badge intent.
+   * **Player Phase (1.4s+):** Banner *"YOUR TURN"* meluncur turun, tangan terisi 5 kartu.
+   * **Aksi Pemain:** Seret kartu `Super Punch` ke ubin musuh.
+   * **Umpan Balik Visual:** Efek suara berbunyi, partikel pukulan meledak, musuh berkedip merah dan menerima -12 damage, kamera berguncang dengan jeda hit-stop.
+   * **Enemy Phase:** Musuh membalas menyerang Nabu.
+   * **Round Reset:** Tangan diisi kembali hingga 5 kartu dan putaran baru dimulai secara mulus.
