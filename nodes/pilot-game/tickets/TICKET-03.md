@@ -19,15 +19,18 @@ Tiket ini bergantung pada TICKET-01 (membutuhkan `TileType`, `CombatEvents`, `Ti
   - Field internal: `TileType[,] _tiles` dan `int[,] _occupants` (0 = kosong).
   - Method `bool IsInsideGrid(Vector2Int coord)` — mengembalikan false jika di luar batas 15×15.
   - Method `bool IsWalkable(Vector2Int coord)` — false jika di luar grid, `ObstaclePillar`, atau ditempati unit lain.
+  - Method `bool IsStealthed(Vector2Int coord)` — mengembalikan true jika `GetTileType(coord) == TileType.StealthBush` (GDD §4.1).
+  - Method `Vector2Int CalculateLinearMoveDestination(Vector2Int start, Vector2Int direction, int distance)` — menghitung titik henti pergerakan; jika jalur melewati tile yang ditempati unit/obstacle, unit akan tertabrak dan berhenti tepat 1 petak di depan rintangan (GDD §4.6 Collision).
   - Method `void SetOccupant(Vector2Int coord, int unitId)` — menetapkan unit (0 untuk kosongkan).
   - Method `int GetOccupant(Vector2Int coord)` — mengembalikan unitId atau 0 jika kosong.
   - Method `void SetTileType(Vector2Int coord, TileType type)` — mengubah tipe ubin.
   - Method `TileType GetTileType(Vector2Int coord)` — mendapatkan tipe ubin.
 - [ ] `EnemyAICalculator.cs` (Pure C#, Non-MonoBehaviour):
   - Constructor menerima injeksi `GridDataModel`.
+  - Rule Bush/Stealth (GDD §4.1): AI musuh tidak dapat menargetkan pemain jika pemain berada di `StealthBush` dan jarak Manhattan > 2 tile. Musuh harus memprioritaskan mendekat ke semak (ke radius <= 2) sebelum bisa menargetkan.
   - Method `void PlanLinearAttack(int enemyId, Vector2Int enemyCoord, Vector2Int attackDirection)`:
     - Menghitung koordinat target 2 petak ke depan.
-    - Jika target berada di dalam grid: broadcast `CombatEvents.OnEnemyIntentDecided?.Invoke(enemyId, targetCoord)`.
+    - Jika target berada di dalam grid dan valid: broadcast `CombatEvents.OnEnemyIntentDecided?.Invoke(enemyId, targetCoord)`.
     - Broadcast `CombatEvents.OnHighlightTilesRequested?.Invoke(new TileHighlightRequest(dangerArea, HighlightType.DangerEnemyIntent))`.
   - Method `void PlanAreaAttack(int enemyId, Vector2Int enemyCoord, int radius)`:
     - Menghitung semua ubin dalam radius Manhattan dari enemyCoord.
@@ -35,6 +38,8 @@ Tiket ini bergantung pada TICKET-01 (membutuhkan `TileType`, `CombatEvents`, `Ti
 - [ ] `GridLogicTests.cs` (NUnit EditMode Test Suite):
   - Test `IsInsideGrid` — coord (0,0), (14,14) return true; coord (-1,0), (15,0) return false.
   - Test `IsWalkable` — ubin kosong return true; ubin dengan `ObstaclePillar` return false; ubin dengan occupant return false.
+  - Test `CalculateLinearMoveDestination` (Collision) — pergerakan 3 petak yang terhalang di petak ke-2 berhenti di petak ke-1 (GDD §4.6).
+  - Test `StealthBush` targeting — target di dalam semak pada jarak 3 petak ditolak/diabaikan oleh AI, tetapi pada jarak 2 petak diterima (GDD §4.1).
   - Test `PlanLinearAttack` — event `OnEnemyIntentDecided` terpanggil dengan koordinat target yang benar (enemyCoord + direction * 2).
   - Test batas arena: serangan yang melampaui batas grid tidak men-trigger event.
 
