@@ -1,0 +1,356 @@
+# 📖 Manual Guide: TICKET-07 — State Machine Giliran Tempur & Integrasi Scene Utama
+
+> **Referensi Tiket:** [TICKET-07.md](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-07.md)  
+> **Domain:** `[👑 PM CORE]`  
+> **Fase:** 1 (MVP Vertical Slice)
+
+---
+
+## 🎯 1. Ringkasan & Tujuan
+Tiket ini adalah puncak integrasi **Fase 1 (Combat MVP)**. Tiket ini membangun arsitektur **Finite State Machine (FSM)** 4-Fase:
+1. **`IntentPhaseState`**: AI Musuh mengalkulasi target dan memunculkan telegraf merah + badge intent.
+2. **`PlayerPhaseState`**: Pemain wajib memainkan 1 kartu aksi.
+3. **`EnemyPhaseState`**: Musuh mengeksekusi serangan secara acak berurutan (*Totally Random* - GDD §4.7).
+4. **`RoundResetPhaseState`**: Mengurangi durasi status effect, membersihkan highlight, menarik kartu hingga 5, dan kembali ke Intent Phase.
+
+Serta merakit seluruh prefab dari TICKET-01 s/d TICKET-06C ke dalam **`MainBattleScene.unity`**.
+
+---
+
+## 📂 2. Struktur File & Lokasi
+```text
+Assets/
+├── Scripts/
+│   └── Core/
+│       └── FSM/
+│           ├── ICombatState.cs
+│           ├── CombatStateMachine.cs
+│           ├── IntentPhaseState.cs
+│           ├── PlayerPhaseState.cs
+│           ├── EnemyPhaseState.cs
+│           └── RoundResetPhaseState.cs
+└── Scenes/
+    └── MainBattleScene.unity
+```
+
+---
+
+## 💻 3. Kode Sumber Lengkap
+
+### A. `Assets/Scripts/Core/FSM/ICombatState.cs`
+```csharp
+using System.Collections;
+
+namespace PilotGame.Core.FSM
+{
+    public interface ICombatState
+    {
+        IEnumerator Enter();
+        void UpdateState();
+        IEnumerator Exit();
+    }
+}
+```
+
+---
+
+### B. `Assets/Scripts/Core/FSM/CombatStateMachine.cs`
+```csharp
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using PilotGame.Cards;
+using PilotGame.Core.Data;
+using PilotGame.Core.Events;
+using PilotGame.Grid;
+using PilotGame.UI;
+using PilotGame.Units;
+
+namespace PilotGame.Core.FSM
+{
+    /// <summary>
+    /// Pengendali Utama Finite State Machine (FSM) Siklus Pertempuran.
+    /// </summary>
+    public class CombatStateMachine : MonoBehaviour
+    {
+        [Header("Scene Dependencies")]
+        [SerializeField] private DeckManager _deckManager;
+        [SerializeField] private CardHandController _handController;
+
+        public GridDataModel GridModel { get; private set; }
+        public CombatMathEngine MathEngine { get; private set; }
+        public EnemyAICalculator AICalculator { get; private set; }
+
+        private ICombatState _currentState;
+
+        public IntentPhaseState IntentState { get; private set; }
+        public PlayerPhaseState PlayerState { get; private set; }
+        public EnemyPhaseState EnemyState { get; private set; }
+        public RoundResetPhaseState ResetState { get; private set; }
+
+        private void Awake()
+        {
+            GridModel = new GridDataModel();
+            MathEngine = new CombatMathEngine();
+            AICalculator = new EnemyAICalculator(GridModel);
+
+            // Inisialisasi States
+            IntentState = new IntentPhaseState(this);
+            PlayerState = new PlayerPhaseState(this, _deckManager, _handController);
+            EnemyState = new EnemyPhaseState(this);
+            ResetState = new RoundResetPhaseState(this, _deckManager);
+        }
+
+        private void Start()
+        {
+            // Set posisi awal Nabu (2,2) dan Musuh Conscript (6,2)
+            GridModel.SetOccupant(new Vector2Int(2, 2), 1);
+            GridModel.SetOccupant(new Vector2Int(6, 2), 2);
+
+            ChangeState(IntentState);
+        }
+
+        public void ChangeState(ICombatState nextState)
+        {
+            if (_currentState != null)
+            {
+                StartCoroutine(TransitionRoutine(nextState));
+            }
+            else
+            {
+                _currentState = nextState;
+                StartCoroutine(_currentState.Enter());
+            }
+        }
+
+        private IEnumerator TransitionRoutine(ICombatState nextState)
+        {
+            yield return StartCoroutine(_currentState.Exit());
+            _currentState = nextState;
+            yield return StartCoroutine(_currentState.Enter());
+        }
+
+        private void Update()
+        {
+            _currentState?.UpdateState();
+        }
+    }
+}
+```
+
+---
+
+### C. `Assets/Scripts/Core/FSM/IntentPhaseState.cs`
+```csharp
+using System.Collections;
+using UnityEngine;
+using PilotGame.Core.Data;
+using PilotGame.Core.Events;
+
+namespace PilotGame.Core.FSM
+{
+    public class IntentPhaseState : ICombatState
+    {
+        private readonly CombatStateMachine _fsm;
+
+        public IntentPhaseState(CombatStateMachine fsm)
+        {
+            _fsm = fsm;
+        }
+
+        public IEnumerator Enter()
+        {
+            CombatEvents.OnPhaseChanged?.Invoke(CombatPhase.IntentPhase);
+            yield return new WaitForSeconds(0.6f);
+
+            // Musuh ID 2 di posisi (6,2) merencanakan serangan ke Nabu di (2,2)
+            _fsm.AICalculator.PlanLinearAttack(2, new Vector2Int(6, 2), new Vector2Int(2, 2), 4);
+
+            yield return new WaitForSeconds(0.8f);
+            _fsm.ChangeState(_fsm.PlayerState);
+        }
+
+        public void UpdateState() { }
+
+        public IEnumerator Exit()
+        {
+            yield return null;
+        }
+    }
+}
+```
+
+---
+
+### D. `Assets/Scripts/Core/FSM/PlayerPhaseState.cs`
+```csharp
+using System.Collections;
+using UnityEngine;
+using PilotGame.Cards;
+using PilotGame.Core.Data;
+using PilotGame.Core.Events;
+using PilotGame.UI;
+
+namespace PilotGame.Core.FSM
+{
+    public class PlayerPhaseState : ICombatState
+    {
+        private readonly CombatStateMachine _fsm;
+        private readonly DeckManager _deck;
+        private readonly CardHandController _ui;
+        private bool _cardPlayedThisTurn;
+
+        public PlayerPhaseState(CombatStateMachine fsm, DeckManager deck, CardHandController ui)
+        {
+            _fsm = fsm;
+            _deck = deck;
+            _ui = ui;
+        }
+
+        public IEnumerator Enter()
+        {
+            _cardPlayedThisTurn = false;
+            CombatEvents.OnPhaseChanged?.Invoke(CombatPhase.PlayerPhase);
+            CombatEvents.OnCardPlayed += HandleCardPlayed;
+            yield return null;
+        }
+
+        public void UpdateState() { }
+
+        private void HandleCardPlayed(object cardObj, Vector2Int targetCoord)
+        {
+            if (_cardPlayedThisTurn || !(cardObj is CardData card)) return;
+
+            Vector2Int playerPos = new Vector2Int(2, 2);
+            if (CardPlayValidator.CanPlayCard(card, playerPos, targetCoord, _fsm.GridModel, CombatPhase.PlayerPhase, out string reason))
+            {
+                _cardPlayedThisTurn = true;
+
+                // Eksekusi efek kartu
+                if (card.ActionType == CardActionType.Attack)
+                {
+                    DamagePayload result = _fsm.MathEngine.CalculateDamage(2, card.BaseDamage, 0);
+                    CombatEvents.OnSkillExecuted?.Invoke(1, 1, targetCoord);
+                    CombatEvents.OnUnitDamaged?.Invoke(result);
+                }
+                else if (card.ActionType == CardActionType.Movement)
+                {
+                    CombatEvents.OnUnitMoved?.Invoke(new UnitMovePayload(1, playerPos, targetCoord));
+                }
+
+                _deck.DiscardCard(card);
+                _ui.RefreshHandVisuals();
+
+                // Lanjut ke fase giliran musuh
+                _fsm.StartCoroutine(DelayToEnemyPhase());
+            }
+            else
+            {
+                Debug.LogWarning($"[PlayerPhase] Kartu tidak sah: {reason}");
+            }
+        }
+
+        private IEnumerator DelayToEnemyPhase()
+        {
+            yield return new WaitForSeconds(1.2f);
+            _fsm.ChangeState(_fsm.EnemyState);
+        }
+
+        public IEnumerator Exit()
+        {
+            CombatEvents.OnCardPlayed -= HandleCardPlayed;
+            yield return null;
+        }
+    }
+}
+```
+
+---
+
+### E. `Assets/Scripts/Core/FSM/EnemyPhaseState.cs` & `RoundResetPhaseState.cs`
+```csharp
+using System.Collections;
+using UnityEngine;
+using PilotGame.Core.Data;
+using PilotGame.Core.Events;
+using PilotGame.UI;
+
+namespace PilotGame.Core.FSM
+{
+    public class EnemyPhaseState : ICombatState
+    {
+        private readonly CombatStateMachine _fsm;
+
+        public EnemyPhaseState(CombatStateMachine fsm) { _fsm = fsm; }
+
+        public IEnumerator Enter()
+        {
+            CombatEvents.OnPhaseChanged?.Invoke(CombatPhase.EnemyPhase);
+            yield return new WaitForSeconds(0.6f);
+
+            // Musuh mengeksekusi serangan tombak ke (2,2)
+            DamagePayload dmg = _fsm.MathEngine.CalculateDamage(1, 5, 0);
+            CombatEvents.OnSkillExecuted?.Invoke(2, 1, new Vector2Int(2, 2));
+            CombatEvents.OnUnitDamaged?.Invoke(dmg);
+
+            yield return new WaitForSeconds(1.0f);
+            _fsm.ChangeState(_fsm.ResetState);
+        }
+
+        public void UpdateState() { }
+        public IEnumerator Exit() { yield return null; }
+    }
+
+    public class RoundResetPhaseState : ICombatState
+    {
+        private readonly CombatStateMachine _fsm;
+        private readonly DeckManager _deck;
+
+        public RoundResetPhaseState(CombatStateMachine fsm, DeckManager deck)
+        {
+            _fsm = fsm;
+            _deck = deck;
+        }
+
+        public IEnumerator Enter()
+        {
+            CombatEvents.OnPhaseChanged?.Invoke(CombatPhase.RoundResetPhase);
+            CombatEvents.OnClearAllHighlights?.Invoke();
+
+            _fsm.MathEngine.TickStatusEffects();
+            _deck.DrawToFullHand();
+
+            yield return new WaitForSeconds(0.8f);
+            _fsm.ChangeState(_fsm.IntentState); // Putaran berikutnya!
+        }
+
+        public void UpdateState() { }
+        public IEnumerator Exit() { yield return null; }
+    }
+}
+```
+
+---
+
+## 🛠️ 4. Langkah Integrasi `MainBattleScene.unity`
+1. Buka Scene `MainBattleScene.unity`.
+2. Masukkan prefab ke hierarchy:
+   * `ArenaEnvironment_Prefab.prefab` (Domain 1)
+   * `Nabu_Player_Prefab.prefab` di posisi (2.5, 2.5, 0)
+   * `Enemy_Conscript_Prefab.prefab` di posisi (6.5, 2.5, 0)
+   * `CombatHUD_Document` (UI Toolkit UIDocument)
+   * `VFXPoolManager`
+3. Buat GameObject `[GameController]` dan pasang script `CombatStateMachine.cs`, `DeckManager.cs`, `CardHandController.cs`.
+4. Hubungkan seluruh reference inspector.
+
+---
+
+## 🧪 5. Langkah Verifikasi (Playable Vertical Slice)
+1. Klik **Play** di Unity Editor.
+2. Amati alur giliran berjalan otomatis:
+   * *Intent Phase:* Musuh memunculkan telegraf ubin merah dan badge intent.
+   * *Player Phase:* Banner bertuliskan *"YOUR TURN"*, tangan berisi 5 kartu.
+   * Seret kartu `Super Punch` ke musuh: animasi serangan dimainkan, partikel pukulan meledak, musuh menerima damage dan kamera berguncang dengan jeda hit-stop.
+   * *Enemy Phase:* Musuh menyerang balik.
+   * *Round Reset:* Ronde berulang ke putaran berikutnya.
+3. Selamat! **Vertical Slice Pertempuran Taktis Fase 1 Selesai Penuh!** 🎉
