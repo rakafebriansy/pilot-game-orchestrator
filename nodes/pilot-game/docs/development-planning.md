@@ -5,6 +5,8 @@
 
 Dalam pendekatan *Vibe Coding* dengan AI Agent, dokumen ini sangat krusial sebagai "Gudang Antrean Tiket" (*Ticket Backlog*).
 
+> **Referensi Arsitektur Utama:** `pilot-game-team-docs/02_engineering/diagrams/system-architecture-dataflow.puml` — seluruh komponen dalam diagram tersebut harus memiliki tiket yang mengakomodasi implementasinya.
+
 ---
 
 ## 🏛️ PETA JALAN PENGEMBANGAN PILOT GAME
@@ -12,89 +14,93 @@ Dalam pendekatan *Vibe Coding* dengan AI Agent, dokumen ini sangat krusial sebag
 ---
 
 ### 🚩 FASE 1: MVP Tactical Combat Slice (Target Utama Iterasi 1)
-* **Tujuan Utama:** Membangun *vertical slice* pertempuran taktis yang dapat dimainkan penuh (*playable slice*) pada grid 15×15 dengan sistem 4-fase giliran, protagonis Nabu, 3 musuh dasar, 14 kartu tempur, dan interaksi drag-and-drop UI Toolkit.
-* **Referensi Arsitektur:** `docs/system-design.md` §1-5, `../../pilot-game-team-docs/02_engineering/sequential_implementation_guide.md`
+* **Tujuan Utama:** Membangun *vertical slice* pertempuran taktis yang dapat dimainkan penuh (*playable slice*) pada grid 15×15 dengan sistem 4-fase giliran, protagonis Nabu, musuh dasar, 14 kartu tempur, sistem damage + shield, dan interaksi drag-and-drop UI Toolkit.
+* **Referensi:** `docs/system-design.md`, `pilot-game-team-docs/02_engineering/sequential_implementation_guide.md`, `domain_milestone_briefs/`
 
-* **Daftar Backlog Tiket (Fase 1):**
-  * `[ ]` **[TICKET-01](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-01.md):** Pondasi Tipe Data, Payloads & Pusat Event (`CombatTypes.cs`, `CombatPayloads.cs`, `CombatEvents.cs`).
-    * *Sub-tasks: Enum CombatPhase, HighlightType, TileType, CardActionType; Struct TileHighlightRequest, UnitMovePayload, DamagePayload; Static CombatEvents delegate hub.*
-  * `[ ]` **[TICKET-02](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02.md):** Katalog Data ScriptableObjects (`CardData.cs`, `EnemyData.cs`, `ConsumableData.cs`, Template `.asset`).
-    * *Sub-tasks: 5 kartu SO asset, 3 musuh SO asset (Tattered Conscript, Dustbound Skeleton, Archive Scavenger).*
-    * *Dependensi: TICKET-01 selesai.*
-  * `[ ]` **[TICKET-03](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-03.md):** Otak Logika Grid 15×15 & AI Musuh (`GridDataModel.cs`, `EnemyAICalculator.cs` + Unit Tests).
-    * *Sub-tasks: GridDataModel dengan 6 method; EnemyAICalculator PlanLinearAttack & PlanAreaAttack; NUnit EditMode test suite GridLogicTests.cs.*
-    * *Dependensi: TICKET-01 selesai.*
-  * `[ ]` **[TICKET-04](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-04.md):** Visualisasi Arena & Sistem Highlight Tilemap (`GridTilemapView.cs`, Tilemap Layers, URP 2D Lights).
-    * *Sub-tasks: 3 Tilemap layers (Floor/Environment/Overlay), GridTilemapView subscriber, ArenaGrid_Prefab, URP Global Light 2D.*
-    * *Dependensi: TICKET-01 selesai.*
-  * `[ ]` **[TICKET-05](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-05.md):** Entitas Karakter, Pergerakan Grid Lerp & Animasi (`UnitMovementView.cs`, `UnitAnimatorPresenter.cs`, Prefabs).
-    * *Sub-tasks: UnitMovementView dengan MoveTowards coroutine, UnitAnimatorPresenter event-driven, HealthBar, Nabu_Player_Prefab, Enemy_Conscript_Prefab.*
-    * *Dependensi: TICKET-01, TICKET-02 selesai.*
-  * `[ ]` **[TICKET-06](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-06.md):** Antarmuka Kartu UI Toolkit & Drag-and-Drop (`CardHandController.cs`, `DeckManager.cs`, UXML/USS).
-    * *Sub-tasks: CardHandHUD.uxml dengan BEM, Cards.uss dengan design tokens, DeckManager draw/discard/reshuffle, drag-to-grid pointer events.*
-    * *Dependensi: TICKET-01, TICKET-02 selesai.*
-  * `[ ]` **[TICKET-07](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-07.md):** State Machine Giliran Tempur & Integrasi Scene Utama (`ICombatState.cs`, `CombatStateMachine.cs`, `MainBattleScene.unity`).
-    * *Sub-tasks: Interface ICombatState, 4 state classes (Intent/Player/Enemy/RoundReset), scene assembly dengan seluruh prefab, verifikasi playable slice 3 ronde.*
-    * *Dependensi: TICKET-01 s/d TICKET-06 semua selesai.*
+#### 📦 Domain: PM Core & Communication Bridge
+* `[ ]` **[TICKET-01](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-01.md):** Pondasi Tipe Data, Payloads & Pusat Event (`CombatTypes.cs`, `CombatPayloads.cs`, `CombatEvents.cs`).
+
+#### 📦 Domain 4: Data & Logic
+* `[ ]` **[TICKET-02](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02.md):** Katalog Data ScriptableObjects — Template Dasar (`CardData.cs`, `EnemyData.cs`, `ConsumableData.cs`, 5 sample cards).
+* `[ ]` **[TICKET-02B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02B.md):** 14 Kartu Tempur Nabu Lengkap + update `CardData` (PhaseRestriction, AreaType, StatusEffect fields).
+* `[ ]` **[TICKET-02C](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02C.md):** 9 Musuh SO Lengkap (selected_enemies.md roster) & 5 Item Consumable SO.
+* `[ ]` **[TICKET-03](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-03.md):** Otak Logika Grid 15×15 & AI Musuh (`GridDataModel.cs`, `EnemyAICalculator.cs` + Unit Tests).
+* `[ ]` **[TICKET-03B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-03B.md):** Mesin Matematika Pertempuran & Validator Kartu (`CombatMathEngine.cs`, `CardPlayValidator.cs`, Status Effect system).
+
+#### 📦 Domain 1: Arena & Tilemap
+* `[ ]` **[TICKET-04](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-04.md):** Visualisasi Arena & Sistem Highlight Tilemap (`GridTilemapView.cs`, 3 Tilemap layers).
+* `[ ]` **[TICKET-04B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-04B.md):** Camera Post-Processing, URP 2D Lighting & Audio Environment (`TorchFlicker.cs`, `AudioManager.cs`).
+* `[ ]` **[TICKET-04C](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-04C.md):** Pulsing Danger Shader & `ArenaEnvironment_Prefab` Final Assembly.
+
+#### 📦 Domain 2: Character & Animation
+* `[ ]` **[TICKET-05](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-05.md):** Entitas Karakter, Pergerakan Grid Lerp & HealthBar (`UnitMovementView.cs`, Prefabs Nabu & Conscript).
+* `[ ]` **[TICKET-05B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-05B.md):** 14 Skill VFX Prefab & Object Pooling System (`VFXPoolManager.cs`, `DamagePopup.cs`, `SkillVFXPresenter.cs`).
+* `[ ]` **[TICKET-05C](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-05C.md):** Animator Controller, Screen Shake & Hit Stop (`NabuAnimatorController`, `CameraShaker.cs`, `HitStopManager.cs`).
+
+#### 📦 Domain 3: Card Deck & UI
+* `[ ]` **[TICKET-06](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-06.md):** Antarmuka Kartu UI Toolkit & Drag-and-Drop (`CardHandController.cs`, `DeckManager.cs`, UXML/USS).
+* `[ ]` **[TICKET-06B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-06B.md):** Combat HUD — Energy Counter, Intent Badges & Phase Banner (`CombatHUDPresenter.cs`, `EnemyIntentBadgePresenter.cs`).
+* `[ ]` **[TICKET-06C](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-06C.md):** Card Range Preview Hover & Card Dissolve Deploy Animation (`CardDeployAnimator.cs`).
+
+#### 📦 PM Core: Integration
+* `[ ]` **[TICKET-07](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-07.md):** State Machine Giliran Tempur & Integrasi Scene Utama (`ICombatState.cs`, `CombatStateMachine.cs`, `MainBattleScene.unity`).
+  * *⚠️ Prasyarat: TICKET-01 s/d TICKET-06C semua Done.*
 
 ---
 
 ### 🚩 FASE 2: Peta Eksplorasi & Wave Drafting (Macro Loop)
-* **Tujuan Utama:** Menghubungkan arena pertempuran ke peta eksplorasi Menara Babel bercabang (*Node Traversal*), event misteri '?', istirahat api unggun, dan pemilihan hadiah *drafting* 1 dari 3 kartu pasca-wave.
-* **Prasyarat:** Seluruh tiket Fase 1 (TICKET-01 s/d TICKET-07) berstatus Done.
+* **Tujuan Utama:** Menghubungkan arena pertempuran ke peta eksplorasi Menara Babel bercabang, event misteri, api unggun, merchant shop, dan sistem drafting hadiah pasca-wave.
+* **Prasyarat:** Seluruh tiket Fase 1 berstatus Done.
 
-* **Daftar Backlog Tiket (Fase 2):**
-  * `[ ]` **[TICKET-08](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-08.md):** Model Data Peta Rute Bercabang Menara Babel (`MapNodeData.cs`, `MapGenerator.cs`, `MapLayout.cs` + Unit Tests).
-    * *Sub-tasks: MapNodeData SO dengan 5 MapNodeType; MapGenerator procedural dengan weighted probability; NUnit test MapGeneratorTests.cs.*
-    * *Dependensi: TICKET-01 (pattern struct/enum).*
-  * `[ ]` **[TICKET-09](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-09.md):** Sistem UI Pemilihan Node Peta & Transisi Scene (`MapScreenController.cs`, `MapManager.cs`, `SceneTransitionManager.cs`).
-    * *Sub-tasks: MapScene UXML dengan node visual, MapManager DontDestroyOnLoad singleton, fade in/out scene transition menggunakan AsyncOperation.*
-    * *Dependensi: TICKET-08, TICKET-07 (MainBattleScene target).*
-  * `[ ]` **[TICKET-10](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-10.md):** Sistem Drafting Hadiah Pasca-Pertempuran Pick 1 of 3 Cards (`DraftManager.cs`, `DraftScreenController.cs`).
-    * *Sub-tasks: DraftManager generate 3 random cards, DraftScreenUI.uxml, skip dengan konfirmasi, deck update setelah pilih.*
-    * *Dependensi: TICKET-02 (CardData), TICKET-06 (DeckManager), TICKET-09 (MapManager).*
-  * `[ ]` **[TICKET-11](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-11.md):** Event Naratif Misteri '?' & Rest Campfire Recovery System (`NarrativeEventManager.cs`, `CampfireManager.cs`).
-    * *Sub-tasks: NarrativeEventData SO (min 5 events), EventScreenController.cs, CampfireManager heal/upgrade, 3 pasang kartu upgrade.*
-    * *Dependensi: TICKET-09 (MapManager), TICKET-02 (CardData).*
+* `[ ]` **[TICKET-08](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-08.md):** Model Data Peta Rute Bercabang Menara Babel (`MapNodeData.cs`, `MapGenerator.cs`, `MapLayout.cs`).
+* `[ ]` **[TICKET-09](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-09.md):** UI Pemilihan Node Peta & Transisi Scene (`MapScreenController.cs`, `MapManager.cs`, `SceneTransitionManager.cs`).
+* `[ ]` **[TICKET-09B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-09B.md):** Merchant Shop UI — Beli Kartu, Relic & Purge Deck (`GoldManager.cs`, `RelicManager.cs`, `ShopScreenController.cs`).
+* `[ ]` **[TICKET-10](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-10.md):** Sistem Drafting Hadiah Pasca-Pertempuran Pick 1 of 3 Cards (`DraftManager.cs`, `DraftScreenController.cs`).
+* `[ ]` **[TICKET-11](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-11.md):** Event Naratif Misteri '?' & Rest Campfire Recovery System (`NarrativeEventManager.cs`, `CampfireManager.cs`).
 
 ---
 
-### 🚩 FASE 3: Meta-Progression & Chapter Boss (Meta Loop)
-* **Tujuan Utama:** Sistem persistensi roguelike markas (*Sanctuary*), pohon talenta upgrade permanen, pertarungan Boss Lantai 1, dan tingkat kesulitan *Ascension*.
-* **Prasyarat:** Seluruh tiket Fase 2 (TICKET-08 s/d TICKET-11) berstatus Done.
+### 🚩 FASE 3: Meta-Progression, Boss & GDD 1.0 (Meta Loop)
+* **Tujuan Utama:** Sistem persistensi roguelike markas Sanctuary, pohon talenta permanen, Boss Chapter 1, Wave Spawner procedural, 3 Bioma Menara Babel, dan Ascension difficulty.
+* **Prasyarat:** Seluruh tiket Fase 2 berstatus Done.
 
-* **Daftar Backlog Tiket (Fase 3):**
-  * `[ ]` **[TICKET-12](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-12.md):** Roster Boss Chapter 1 — Mekanik Serangan Multi-Tile & Fase Enrage (`BossData.cs`, `BossAIController.cs`, Prefab Archivist Sentinel).
-    * *Sub-tasks: BossData SO dengan AttackPatterns, BossAIController dengan scripted rotation + enrage trigger, multi-tile highlight coroutine, BossHealthBarPresenter.*
-    * *Dependensi: TICKET-01, TICKET-03, TICKET-07.*
-  * `[ ]` **[TICKET-13](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-13.md):** Sistem Konversi Poin Ekspedisi & Penyimpanan Save Data Lokal (`RunSaveData.cs`, `MetaSaveData.cs`, `SaveDataManager.cs`, `ExpeditionPointsManager.cs`).
-    * *Sub-tasks: JSON serialize/deserialize ke persistentDataPath, timestamp Epoch Millis, auto-save per node, NUnit SaveDataTests.cs.*
-    * *Dependensi: TICKET-08 (MapLayout), TICKET-02 (CardData IDs).*
-  * `[ ]` **[TICKET-14](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-14.md):** UI Markas Sanctuary & Pohon Talenta Upgrade Permanen (`TalentData.cs`, `TalentTreeManager.cs`, `SanctuaryScreenController.cs`).
-    * *Sub-tasks: 12 TalentData SO asset (3 tier), visual talent tree UXML, unlock logic dengan prerequisites, apply talents on run start.*
-    * *Dependensi: TICKET-13 (ExpeditionPoints, MetaSaveData).*
-  * `[ ]` **[TICKET-15](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-15.md):** Sistem Modifikator Tingkat Kesulitan Ascension Tiers (`AscensionModifierData.cs`, `AscensionManager.cs`).
-    * *Sub-tasks: 10 AscensionModifierData SO (A1-A10 kumulatif), AscensionManager apply effects, Sanctuary UI section untuk pilih Ascension level.*
-    * *Dependensi: TICKET-13 (MetaSaveData), TICKET-14 (SanctuaryScreenController).*
+* `[ ]` **[TICKET-12](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-12.md):** Roster Boss Chapter 1 — Mekanik Serangan Multi-Tile & Fase Enrage (`BossData.cs`, `BossAIController.cs`).
+* `[ ]` **[TICKET-12B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-12B.md):** Combat Wave Spawner & Floor Progression Scaling (`CombatWaveSpawner.cs`, `WaveCompositionData.cs`).
+* `[ ]` **[TICKET-12C](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-12C.md):** 3 Bioma Menara Babel & Dynamic Hazards (`BiomeManager.cs`, `DynamicTileManager.cs`).
+* `[ ]` **[TICKET-13](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-13.md):** Sistem Konversi Poin Ekspedisi & Penyimpanan Save Data Lokal (`SaveDataManager.cs`, `ExpeditionPointsManager.cs`).
+* `[ ]` **[TICKET-14](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-14.md):** UI Markas Sanctuary & Pohon Talenta Upgrade Permanen (`TalentTreeManager.cs`, `SanctuaryScreenController.cs`).
+* `[ ]` **[TICKET-15](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-15.md):** Sistem Modifikator Tingkat Kesulitan Ascension Tiers (`AscensionModifierData.cs`, `AscensionManager.cs`).
 
 ---
 
-## 📊 STATUS SUMMARY
+## 📊 STATUS SUMMARY (28 Tiket Total)
 
-| Tiket | Judul | Fase | Status | Prioritas |
-| :---: | :--- | :---: | :---: | :---: |
-| TICKET-01 | Pondasi Tipe Data, Payloads & Pusat Event | 1 | `Todo` | High |
-| TICKET-02 | Katalog Data ScriptableObjects | 1 | `Todo` | High |
-| TICKET-03 | Otak Logika Grid 15×15 & AI Musuh | 1 | `Todo` | High |
-| TICKET-04 | Visualisasi Arena & Sistem Highlight Tilemap | 1 | `Todo` | High |
-| TICKET-05 | Entitas Karakter, Pergerakan Grid Lerp & Animasi | 1 | `Todo` | High |
-| TICKET-06 | Antarmuka Kartu UI Toolkit & Drag-and-Drop | 1 | `Todo` | High |
-| TICKET-07 | State Machine Giliran Tempur & Integrasi Scene | 1 | `Todo` | High |
-| TICKET-08 | Model Data Peta Rute Bercabang Menara Babel | 2 | `Todo` | High |
-| TICKET-09 | UI Pemilihan Node Peta & Transisi Scene | 2 | `Todo` | High |
-| TICKET-10 | Sistem Drafting Hadiah Pasca-Pertempuran | 2 | `Todo` | High |
-| TICKET-11 | Event Naratif Misteri '?' & Campfire Rest | 2 | `Todo` | Medium |
-| TICKET-12 | Roster Boss Chapter 1 & Fase Enrage | 3 | `Todo` | High |
-| TICKET-13 | Sistem Poin Ekspedisi & Save Data Lokal | 3 | `Todo` | High |
-| TICKET-14 | UI Sanctuary & Pohon Talenta Upgrade Permanen | 3 | `Todo` | Medium |
-| TICKET-15 | Sistem Modifikator Tingkat Kesulitan Ascension | 3 | `Todo` | Low |
+| Tiket | Judul | Domain | Fase | Status | Prioritas |
+| :---: | :--- | :---: | :---: | :---: | :---: |
+| TICKET-01 | Pondasi Tipe Data, Payloads & Event Bus | PM Core | 1 | `Todo` | High |
+| TICKET-02 | Katalog SO Template Dasar | D4 | 1 | `Todo` | High |
+| TICKET-02B | 14 Kartu Tempur Nabu Lengkap | D4 | 1 | `Todo` | High |
+| TICKET-02C | 9 Musuh SO & 5 Consumable SO | D4 | 1 | `Todo` | High |
+| TICKET-03 | Grid 15×15 Logic & EnemyAI | D4 | 1 | `Todo` | High |
+| TICKET-03B | CombatMathEngine & CardPlayValidator | D4 | 1 | `Todo` | High |
+| TICKET-04 | Arena Tilemap & Highlight View | D1 | 1 | `Todo` | High |
+| TICKET-04B | Camera Post-Processing & URP Lighting | D1 | 1 | `Todo` | High |
+| TICKET-04C | Pulsing Danger Shader & Arena Prefab Final | D1 | 1 | `Todo` | Medium |
+| TICKET-05 | Unit Prefabs & Grid Movement Lerp | D2 | 1 | `Todo` | High |
+| TICKET-05B | 14 Skill VFX Prefab & Object Pool | D2 | 1 | `Todo` | High |
+| TICKET-05C | Animator Controller & Hit Impact System | D2 | 1 | `Todo` | Medium |
+| TICKET-06 | Card Hand UI Toolkit & Drag-Drop | D3 | 1 | `Todo` | High |
+| TICKET-06B | Combat HUD (Energy, Intent Badges, Phase) | D3 | 1 | `Todo` | High |
+| TICKET-06C | Card Range Preview & Deploy Animation | D3 | 1 | `Todo` | Medium |
+| TICKET-07 | Turn FSM & MainBattleScene Assembly | PM Core | 1 | `Todo` | High |
+| TICKET-08 | Map Node Data & Generator | Map | 2 | `Todo` | High |
+| TICKET-09 | Map Screen UI & Scene Transition | Map | 2 | `Todo` | High |
+| TICKET-09B | Merchant Shop UI & Relic System | D3 | 2 | `Todo` | Medium |
+| TICKET-10 | Draft Reward Screen (Pick 1 of 3) | D3 | 2 | `Todo` | High |
+| TICKET-11 | Narrative Events & Campfire Rest | Map | 2 | `Todo` | Medium |
+| TICKET-12 | Boss Chapter 1 & Enrage Phase | D4 | 3 | `Todo` | High |
+| TICKET-12B | Combat Wave Spawner & Floor Scaling | D4 | 3 | `Todo` | High |
+| TICKET-12C | 3 Bioma Menara Babel & Dynamic Hazards | D1 | 3 | `Todo` | Low |
+| TICKET-13 | Expedition Points & Save Data Local | Core | 3 | `Todo` | High |
+| TICKET-14 | Sanctuary UI & Talent Tree | Meta | 3 | `Todo` | Medium |
+| TICKET-15 | Ascension Difficulty Tiers | Meta | 3 | `Todo` | Low |
