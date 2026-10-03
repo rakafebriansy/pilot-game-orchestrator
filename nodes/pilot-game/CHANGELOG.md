@@ -31,7 +31,24 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 ## Log Perubahan (Pilot Game)
 
-*(⚠️ PERHATIAN AI AGENT: TAMBAHKAN ENTRI LOG BARU ANDA TEPAT DI BAWAH BARIS INI. JANGAN DI PALING BAWAH DOKUMEN!)*
+### [2026-10-04 06:23:00] - Game Design & Development Planning: Master Card Library Balance Overhaul (49 Cards) & Combat Rules Pipeline
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "audit cards, apakah sudah balance, masuk akal, dan bisa bersinergitas", "a1. jangan ada slot modifier... a2. hapus masons ward, zealot ascension, sneaky strike, force fist. heavy crossbow kurangi dmg... a3. perbaiki, buat lebih balance a4. buatkan b. buatlah balance, seperti pada clash royale... c. tidak apa jika tidak sesuai gdd jika membuat balancing lebih baik... d. perbaiki sinergitas e. tidak apa, nanti list saja... f. recreate implementation plannya"
+- **Perubahan:**
+  - `[Changed]` Mengaudit dan merestrukturisasi seluruh pustaka kartu tempur menjadi 49 kartu unik seimbang pada `pilot-game-team-docs/01_game_design/cards.md`.
+  - `[Removed]` Menghapus 4 kartu yang merusak ritme/repetitif: *Mason's Ward*, *Zealot's Ascension*, *Sneaky Strike*, dan *Force Fist*.
+  - `[Changed]` Menyeimbangkan *Heavy Crossbow* (damage jarak jauh 6, stealth/bush bonus 9) agar mematuhi aturan baku "Melee > Ranged baseline damage".
+  - `[Added]` Memformulasikan Aturan Inti Sistem Pertempuran baku (§2): *Damage Calculation Pipeline* matematis (Base $\to$ Flat Modifiers $\to$ Additive Multipliers $\to$ Shield Absorber $\to$ Final HP), *Status Stacking Rules* & Durasi DoT (reapply refresh), *Stun Diminishing Returns* & 1-Round Stun Immunity (pencegahan perma-stun), serta *Wall Slam Collision* (+4 damage + 1 turn Stun jika terdorong menabrak rintangan/dinding).
+  - `[Added]` Menyusun *Deck Synergy Compendium* (§11) mencakup 5 arketipe deck meta: Bleed Assassination, Hydro-Volt Stun & AoE, Wall Slam Kinetic Brawler, Occult Multi-Hit Hex, dan Stealth Ambush Burst.
+  - `[Changed]` Meregenerasi berkas deliverable [cards.pdf](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-team-docs/05_deliverables/cards.pdf) dan `cards.html` berukuran ~1.6 MB dengan format bersih dan mudah dibaca.
+  - `[Changed]` Memperbarui berkas [development-planning.md](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/docs/development-planning.md) agar menyelaraskan ruang lingkup tiket data dan combat engine dengan 49 kartu master dan aturan tempur baru.
+- **Path File:**
+  - `pilot-game-team-docs/01_game_design/cards.md`
+  - `pilot-game-team-docs/05_deliverables/cards.html`
+  - `pilot-game-team-docs/05_deliverables/cards.pdf`
+  - `nodes/pilot-game/docs/development-planning.md`
+  - `nodes/pilot-game/CHANGELOG.md`
+
 
 ### [2026-10-03 22:12:00] - Game Design: Adopt GDD 0.1 Cost System (1 Turn = 1 Card) & Eliminate Action Points (AP)
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`

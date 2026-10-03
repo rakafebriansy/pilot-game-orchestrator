@@ -5,7 +5,7 @@
 
 Dalam pendekatan *Vibe Coding* dengan AI Agent, dokumen ini sangat krusial sebagai "Gudang Antrean Tiket" (*Ticket Backlog*).
 
-> **Referensi Arsitektur Utama:** `pilot-game-team-docs/02_engineering/diagrams/system-architecture-dataflow.puml` dan `global-docs/GDDs/GDD-0.1/GDD-0.1.md` — seluruh komponen dalam dokumen acuan tersebut terpetakan secara utuh ke dalam tiket implementasi.
+> **Referensi Arsitektur Utama:** `pilot-game-team-docs/02_engineering/diagrams/system-architecture-dataflow.puml`, `global-docs/GDDs/GDD-0.1/GDD-0.1.md`, dan `pilot-game-team-docs/01_game_design/cards.md` (Pustaka 49 Kartu Master Terpadu).
 
 ---
 
@@ -14,18 +14,18 @@ Dalam pendekatan *Vibe Coding* dengan AI Agent, dokumen ini sangat krusial sebag
 ---
 
 ### 🚩 FASE 1: MVP Tactical Combat Slice (Target Utama Iterasi 1)
-* **Tujuan Utama:** Membangun *vertical slice* pertempuran taktis yang dapat dimainkan penuh (*playable slice*) pada grid 15×15 dengan sistem 4-fase giliran, protagonis Nabu, musuh dasar, 14 kartu tempur, sistem damage + shield, aturan stealth bush & path collision, dan interaksi drag-and-drop UI Toolkit.
-* **Referensi:** `docs/system-design.md`, `pilot-game-team-docs/02_engineering/sequential_implementation_guide.md`, `domain_milestone_briefs/`, `global-docs/GDDs/GDD-0.1/GDD-0.1.md`
+* **Tujuan Utama:** Membangun *vertical slice* pertempuran taktis yang dapat dimainkan penuh (*playable slice*) pada grid 15×15 dengan sistem 3-fase pertempuran (`IntentPhase`, `PlayerPhase`, `RoundResetPhase`), Cost System murni GDD 0.1 (1 Turn = 1 Kartu), protagonis Nabu, musuh dasar, pustaka 49 kartu tempur seimbang, damage pipeline & shield, aturan stealth bush & path collision, Wall Slam knockback, serta interaksi drag-and-drop UI Toolkit.
+* **Referensi:** `docs/system-design.md`, `pilot-game-team-docs/02_engineering/sequential_implementation_guide.md`, `pilot-game-team-docs/01_game_design/cards.md`, `global-docs/GDDs/GDD-0.1/GDD-0.1.md`
 
 #### 📦 Domain: PM Core & Communication Bridge
 * `[x]` **[TICKET-01](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-01.md):** Pondasi Tipe Data, Payloads & Pusat Event (`CombatTypes.cs`, `CombatPayloads.cs`, `CombatEvents.cs`).
 
 #### 📦 Domain 4: Data & Logic
-* `[x]` **[TICKET-02](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02.md):** Katalog Data ScriptableObjects — Template Dasar (`CardData.cs`, `EnemyData.cs`, `ConsumableData.cs`, 5 sample cards).
-* `[ ]` **[TICKET-02B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02B.md):** 14 Kartu Tempur Nabu Lengkap + update `CardData` (PhaseRestriction, AreaType, StatusEffect fields).
+* `[x]` **[TICKET-02](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02.md):** Katalog Data ScriptableObjects — Template Dasar (`CardData.cs`, `EnemyData.cs`, `ConsumableData.cs`, sample cards).
+* `[ ]` **[TICKET-02B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02B.md):** Pustaka 49 Kartu Tempur Master (`cards.md`) + Update Schema `CardData` (PhaseRestriction, TargetAreaType, StatusEffectType, CostType).
 * `[ ]` **[TICKET-02C](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02C.md):** 9 Musuh SO Lengkap (selected_enemies.md roster) & 5 Item Consumable SO.
 * `[ ]` **[TICKET-03](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-03.md):** Otak Logika Grid 15×15, Stealth Bush & AI Musuh (`GridDataModel.cs`, `EnemyAICalculator.cs` + Unit Tests).
-* `[ ]` **[TICKET-03B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-03B.md):** Mesin Matematika Pertempuran & Validator Kartu (`CombatMathEngine.cs`, `CardPlayValidator.cs`, Status Effect system).
+* `[ ]` **[TICKET-03B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-03B.md):** Mesin Matematika Pertempuran & Validator Kartu (`CombatMathEngine.cs`, `CardPlayValidator.cs`, Damage Pipeline, Stacking Rules, Stun Diminishing Returns, Wall Slam Collision).
 
 #### 📦 Domain 1: Arena & Tilemap
 * `[ ]` **[TICKET-04](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-04.md):** Visualisasi Arena & Sistem Highlight Tilemap (`GridTilemapView.cs`, 3 Tilemap layers).
@@ -34,12 +34,12 @@ Dalam pendekatan *Vibe Coding* dengan AI Agent, dokumen ini sangat krusial sebag
 
 #### 📦 Domain 2: Character & Animation
 * `[ ]` **[TICKET-05](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-05.md):** Entitas Karakter, Pergerakan Grid Lerp & HealthBar (`UnitMovementView.cs`, Prefabs Nabu & Conscript).
-* `[ ]` **[TICKET-05B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-05B.md):** 14 Skill VFX Prefab & Object Pooling System (`VFXPoolManager.cs`, `DamagePopup.cs`, `SkillVFXPresenter.cs`).
+* `[ ]` **[TICKET-05B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-05B.md):** Skill VFX Prefab Pool & Object Pooling System (`VFXPoolManager.cs`, `DamagePopup.cs`, `SkillVFXPresenter.cs`).
 * `[ ]` **[TICKET-05C](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-05C.md):** Animator Controller, Screen Shake & Hit Stop (`NabuAnimatorController`, `CameraShaker.cs`, `HitStopManager.cs`).
 
 #### 📦 Domain 3: Card Deck & UI
 * `[ ]` **[TICKET-06](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-06.md):** Antarmuka Kartu UI Toolkit & Drag-and-Drop (`CardHandController.cs`, `DeckManager.cs`, UXML/USS).
-* `[ ]` **[TICKET-06B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-06B.md):** Combat HUD — Energy Counter, Intent Badges & Phase Banner (`CombatHUDPresenter.cs`, `EnemyIntentBadgePresenter.cs`).
+* `[ ]` **[TICKET-06B](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-06B.md):** Combat HUD — Turn Indicator, Intent Badges & Phase Banner (`CombatHUDPresenter.cs`, `EnemyIntentBadgePresenter.cs`).
 * `[ ]` **[TICKET-06C](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-06C.md):** Card Range Preview Hover & Card Dissolve Deploy Animation (`CardDeployAnimator.cs`).
 
 #### 📦 PM Core: Integration
@@ -80,8 +80,8 @@ Dalam pendekatan *Vibe Coding* dengan AI Agent, dokumen ini sangat krusial sebag
 | Tiket | Judul | Domain | Fase | Status | Prioritas |
 | :---: | :--- | :---: | :---: | :---: | :---: |
 | TICKET-01 | Pondasi Tipe Data, Payloads & Event Bus | PM Core | 1 | `Done` | High |
-| TICKET-02 | Katalog SO Template Dasar | D4 | 1 | `Todo` | High |
-| TICKET-02B | 14 Kartu Tempur Nabu Lengkap | D4 | 1 | `Todo` | High |
+| TICKET-02 | Katalog SO Template Dasar | D4 | 1 | `Done` | High |
+| TICKET-02B | Pustaka 49 Kartu Tempur Master (`cards.md`) | D4 | 1 | `Todo` | High |
 | TICKET-02C | 9 Musuh SO & 5 Consumable SO | D4 | 1 | `Todo` | High |
 | TICKET-03 | Grid 15×15 Logic, Stealth & EnemyAI | D4 | 1 | `Todo` | High |
 | TICKET-03B | CombatMathEngine & CardPlayValidator | D4 | 1 | `Todo` | High |
@@ -89,10 +89,10 @@ Dalam pendekatan *Vibe Coding* dengan AI Agent, dokumen ini sangat krusial sebag
 | TICKET-04B | Camera Post-Processing & URP Lighting | D1 | 1 | `Todo` | High |
 | TICKET-04C | Pulsing Danger Shader & Arena Prefab Final | D1 | 1 | `Todo` | Medium |
 | TICKET-05 | Unit Prefabs & Grid Movement Lerp | D2 | 1 | `Todo` | High |
-| TICKET-05B | 14 Skill VFX Prefab & Object Pool | D2 | 1 | `Todo` | High |
+| TICKET-05B | Skill VFX Prefab Pool & Object Pool | D2 | 1 | `Todo` | High |
 | TICKET-05C | Animator Controller & Hit Impact System | D2 | 1 | `Todo` | Medium |
 | TICKET-06 | Card Hand UI Toolkit & Drag-Drop | D3 | 1 | `Todo` | High |
-| TICKET-06B | Combat HUD (Energy, Intent Badges, Phase) | D3 | 1 | `Todo` | High |
+| TICKET-06B | Combat HUD (Turn, Intent Badges, Phase) | D3 | 1 | `Todo` | High |
 | TICKET-06C | Card Range Preview & Deploy Animation | D3 | 1 | `Todo` | Medium |
 | TICKET-07 | Turn FSM & MainBattleScene Assembly | PM Core | 1 | `Todo` | High |
 | TICKET-08 | Map Node Data & Generator | Map | 2 | `Todo` | High |
