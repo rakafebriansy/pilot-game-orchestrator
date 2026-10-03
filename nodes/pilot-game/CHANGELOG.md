@@ -33,6 +33,20 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 *(⚠️ PERHATIAN AI AGENT: TAMBAHKAN ENTRI LOG BARU ANDA TEPAT DI BAWAH BARIS INI. JANGAN DI PALING BAWAH DOKUMEN!)*
 
+### [2026-10-03 21:44:00] - Game Design: Unified Master Card Library and Mathematical Balance Matrix
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "gabung cards.md dan other-cards.md , jadikan satu, dan samakan boundariesnya, berikan perhitungan sederhananya juga untuk yang belum ada. buatlah semua kartu setara"
+- **Perubahan:**
+  - `[Changed]` Menggabungkan seluruh 14 Kartu Inti Nabu dan seluruh set kartu tim (53 kartu unik) ke dalam `pilot-game-team-docs/01_game_design/cards.md` sebagai *Single Source of Truth (SSOT)*.
+  - `[Changed]` Menyelaraskan seluruh batas (boundaries) dan skema parameter kartu mengikuti properti runtime C# `CardData.cs` (`Id`, `Name`, `ActionType`, `TargetArea`, `PhaseRestriction`, `EnergyCost`, `BaseDamage`, `BaseShield`, `Range`, `AreaRadius`, `InflictedStatus`, `StatusDuration`).
+  - `[Added]` Menetapkan rumus anggaran nilai baku matematis (*AP Value Budget Math*) untuk kartu 0 AP, 1 AP, 2 AP, dan 3 AP agar seluruh 53 kartu memiliki rasio kekuatan yang setara dan adil. Mengganti semua variabel prototipe ($X, Y, Z$) dengan nilai numerik konkret, formula scaling, serta tabel matriks keseimbangan master (*Master Balance Matrix*).
+  - `[Changed]` Memperbarui `other-cards.md` menjadi penunjuk arsip yang merujuk ke `cards.md`.
+- **Path File:**
+  - `pilot-game-team-docs/01_game_design/cards.md`
+  - `pilot-game-team-docs/01_game_design/other-cards.md`
+  - `nodes/pilot-game/CHANGELOG.md`
+
+
 ### [2026-10-03 21:38:00] - Game Design: Consolidation and De-duplication of Team Card Submissions
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
 - **Konteks:** "berikut pdf berisi seluruh kartu dari anggota anggota lain. buatlah other-cards.md di 01_game_design" & keputusan de-duplikasi kartu
