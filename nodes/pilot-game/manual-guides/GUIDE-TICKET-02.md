@@ -37,7 +37,7 @@ Sebelum memasukkan gambar/ikon ke ScriptableObject, pastikan tekstur pixel art d
 3. Di panel **Inspector**, ubah pengaturan berikut:
    * **Texture Type:** `Sprite (2D and UI)`
    * **Sprite Mode:** `Single`
-   * **Pixels Per Unit (PPU):** `16` (atau disesuaikan dengan grid art)
+   * **Pixels Per Unit (PPU):** `64` *(Standar Resmi Proyek: 1 ubin = 64x64 px)*
    * **Filter Mode:** `Point (no filter)` *(PENTING: agar pixel art tajam dan tidak blur!)*
    * **Compression:** `None` (pada tab Default di bagian bawah)
 4. Klik tombol **Apply** di kanan bawah Inspector.

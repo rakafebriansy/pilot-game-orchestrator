@@ -22,7 +22,7 @@ Tiket ini mengimplementasikan entitas visual karakter protagonis Nabu dan musuh 
 2. Atur **Transform Position:** `X: 2.5, Y: 2.5, Z: 0` *(Titik tengah ubin [2,2])*.
 3. Di panel **Inspector**, tambahkan komponen berikut via tombol **Add Component**:
    * **Sprite Renderer**:
-     * **Sprite:** Pasang sprite placeholder Nabu (atau kotak biru).
+     * **Sprite:** Pasang sprite Nabu *(Resolusi 64x64 px, PPU: 64, Filter: Point)*.
      * **Sorting Layer:** Pilih `Units` *(PENTING: agar karakter berdiri di atas ubin lantai!)*.
      * **Order in Layer:** `0`.
    * **Animator**:

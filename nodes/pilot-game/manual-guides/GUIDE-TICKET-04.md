@@ -70,7 +70,7 @@ Struktur akhir di panel Hierarchy:
 
 ### Langkah 2.3: Pembuatan Aset Tile (Sprites to Tiles)
 1. Di Project Window, buat folder `Assets/Art/Tiles/HighlightTiles/`.
-2. Siapkan 4 sprite ubin berwarna 16x16 atau 32x32:
+2. Siapkan 4 sprite ubin berukuran **64x64 px** (*Pixels Per Unit / PPU: 64, Filter: Point, Compression: None*):
    * `Sprite_RedSquare.png` (Merah semi-transparan untuk Intent Musuh)
    * `Sprite_GreenSquare.png` (Hijau semi-transparan untuk Jangkauan Kartu)
    * `Sprite_BlueSquare.png` (Biru semi-transparan untuk Jangkauan Gerak)

@@ -228,7 +228,7 @@ Sebelum menyentuh kanvas digital atau menggambar garis pertama, Concept Artist *
     *   Apa cerita atau pesan narasi yang harus disampaikan? (Contoh: *"Ini adalah pustakawan kuno Babel yang terdistorsi oleh sihir gelap arsip"*).
     *   Bagaimana unit ini berinteraksi di arena 15×15? (Bagaimana bentuknya saat berdiri di ubin semak? Bagaimana ikon intent diletakkan di atas kepalanya?).
 2.  **SET CONSTRAINTS (Tetapkan Batasan di Awal):**
-    *   **Batasan Teknis:** Resolusi piksel sprite isometrik (rasio 2:1), batasan dimensi ubin (1 tile per karakter), batas palet warna, dan kompatibilitas engine Unity.
+    *   **Batasan Teknis:** Standar resolusi piksel kanvas **$64 \times 64\text{ px}$ per ubin/karakter**, pengaturan engine Unity **Pixels Per Unit (PPU) = 64** (*Filter: Point, Compression: None*), proyeksi isometrik (rasio 2:1), batasan dimensi ubin (1 tile per karakter), dan batas palet warna.
     *   **Batasan Spasial:** Desain tidak boleh terlalu lebar hingga menutupi ubin di samping atau belakangnya secara berlebihan.
     *   **Batasan Gameplay:** Karakter dengan pertahanan tebal harus terlihat ber-armor; karakter yang lincah harus terlihat ringan.
 3.  **RESEARCH!!!! (Riset Menyeluruh & Mendalam):**
@@ -289,6 +289,7 @@ Sebelum aset visual (karakter, musuh, semak, kartu, ubin, VFX) diekspor ke Unity
 | **Clarity** | Apakah unit/aset dapat dikenali jenis dan fungsinya dalam 1 detik? | [ ] |
 | **Clarity** | Apakah ada ruang jelas di atas kepala karakter untuk ikon *Enemy Intent*? | [ ] |
 | **Clarity** | Apakah aset menempati batas ubin 15×15 secara presisi tanpa mengaburkan ubin sekitar? | [ ] |
+| **Technical** | Apakah resolusi $64\times 64\text{ px}$ per ubin dan import PPU = **64** (Point Filter, No Compression)? | [ ] |
 | **Satisfaction**| Apakah animasi/efek memiliki bobot (*anticipation, impact, recovery*)? | [ ] |
 | **Satisfaction**| Apakah efek visual (VFX) memberikan kepuasan pendaran (*juice / hit sparks*)? | [ ] |
 | **Style** | Apakah mematuhi fusi *Arco* (isometrik) + *Signalis* (retro dark) + *Dead Cells* (aksen cerah)? | [ ] |

@@ -33,6 +33,12 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 *(⚠️ PERHATIAN AI AGENT: TAMBAHKAN ENTRI LOG BARU ANDA TEPAT DI BAWAH BARIS INI. JANGAN DI PALING BAWAH DOKUMEN!)*
 
+### [2026-10-03 17:48:00] - Guideline: Standardize 64 PPU & 64x64 Pixel Art Spec across GDD & Manual Guides
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "ubah ke 64 semua manual guides dan dokumen"
+- **Perubahan:** `[Changed]` Menetapkan dan membakukan resolusi kanvas aset $64 \times 64\text{ px}$ per ubin/karakter serta pengaturan import Unity Pixels Per Unit (PPU) = **64** (*Filter Mode: Point, Compression: None*) pada seluruh dokumen GDD (`GDD-0.1.md`), aturan visual seni (`visual-art-rules.md`), dan panduan manual editor Unity (`GUIDE-TICKET-02.md`, `GUIDE-TICKET-04.md`, `GUIDE-TICKET-05.md`).
+- **Path File:** `global-docs/GDDs/GDD-0.1/GDD-0.1.md`, `global-docs/visual-art-rules.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-02.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-04.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-05.md`
+
 ### [2026-10-03 16:54:00] - Implementation: TICKET-01 Shared Data Contracts & Event Bus
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `Tubbies Pilot Game`
 - **Konteks:** "Tubbies Pilot Game commit push, saya sudah manual guides. untuk commit message sesuaikan pilot-game-ai-orchestrator dan jangan lupa update changelog"

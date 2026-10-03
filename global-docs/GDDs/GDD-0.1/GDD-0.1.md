@@ -93,6 +93,7 @@ Siklus inti permainan dirancang untuk terus memicu ketegangan dan pemikiran stra
 - **Invisible Grid:** Meskipun permainan berjalan ketat secara matematis di atas papan ubin catur (grid), visualisasi ubin tersebut dihilangkan untuk menjaga ilusi natural dunia game.
 - **HUD & UI:** Desain antarmuka difokuskan pada fungsionalitas dan minimalisme. Deretan kartu (*deck/hand*) difiksasi pada area tengah bawah agar sudut pandang pemain ke arena tidak terhalang.
 - **Art Style & Referensi:** Mengusung visual bernuansa *dark retro-futuristic/anime fantasy* (referensi: *Signalis*) dipadukan dengan rendering pixel art isometric yang tajam dan atmosferik.
+- **Spesifikasi Teknis Resolusi & PPU:** Standar aset visual menggunakan resolusi kanvas **$64 \times 64\text{ px}$ per ubin/karakter** dengan **Pixels Per Unit (PPU) = 64** di Unity untuk menjamin ketajaman pixel art HD modern.
 
 ### 5.2. Setting, Ambience & Color Palette
 - **Latar Tempat (World Setting):** Dunia yang hancur dan dipenuhi keputusasaan.
@@ -157,6 +158,7 @@ Siklus inti permainan dirancang untuk terus memicu ketegangan dan pemikiran stra
 ### 8.1. Platform & Engine
 - **Game Engine:** Unity (memadukan struktur logis Grid dan render Isometric).
 - **Pemrograman:** C# dengan pedoman arsitektur yang sangat ketat (pemisahan logika vs presentasi).
+- **Pipeline Import Aset 2D:** Pixels Per Unit (PPU) = **64** (Grid $64\times 64\text{ px}$ = 1.0 World Unit), Texture Type: *Sprite (2D and UI)*, Filter Mode: *Point (no filter)*, Compression: *None*.
 - **Quality Assurance:** Berfokus pada pengetesan unit (*Unit Testing*) secara otomatis untuk mesin logika Turn Controller dan Deck Manager.
 
 ## 9. Monetization & Release Strategy
