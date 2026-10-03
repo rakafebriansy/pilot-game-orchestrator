@@ -40,23 +40,23 @@ namespace PilotGame.Units
     [CreateAssetMenu(fileName = "NewBoss", menuName = "PilotGame/Data/Boss Data")]
     public class BossData : ScriptableObject
     {
-        [Header("Identitas Boss")]
+        [Header("Boss Identity")]
         public string BossId = "boss_enlil";
         public string BossName = "Enlil, Grand Keeper of the Cuneiform Archive";
         public Sprite BossPortrait;
 
-        [Header("Statistik Vital")]
+        [Header("Vital Stats")]
         public int MaxHealth = 250;
         public int BaseShield = 20;
         public int SizeWidth = 2;   // 2x2 multi-tile footprint
         public int SizeHeight = 2;
 
-        [Header("Fase Enrage")]
+        [Header("Enrage Phase")]
         public float EnrageHealthThreshold = 0.50f; // 50% HP
         public int EnrageAttackBonus = 6;
         public Color EnrageAuraColor = Color.red;
 
-        [Header("Katalog Serangan")]
+        [Header("Attack Catalog")]
         public List<CardData> Phase1Skills = new();
         public List<CardData> EnrageSkills = new();
     }

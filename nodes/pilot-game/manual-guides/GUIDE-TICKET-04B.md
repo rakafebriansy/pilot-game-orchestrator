@@ -116,12 +116,12 @@ namespace PilotGame.Environment
     [RequireComponent(typeof(Light2D))]
     public class TorchFlicker : MonoBehaviour
     {
-        [Header("Parameter Kedipan")]
+        [Header("Flicker Parameters")]
         [SerializeField] private float _minIntensity = 0.8f;
         [SerializeField] private float _maxIntensity = 1.4f;
         [SerializeField] private float _flickerSpeed = 3.5f;
 
-        [Header("Pergeseran Posisi Mikro (Radius)")]
+        [Header("Micro Jitter Radius")]
         [SerializeField] private float _minRadius = 3.0f;
         [SerializeField] private float _maxRadius = 3.6f;
 

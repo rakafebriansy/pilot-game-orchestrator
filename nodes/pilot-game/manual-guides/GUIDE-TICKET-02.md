@@ -83,20 +83,20 @@ namespace PilotGame.Cards
     [CreateAssetMenu(fileName = "NewCard", menuName = "PilotGame/Data/Card Data")]
     public class CardData : ScriptableObject
     {
-        [Header("Identitas Kartu")]
+        [Header("Card Identity")]
         public string CardId;
         public string CardName;
         [TextArea(2, 4)]
         public string Description;
         public Sprite CardArt;
 
-        [Header("Klasifikasi & Biaya")]
+        [Header("Classification & Cost")]
         public CardActionType ActionType = CardActionType.Attack;
         public TargetAreaType AreaType = TargetAreaType.SingleTarget;
         public CombatPhase PhaseRestriction = CombatPhase.PlayerPhase;
         public int EnergyCost = 1;
 
-        [Header("Parameter Tempur")]
+        [Header("Combat Parameters")]
         public int BaseDamage = 0;
         public int BaseShield = 0;
         public int Range = 1;
@@ -140,26 +140,26 @@ namespace PilotGame.Cards
     [CreateAssetMenu(fileName = "NewEnemy", menuName = "PilotGame/Data/Enemy Data")]
     public class EnemyData : ScriptableObject
     {
-        [Header("Identitas")]
+        [Header("Enemy Identity")]
         public string EnemyId;
         public string EnemyName;
         public Sprite EnemySprite;
 
-        [Header("Klasifikasi")]
+        [Header("Classification")]
         public EnemyArchetype Archetype = EnemyArchetype.Melee;
         public EnemyHierarchy Hierarchy = EnemyHierarchy.Minion;
 
-        [Header("Statistik Tempur")]
+        [Header("Combat Stats")]
         public int MaxHealth = 20;
         public int BaseShield = 0;
         public int AttackPower = 5;
         public int AttackRange = 1;
         public int MoveSpeedTiles = 1;
 
-        [Header("Classless Deck Bawaan")]
+        [Header("Classless Default Deck")]
         public List<CardData> EnemyDeck = new List<CardData>();
 
-        [Header("Prefab Visual")]
+        [Header("Visual Prefab")]
         public GameObject CharacterPrefab;
     }
 }
@@ -186,14 +186,14 @@ namespace PilotGame.Cards
     [CreateAssetMenu(fileName = "NewConsumable", menuName = "PilotGame/Data/Consumable Data")]
     public class ConsumableData : ScriptableObject
     {
-        [Header("Identitas Item")]
+        [Header("Item Identity")]
         public string ItemId;
         public string ItemName;
         [TextArea(2, 3)]
         public string Description;
         public Sprite ItemIcon;
 
-        [Header("Efek Konsumsi (Free Action)")]
+        [Header("Consumable Effect (Free Action)")]
         public ConsumableEffectType EffectType = ConsumableEffectType.InstantHeal;
         public int EffectValue = 10;
         public AudioClip UseSFX;

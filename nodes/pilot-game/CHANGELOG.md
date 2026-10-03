@@ -33,6 +33,12 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 *(⚠️ PERHATIAN AI AGENT: TAMBAHKAN ENTRI LOG BARU ANDA TEPAT DI BAWAH BARIS INI. JANGAN DI PALING BAWAH DOKUMEN!)*
 
+### [2026-10-03 18:04:00] - Guideline: Standardize English Code Syntax & Indonesian Comments across Manual Guides
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "seluruh kode bahasa inggris, yang bahasa indonesia hanya comments"
+- **Perubahan:** `[Changed]` Memperbarui seluruh string atribut kode C# (seperti `[Header(...)]`, tipe data, identifier, class, method) di semua manual guides (`GUIDE-TICKET-02.md`, `GUIDE-TICKET-04B.md`, `GUIDE-TICKET-12.md`) menjadi 100% Bahasa Inggris murni, dengan mempertahankan seluruh komentar penjelasan (`//`, `///`, `/* */`) dalam Bahasa Indonesia.
+- **Path File:** `nodes/pilot-game/manual-guides/GUIDE-TICKET-02.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-04B.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-12.md`
+
 ### [2026-10-03 17:48:00] - Guideline: Standardize 64 PPU & 64x64 Pixel Art Spec across GDD & Manual Guides
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
 - **Konteks:** "ubah ke 64 semua manual guides dan dokumen"
