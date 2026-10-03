@@ -107,7 +107,7 @@ namespace PilotGame.Map
 
         public void UpgradeCard(CardData baseCard, CardData upgradedCard)
         {
-            Debug.Log($"[Campfire] Kartu {baseCard.CardName} berhasil ditingkatkan menjadi {upgradedCard.CardName}!");
+            Debug.Log($"[Campfire] Kartu {baseCard.Name} berhasil ditingkatkan menjadi {upgradedCard.Name}!");
         }
     }
 }

@@ -143,7 +143,7 @@ namespace PilotGame.UI
                 var itemBox = new VisualElement();
                 itemBox.AddToClassList("shop-item-box");
 
-                var nameLbl = new Label(card.CardName);
+                var nameLbl = new Label(card.Name);
                 var priceBtn = new Button(() => BuyCard(card, cardPrice, itemBox));
                 priceBtn.text = $"Beli: {cardPrice} G";
 
@@ -157,7 +157,7 @@ namespace PilotGame.UI
         {
             if (GoldManager.Instance != null && GoldManager.Instance.TrySpendGold(price))
             {
-                Debug.Log($"[Shop] Berhasil membeli kartu: {card.CardName}");
+                Debug.Log($"[Shop] Berhasil membeli kartu: {card.Name}");
                 itemBox.SetEnabled(false);
                 itemBox.AddToClassList("sold-out");
                 UpdateGoldDisplay(GoldManager.Instance.CurrentGold);

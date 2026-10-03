@@ -12,27 +12,27 @@ Menyusun **template data konfigurasi statis** menggunakan ScriptableObjects untu
 Tiket ini bergantung pada TICKET-01 (enum `CardActionType` diperlukan oleh `CardData.cs`).
 
 ## Acceptance Criteria
-- [ ] `CardData.cs` (`ScriptableObject`) mengimplementasikan properti enkapsulasi read-only:
-  - `string CardId` — ID unik kartu (contoh: `"card_page_cutter"`).
-  - `string CardName` — Nama tampilan kartu.
+- [ ] `CardData.cs` (`ScriptableObject`) mengimplementasikan properti data:
+  - `string Id` — ID unik kartu (contoh: `"card_page_cutter"`).
+  - `string Name` — Nama tampilan kartu.
+  - `string Description` — Deskripsi efek jurus kartu.
   - `CardActionType ActionType` — Tipe aksi (`Attack`, `Defense`, `Movement`, `Utility`).
-  - `int BaseValue` — Nilai damage / shield / langkah.
-  - `int Range` — Jangkauan dalam satuan ubin (tile).
-  - `Sprite CardIllustration` — Sprite visual kartu.
-  - `[CreateAssetMenu]` attribute menggunakan menuName: `"PilotGame/Card Data"`.
+  - `int BaseDamage`, `int BaseShield`, `int Range`, `int AreaRadius`.
+  - `Sprite Art` — Sprite visual kartu.
+  - `[CreateAssetMenu]` attribute menggunakan menuName: `"PilotGame/Data/Card Data"`.
 - [ ] `EnemyData.cs` (`ScriptableObject`) mengimplementasikan:
-  - `string EnemyId` — ID unik musuh.
-  - `string EnemyName` — Nama musuh.
+  - `string Id` — ID unik musuh.
+  - `string Name` — Nama musuh.
   - `string Description` — Deskripsi latar naratif musuh.
   - `int MaxHealth` — HP maksimum musuh.
-  - `int BaseAttackDamage` — Damage serangan dasar.
-  - `int MoveRange` — Jangkauan gerak per giliran (dalam tile).
+  - `int AttackPower` — Damage serangan dasar.
+  - `int MoveSpeedTiles` — Jangkauan gerak per giliran (dalam tile).
   - `int AttackRange` — Jangkauan serangan (dalam tile).
-  - `Sprite EnemySprite` — Sprite visual musuh.
-  - `[CreateAssetMenu]` attribute menggunakan menuName: `"PilotGame/Enemy Data"`.
+  - `Sprite Sprite` — Sprite visual musuh.
+  - `[CreateAssetMenu]` attribute menggunakan menuName: `"PilotGame/Data/Enemy Data"`.
 - [ ] `ConsumableData.cs` (`ScriptableObject`) mengimplementasikan:
-  - `string ItemId`, `string ItemName`, `int HealAmount`, `Sprite ItemIcon`.
-  - `[CreateAssetMenu]` attribute menggunakan menuName: `"PilotGame/Consumable Data"`.
+  - `string Id`, `string Name`, `string Description`, `int EffectValue`, `Sprite Icon`.
+  - `[CreateAssetMenu]` attribute menggunakan menuName: `"PilotGame/Data/Consumable Data"`.
 - [ ] Minimal **5 file aset kartu** dibuat di `Assets/ScriptableObjects/Cards/` berdasarkan data desain:
   - `Card_PageCutter.asset` — Attack | Damage: 6 | Range: 1
   - `Card_TumbleDodge.asset` — Movement | Step: 2 | Range: 2

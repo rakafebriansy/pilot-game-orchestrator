@@ -41,9 +41,9 @@ namespace PilotGame.Units
     public class BossData : ScriptableObject
     {
         [Header("Boss Identity")]
-        public string BossId = "boss_enlil";
-        public string BossName = "Enlil, Grand Keeper of the Cuneiform Archive";
-        public Sprite BossPortrait;
+        public string Id = "boss_enlil";
+        public string Name = "Enlil, Grand Keeper of the Cuneiform Archive";
+        public Sprite Portrait;
 
         [Header("Vital Stats")]
         public int MaxHealth = 250;
@@ -108,7 +108,7 @@ namespace PilotGame.Units
 
         private void TriggerEnrageTransformation()
         {
-            Debug.Log($"[BossAI] {_bossData.BossName} memasuki FASE MURKA (ENRAGE)!");
+            Debug.Log($"[BossAI] {_bossData.Name} memasuki FASE MURKA (ENRAGE)!");
             // Tambahkan partikel aura merah menyala dan suara raungan boss
         }
 

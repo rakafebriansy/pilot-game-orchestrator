@@ -111,8 +111,8 @@ namespace PilotGame.EditorTools
                 enemy = ScriptableObject.CreateInstance<EnemyData>();
                 AssetDatabase.CreateAsset(enemy, path);
             }
-            enemy.EnemyId = fileName.ToLower();
-            enemy.EnemyName = name;
+            enemy.Id = fileName.ToLower();
+            enemy.Name = name;
             enemy.Archetype = arch;
             enemy.Hierarchy = hier;
             enemy.MaxHealth = hp;
@@ -141,8 +141,8 @@ namespace PilotGame.EditorTools
                 item = ScriptableObject.CreateInstance<ConsumableData>();
                 AssetDatabase.CreateAsset(item, path);
             }
-            item.ItemId = fileName.ToLower();
-            item.ItemName = name;
+            item.Id = fileName.ToLower();
+            item.Name = name;
             item.Description = desc;
             item.EffectType = effect;
             item.EffectValue = val;

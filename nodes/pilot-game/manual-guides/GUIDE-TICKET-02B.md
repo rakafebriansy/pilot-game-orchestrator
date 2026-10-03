@@ -109,8 +109,8 @@ namespace PilotGame.EditorTools
                 AssetDatabase.CreateAsset(card, path);
             }
 
-            card.CardId = fileName.ToLower();
-            card.CardName = cardName;
+            card.Id = fileName.ToLower();
+            card.Name = cardName;
             card.Description = desc;
             card.ActionType = actionType;
             card.AreaType = areaType;

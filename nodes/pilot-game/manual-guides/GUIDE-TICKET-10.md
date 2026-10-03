@@ -107,7 +107,7 @@ namespace PilotGame.UI
                 var cardBox = new VisualElement();
                 cardBox.AddToClassList("draft-card-card");
 
-                var nameLbl = new Label(card.CardName);
+                var nameLbl = new Label(card.Name);
                 nameLbl.AddToClassList("card-title");
 
                 var descLbl = new Label(card.Description);
@@ -129,7 +129,7 @@ namespace PilotGame.UI
 
         private void OnCardSelected(CardData chosenCard)
         {
-            Debug.Log($"[Draft] Pemain menambahkan kartu: {chosenCard.CardName} ke deck!");
+            Debug.Log($"[Draft] Pemain menambahkan kartu: {chosenCard.Name} ke deck!");
             // Tambahkan ke starter deck / draw pile
             CloseDraftScreen();
         }

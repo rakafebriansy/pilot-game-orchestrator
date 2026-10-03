@@ -81,11 +81,11 @@ namespace PilotGame.Map
             // Hapus kartu yang dikorbankan dari deck aktif
             deck.Remove(sacrificedCard);
 
-            var cp = new CheckpointData(nodeId, floor, sacrificedCard.CardId, currentHP);
+            var cp = new CheckpointData(nodeId, floor, sacrificedCard.Id, currentHP);
             _activeCheckpoints.Add(cp);
 
             CombatEvents.OnCheckpointPlaced?.Invoke(nodeId);
-            Debug.Log($"[Checkpoint] Checkpoint aktif di Node {nodeId}. Mengorbankan kartu: {sacrificedCard.CardName}. Sisa slot: {AvailableCheckpoints}");
+            Debug.Log($"[Checkpoint] Checkpoint aktif di Node {nodeId}. Mengorbankan kartu: {sacrificedCard.Name}. Sisa slot: {AvailableCheckpoints}");
 
             return true;
         }
@@ -133,8 +133,8 @@ namespace PilotGame.Tests.EditMode
                 ScriptableObject.CreateInstance<CardData>(),
                 ScriptableObject.CreateInstance<CardData>()
             };
-            _sampleDeck[0].CardId = "card_1";
-            _sampleDeck[1].CardId = "card_2";
+            _sampleDeck[0].Id = "card_1";
+            _sampleDeck[1].Id = "card_2";
         }
 
         [Test]

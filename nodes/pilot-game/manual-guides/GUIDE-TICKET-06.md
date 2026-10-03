@@ -214,7 +214,7 @@ namespace PilotGame.UI
             var cardBox = new VisualElement();
             cardBox.AddToClassList("card-element");
 
-            var title = new Label(card.CardName);
+            var title = new Label(card.Name);
             title.AddToClassList("card-title");
 
             var desc = new Label(card.Description);

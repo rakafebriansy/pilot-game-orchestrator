@@ -33,6 +33,12 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 *(⚠️ PERHATIAN AI AGENT: TAMBAHKAN ENTRI LOG BARU ANDA TEPAT DI BAWAH BARIS INI. JANGAN DI PALING BAWAH DOKUMEN!)*
 
+### [2026-10-03 18:29:00] - Guideline: Standardize Clean OOP Field Names (Id, Name, Description) across All Data Templates
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "okelah paramsnya, tapi kan ini field class, pasti ya CardName.id pemakaiannya bukan?"
+- **Perubahan:** `[Changed]` Menghapus redundansi nama kelas pada variabel (*class stuttering*) dan menstandardisasi seluruh ScriptableObject data (`CardData`, `EnemyData`, `ConsumableData`, `BossData`, `EquipmentData`) menjadi field yang bersih dan ringkas (`Id`, `Name`, `Description`, `Art`/`Sprite`/`Icon`/`Portrait`) di seluruh manual guides (`GUIDE-TICKET-02.md`, `02B`, `02C`, `06`, `09B`, `10`, `11`, `11B`, `12`, `14B`) dan tiket (`TICKET-02.md`).
+- **Path File:** `nodes/pilot-game/manual-guides/GUIDE-TICKET-02.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-02B.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-02C.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-06.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-09B.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-10.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-11.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-11B.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-12.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-14B.md`, `nodes/pilot-game/tickets/TICKET-02.md`
+
 ### [2026-10-03 18:23:00] - Guideline: Add Description Field to EnemyData ScriptableObject
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
 - **Konteks:** "tambah enemy desc"

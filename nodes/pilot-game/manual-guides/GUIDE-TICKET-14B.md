@@ -54,11 +54,11 @@ namespace PilotGame.Inventory
     [CreateAssetMenu(fileName = "NewEquipment", menuName = "PilotGame/Data/Equipment Data")]
     public class EquipmentData : ScriptableObject
     {
-        public string ItemId;
-        public string ItemName;
+        public string Id;
+        public string Name;
         [TextArea(2, 3)]
         public string Description;
-        public Sprite ItemIcon;
+        public Sprite Icon;
         public EquipmentSlotType SlotType;
         public List<CardData> GrantedCards = new();
         public int BonusMaxHP = 0;
@@ -84,7 +84,7 @@ namespace PilotGame.Inventory
 
             StashItems.Remove(item);
             WearableSlots[targetSlotIndex] = item;
-            Debug.Log($"[Inventory] Berhasil memasang {item.ItemName} di slot {targetSlotIndex + 1}");
+            Debug.Log($"[Inventory] Berhasil memasang {item.Name} di slot {targetSlotIndex + 1}");
             return true;
         }
 
@@ -135,7 +135,7 @@ namespace PilotGame.UI
                 var box = new VisualElement();
                 box.AddToClassList("loot-card-box");
 
-                var nameLbl = new Label(equip.ItemName);
+                var nameLbl = new Label(equip.Name);
                 var descLbl = new Label(equip.Description);
                 var claimBtn = new Button(() => ClaimLoot(equip));
                 claimBtn.text = "Ambil & Simpan ke Stash";
@@ -150,7 +150,7 @@ namespace PilotGame.UI
         private void ClaimLoot(EquipmentData equip)
         {
             _inventory.StashItems.Add(equip);
-            Debug.Log($"[BossLoot] Item {equip.ItemName} tersimpan di Stash Sanctuary!");
+            Debug.Log($"[BossLoot] Item {equip.Name} tersimpan di Stash Sanctuary!");
             gameObject.SetActive(false);
         }
     }
