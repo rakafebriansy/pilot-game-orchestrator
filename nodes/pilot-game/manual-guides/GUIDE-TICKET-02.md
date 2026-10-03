@@ -47,19 +47,24 @@ Sebelum memasukkan gambar/ikon ke ScriptableObject, pastikan tekstur pixel art d
 ### Langkah 2.3: Pembuatan File `.asset` ScriptableObject via Unity GUI
 Setelah script di Bagian 3 diketik dan di-save:
 
-**A. Membuat Kartu (`Card_PageCutter.asset`):**
+**A. Membuat Kartu (`Card_ThrowingBlade.asset`):**
 1. Masuk ke folder `Assets/ScriptableObjects/Cards/`.
-2. Klik kanan > **Create > PilotGame > Data > Card Data**, beri nama `Card_PageCutter.asset`.
+2. Klik kanan > **Create > PilotGame > Data > Card Data**, beri nama `Card_ThrowingBlade.asset`.
 3. Di panel **Inspector**, isi:
-   * `Id`: `card_page_cutter`
-   * `Name`: `Page Cutter`
-   * `Description`: `Tebasan lembaran kitab kuno yang memberikan 6 damage ke musuh di depannya.`
+   * `Id`: `card_throwing_blade`
+   * `Name`: `Throwing Blade`
+   * `Description`: `Lemparan belati tajam jarak menengah yang memberikan 5 damage dan memicu efek pendarahan (Bleed).`
    * `ActionType`: `Attack`
    * `TargetArea`: `SingleTarget`
+   * `PhaseRestriction`: `PlayerPhase`
    * `energyCost`: `1`
-   * `BaseDamage`: `6`
-   * `Range`: `1`
-   * `Art`: Seret sprite `Card_PageCutter_Art` ke slot ini.
+   * `BaseDamage`: `5`
+   * `BaseShield`: `0`
+   * `Range`: `3`
+   * `AreaRadius`: `0`
+   * `InflictedStatus`: `Bleed`
+   * `StatusDuration`: `2`
+   * `Art`: Seret sprite `Card_ThrowingBlade_Art` ke slot ini.
 
 **B. Membuat Musuh (`Enemy_TatteredConscript.asset`):**
 1. Masuk ke folder `Assets/ScriptableObjects/Enemies/`.
@@ -244,5 +249,5 @@ namespace PilotGame.Cards
 
 ## 🧪 4. Langkah Verifikasi di Unity Editor
 1. Periksa folder `Assets/ScriptableObjects/Cards/` di Project View.
-2. Klik file `Card_PageCutter.asset`.
+2. Klik file `Card_ThrowingBlade.asset`.
 3. Pastikan Inspector menampilkan data kartu dengan benar tanpa ada field yang kosong atau error serialization.

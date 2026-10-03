@@ -13,7 +13,7 @@ Tiket ini bergantung pada TICKET-01 (enum `CardActionType` diperlukan oleh `Card
 
 ## Acceptance Criteria
 - [x] `CardData.cs` (`ScriptableObject`) mengimplementasikan properti data:
-  - `string Id` — ID unik kartu (contoh: `"card_page_cutter"`).
+  - `string Id` — ID unik kartu (contoh: `"card_throwing_blade"`).
   - `string Name` — Nama tampilan kartu.
   - `string Description` — Deskripsi efek jurus kartu.
   - `CardActionType ActionType` — Tipe aksi (`Attack`, `Skill`, `Power`, `Movement`, `Utility`).
@@ -50,7 +50,7 @@ Tiket ini bergantung pada TICKET-01 (enum `CardActionType` diperlukan oleh `Card
 - `Assets/Scripts/Cards/CardData.cs`
 - `Assets/Scripts/Cards/EnemyData.cs`
 - `Assets/Scripts/Cards/ConsumableData.cs`
-- `Assets/Art/Sprites/Card_PageCutter_Art.jpg`
+- `Assets/Art/Sprites/Card_ThrowingBlade_Art.jpg`
 - `Assets/Art/Sprites/Enemy_TatteredConscript_Sprite.jpg`
 - `Assets/Art/Sprites/Item_ElixirOfLife_Icon.jpg`
 - `Assets/ScriptableObjects/Cards/`

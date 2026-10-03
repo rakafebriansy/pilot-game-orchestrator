@@ -33,6 +33,18 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 *(⚠️ PERHATIAN AI AGENT: TAMBAHKAN ENTRI LOG BARU ANDA TEPAT DI BAWAH BARIS INI. JANGAN DI PALING BAWAH DOKUMEN!)*
 
+### [2026-10-03 18:55:00] - Guideline: Standardize Sample Entities in Manual Guides to Throwing Blade, Tattered Conscript, and Elixir of Life
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `Tubbies Pilot Game` & `pilot-game-ai-orchestrator`
+- **Konteks:** "ganti contoh@[/Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/manual-guides] ke throwing blade dan tattered conscript dan elixir of life"
+- **Perubahan:**
+  - `[Changed]` Mengganti contoh pembuatan kartu sample di `GUIDE-TICKET-02.md`, kriteria `TICKET-02.md`, dan aset sprite `Assets/Art/Sprites/` dari Page Cutter menjadi `Card_ThrowingBlade.asset` (*Throwing Blade*), bersanding dengan `Enemy_TatteredConscript.asset` (*Tattered Conscript*) dan `Item_ElixirOfLife.asset` (*Elixir of Life*).
+  - `[Added]` Menghasilkan dan menyertakan aset pixel art 64 PPU `Card_ThrowingBlade_Art.jpg` di folder `Assets/Art/Sprites/`.
+- **Path File:**
+  - `pilot-game-ai-orchestrator/nodes/pilot-game/manual-guides/GUIDE-TICKET-02.md`
+  - `pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02.md`
+  - `pilot-game-ai-orchestrator/nodes/pilot-game/CHANGELOG.md`
+  - `Tubbies Pilot Game/Assets/Art/Sprites/Card_ThrowingBlade_Art.jpg`
+
 ### [2026-10-03 18:46:00] - Implementation: ScriptableObject Data Templates for Cards, Enemies, and Consumables
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `Tubbies Pilot Game` & `pilot-game-ai-orchestrator`
 - **Konteks:** "commit push @[/Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/Tubbies Pilot Game] , yang berbeda, timpa milik @[/Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir] dengan @[/Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/Tubbies Pilot Game] jika ada yang berbeda."
