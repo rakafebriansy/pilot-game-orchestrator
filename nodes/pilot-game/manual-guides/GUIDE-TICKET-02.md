@@ -55,8 +55,8 @@ Setelah script di Bagian 3 diketik dan di-save:
    * `Name`: `Page Cutter`
    * `Description`: `Tebasan lembaran kitab kuno yang memberikan 6 damage ke musuh di depannya.`
    * `ActionType`: `Attack`
-   * `AreaType`: `SingleTarget`
-   * `EnergyCost`: `1`
+   * `TargetArea`: `SingleTarget`
+   * `energyCost`: `1`
    * `BaseDamage`: `6`
    * `Range`: `1`
    * `Art`: Seret sprite `Card_PageCutter_Art` ke slot ini.
@@ -100,11 +100,11 @@ namespace PilotGame.Cards
 {
     public enum TargetAreaType
     {
-        SingleTarget,      // Tepat pada 1 petak target
-        LinearLine,        // Garis lurus ke depan
-        RadiusArea,        // Lingkaran radius di sekitar target
-        SelfOnly,          // Diri sendiri
-        GlobalAllEnemies   // Seluruh musuh di arena
+        SingleTarget, // hanya satu petak target
+        LinearLine, // garis lurus dari caster ke target
+        RadiusArea, // area lingkaran dengan radius tertentu di sekitar target
+        SelfOnly, // hanya diri sendiri
+        GlobalAllEnemies // semua musuh di arena
     }
 
     [CreateAssetMenu(fileName = "NewCard", menuName = "PilotGame/Data/Card Data")]
@@ -113,15 +113,15 @@ namespace PilotGame.Cards
         [Header("Card Identity")]
         public string Id;
         public string Name;
-        [TextArea(2, 4)]
+        [TextArea(2,4)]
         public string Description;
         public Sprite Art;
 
         [Header("Classification & Cost")]
         public CardActionType ActionType = CardActionType.Attack;
-        public TargetAreaType AreaType = TargetAreaType.SingleTarget;
+        public TargetAreaType TargetArea = TargetAreaType.SingleTarget;
         public CombatPhase PhaseRestriction = CombatPhase.PlayerPhase;
-        public int EnergyCost = 1;
+        public int energyCost = 1;
 
         [Header("Combat Parameters")]
         public int BaseDamage = 0;
@@ -133,7 +133,7 @@ namespace PilotGame.Cards
         public StatusEffectType InflictedStatus = StatusEffectType.None;
         public int StatusDuration = 0;
 
-        [Header("UX & Visual FX")]
+        [Header("UX & VFX")]
         public GameObject VFXPrefab;
         public AudioClip SFX;
     }
@@ -152,16 +152,17 @@ namespace PilotGame.Cards
 {
     public enum EnemyArchetype
     {
-        Melee,      // Petarung jarak dekat
-        Ranged,     // Penyerang jarak jauh
-        Support     // Pendukung / Buffer / Healer
+        Melee,
+        Ranged,
+        Support
     }
 
     public enum EnemyHierarchy
     {
-        Minion,     // Kroco biasa, sinergi minimal
-        Regular,    // Prajurit standar, beberapa sinergi
-        Elite       // Pasukan elit, sinergi penuh & tanggap situasi
+        Minion,
+        Regular,
+        Elite,
+        Boss
     }
 
     [CreateAssetMenu(fileName = "NewEnemy", menuName = "PilotGame/Data/Enemy Data")]
@@ -170,7 +171,7 @@ namespace PilotGame.Cards
         [Header("Enemy Identity")]
         public string Id;
         public string Name;
-        [TextArea(2, 4)]
+        [TextArea(2,4)]
         public string Description;
         public Sprite Sprite;
 
@@ -180,22 +181,22 @@ namespace PilotGame.Cards
 
         [Header("Combat Stats")]
         public int MaxHealth = 20;
-        public int BaseShield = 0;
         public int AttackPower = 5;
         public int AttackRange = 1;
+        public int BaseShield = 0;
         public int MoveSpeedTiles = 1;
 
         [Header("Status Effect")]
         public StatusEffectType InflictedStatus = StatusEffectType.None;
         public int StatusDuration = 0;
 
-        [Header("Classless Default Deck")]
-        public List<CardData> EnemyDeck = new List<CardData>();
-
-        [Header("UX & Visual FX")]
+        [Header("UX & VFX")]
         public GameObject CharacterPrefab;
         public GameObject VFXPrefab;
         public AudioClip SFX;
+
+        [Header("Classless Default Deck")]
+        public List<CardData> CardDeck = new ();
     }
 }
 ```
@@ -224,15 +225,15 @@ namespace PilotGame.Cards
         [Header("Item Identity")]
         public string Id;
         public string Name;
-        [TextArea(2, 3)]
+        [TextArea(2,3)]
         public string Description;
         public Sprite Icon;
 
         [Header("Consumable Effect (Free Action)")]
         public ConsumableEffectType EffectType = ConsumableEffectType.InstantHeal;
-        public int EffectValue = 10;
+        public int EffectValue = 0;
 
-        [Header("UX & Visual FX")]
+        [Header("UX & VFX")]
         public GameObject VFXPrefab;
         public AudioClip SFX;
     }

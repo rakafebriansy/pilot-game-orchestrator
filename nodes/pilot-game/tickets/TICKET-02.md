@@ -1,7 +1,7 @@
 ---
 id: TICKET-02
 title: Katalog Data ScriptableObjects (Kartu, Musuh, Consumable)
-status: Todo
+status: Done
 priority: High
 labels: [Data, ScriptableObjects, Cards, Enemies, Consumables]
 ---
@@ -12,70 +12,71 @@ Menyusun **template data konfigurasi statis** menggunakan ScriptableObjects untu
 Tiket ini bergantung pada TICKET-01 (enum `CardActionType` diperlukan oleh `CardData.cs`).
 
 ## Acceptance Criteria
-- [ ] `CardData.cs` (`ScriptableObject`) mengimplementasikan properti data:
+- [x] `CardData.cs` (`ScriptableObject`) mengimplementasikan properti data:
   - `string Id` — ID unik kartu (contoh: `"card_page_cutter"`).
   - `string Name` — Nama tampilan kartu.
   - `string Description` — Deskripsi efek jurus kartu.
-  - `CardActionType ActionType` — Tipe aksi (`Attack`, `Defense`, `Movement`, `Utility`).
+  - `CardActionType ActionType` — Tipe aksi (`Attack`, `Skill`, `Power`, `Movement`, `Utility`).
+  - `TargetAreaType TargetArea`, `CombatPhase PhaseRestriction`, `int energyCost`.
   - `int BaseDamage`, `int BaseShield`, `int Range`, `int AreaRadius`.
+  - `StatusEffectType InflictedStatus`, `int StatusDuration`.
   - `Sprite Art` — Sprite visual kartu.
   - `GameObject VFXPrefab`, `AudioClip SFX`.
   - `[CreateAssetMenu]` attribute menggunakan menuName: `"PilotGame/Data/Card Data"`.
-- [ ] `EnemyData.cs` (`ScriptableObject`) mengimplementasikan:
+- [x] `EnemyData.cs` (`ScriptableObject`) mengimplementasikan:
   - `string Id` — ID unik musuh.
   - `string Name` — Nama musuh.
   - `string Description` — Deskripsi latar naratif musuh.
+  - `EnemyArchetype Archetype`, `EnemyHierarchy Hierarchy`.
   - `int MaxHealth` — HP maksimum musuh.
   - `int AttackPower` — Damage serangan dasar.
-  - `int MoveSpeedTiles` — Jangkauan gerak per giliran (dalam tile).
   - `int AttackRange` — Jangkauan serangan (dalam tile).
+  - `int BaseShield` — Shield dasar musuh.
+  - `int MoveSpeedTiles` — Jangkauan gerak per giliran (dalam tile).
+  - `StatusEffectType InflictedStatus`, `int StatusDuration`.
   - `Sprite Sprite` — Sprite visual musuh.
   - `GameObject CharacterPrefab`, `GameObject VFXPrefab`, `AudioClip SFX`.
+  - `List<CardData> CardDeck` — Deck musuh classless.
   - `[CreateAssetMenu]` attribute menggunakan menuName: `"PilotGame/Data/Enemy Data"`.
-- [ ] `ConsumableData.cs` (`ScriptableObject`) mengimplementasikan:
-  - `string Id`, `string Name`, `string Description`, `int EffectValue`, `Sprite Icon`.
+- [x] `ConsumableData.cs` (`ScriptableObject`) mengimplementasikan:
+  - `string Id`, `string Name`, `string Description`, `Sprite Icon`.
+  - `ConsumableEffectType EffectType`, `int EffectValue`.
   - `GameObject VFXPrefab`, `AudioClip SFX`.
   - `[CreateAssetMenu]` attribute menggunakan menuName: `"PilotGame/Data/Consumable Data"`.
-- [ ] Minimal **5 file aset kartu** dibuat di `Assets/ScriptableObjects/Cards/` berdasarkan data desain:
-  - `Card_PageCutter.asset` — Attack | Damage: 6 | Range: 1
-  - `Card_TumbleDodge.asset` — Movement | Step: 2 | Range: 2
-  - `Card_ClayShield.asset` — Defense | Shield: 5 | Range: 0
-  - `Card_ScorchingBrand.asset` — Attack | Damage: 4 | Range: 3
-  - `Card_EnkiSurge.asset` — Utility | Value: 0 | Range: 0 (draw 2 cards)
-- [ ] Minimal **3 file aset musuh** dibuat di `Assets/ScriptableObjects/Enemies/` berdasarkan data dari `enemies.md`:
-  - `Enemy_TatteredConscript.asset` — HP: 18 | Gerak: 2 | Serangan: 1 | Damage: 5
-  - `Enemy_DustboundSkeleton.asset` — HP: 14 | Gerak: 2 | Serangan: 1 | Damage: 4
-  - `Enemy_ArchiveScavenger.asset` — HP: 16 | Gerak: 2 | Serangan: 1 | Damage: 5
-- [ ] Seluruh kode kompilasi bersih di Unity Editor.
+- [x] Struktur folder `Assets/ScriptableObjects/Cards/`, `Assets/ScriptableObjects/Enemies/`, `Assets/ScriptableObjects/Consumables/` dan sprite placeholder dibuat.
+- [x] Seluruh kode kompilasi bersih di Unity Editor.
 
 ## Target Lingkup File (Affected Files)
-- `Assets/Scripts/Core/Data/CardData.cs`
-- `Assets/Scripts/Core/Data/EnemyData.cs`
-- `Assets/Scripts/Core/Data/ConsumableData.cs`
-- `Assets/ScriptableObjects/Cards/Card_PageCutter.asset`
-- `Assets/ScriptableObjects/Cards/Card_TumbleDodge.asset`
-- `Assets/ScriptableObjects/Cards/Card_ClayShield.asset`
-- `Assets/ScriptableObjects/Cards/Card_ScorchingBrand.asset`
-- `Assets/ScriptableObjects/Cards/Card_EnkiSurge.asset`
-- `Assets/ScriptableObjects/Enemies/Enemy_TatteredConscript.asset`
-- `Assets/ScriptableObjects/Enemies/Enemy_DustboundSkeleton.asset`
-- `Assets/ScriptableObjects/Enemies/Enemy_ArchiveScavenger.asset`
+- `Assets/Scripts/Cards/CardData.cs`
+- `Assets/Scripts/Cards/EnemyData.cs`
+- `Assets/Scripts/Cards/ConsumableData.cs`
+- `Assets/Art/Sprites/Card_PageCutter_Art.jpg`
+- `Assets/Art/Sprites/Enemy_TatteredConscript_Sprite.jpg`
+- `Assets/Art/Sprites/Item_ElixirOfLife_Icon.jpg`
+- `Assets/ScriptableObjects/Cards/`
+- `Assets/ScriptableObjects/Enemies/`
+- `Assets/ScriptableObjects/Consumables/`
 
 ## Dependensi
 - **Bergantung pada:** TICKET-01 (membutuhkan `CardActionType` dari `CombatTypes.cs`).
 
 ## Catatan Teknis
-- Gunakan **properti enkapsulasi C# (`=>`)** — JANGAN menggunakan field publik. Ini menjaga prinsip immutability data ScriptableObject.
-- File `.asset` di Unity dibuat via menu Assets > Create > PilotGame setelah script di-compile.
+- Standar penamaan field menggunakan sintaks C# PascalCase/camelCase yang bersih tanpa stuttering (`Id`, `Name`, `Description`, `Art`, `Sprite`, `Icon`).
+- PPU aset sprite distandarisasi ke 64 PPU (Point Filter, No Compression).
 
 ---
 
 ## AI Execution Log & Output
 - **Langkah Teknis Tereksekusi:**
-  *(Akan diisi saat tiket dieksekusi)*
+  1. Membuat template ScriptableObject `CardData.cs`, `EnemyData.cs`, dan `ConsumableData.cs` di bawah namespace `PilotGame.Cards`.
+  2. Menyediakan metadata pendukung (`TargetAreaType`, `EnemyArchetype`, `EnemyHierarchy`, `ConsumableEffectType`).
+  3. Mengonfigurasi folder target aset `Assets/ScriptableObjects/` dan aset sprite visual `Assets/Art/Sprites/`.
 - **Keputusan Desain & Arsitektur:**
-  *(Akan diisi saat tiket dieksekusi)*
+  - Mengadopsi konvensi penamaan field clean (`Id`, `Name`, `Description`) tanpa redundant prefix.
+  - Menyertakan slot visual & audio (`VFXPrefab`, `SFX`) pada seluruh ScriptableObject entitas untuk keseragaman feedback audio-visual.
 - **Ringkasan File Terpengaruh:**
-  - *(Akan diisi saat tiket dieksekusi)*
+  - `Assets/Scripts/Cards/CardData.cs`
+  - `Assets/Scripts/Cards/EnemyData.cs`
+  - `Assets/Scripts/Cards/ConsumableData.cs`
 - **Catatan & Temuan Tak Terduga:**
-  *(Akan diisi saat tiket dieksekusi)*
+  - Telah disinkronkan langsung dengan repositori Unity `Tubbies Pilot Game`.

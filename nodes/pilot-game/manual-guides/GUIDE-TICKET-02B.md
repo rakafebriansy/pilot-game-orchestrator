@@ -113,7 +113,7 @@ namespace PilotGame.EditorTools
             card.Name = cardName;
             card.Description = desc;
             card.ActionType = actionType;
-            card.AreaType = areaType;
+            card.TargetArea = areaType;
             card.PhaseRestriction = phase;
             card.BaseDamage = dmg;
             card.BaseShield = shield;
