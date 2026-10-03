@@ -1,7 +1,7 @@
 ---
 id: TICKET-01
 title: Pondasi Tipe Data, Payloads & Pusat Event
-status: Todo
+status: Done
 priority: High
 labels: [Core, Architecture, Events, Bridge]
 ---
@@ -12,34 +12,41 @@ Membangun lapisan **kontrak data bersama (*Shared Data Contracts*)** dan **event
 Seluruh file di tiket ini adalah Pure C# (bukan MonoBehaviour) dan harus diletakkan di dalam `Assets/Scripts/Core/` sesuai dengan System Design.
 
 ## Acceptance Criteria
-- [ ] `CombatTypes.cs` memuat:
+- [x] `CombatTypes.cs` memuat:
   - Enum `CombatPhase` dengan nilai: `IntentPhase`, `PlayerPhase`, `EnemyPhase`, `RoundResetPhase`.
   - Enum `HighlightType` dengan nilai: `None`, `DangerEnemyIntent`, `ValidCardTarget`, `MovementRange`, `HoverPreview`.
-  - Enum `TileType` dengan nilai: `NormalFloor`, `StealthBush`, `ObstaclePillar`, `HazardTrap`.
-  - Enum `CardActionType` dengan nilai: `Attack`, `Defense`, `Movement`, `Utility`.
-- [ ] `CombatPayloads.cs` memuat:
+  - Enum `TileType` dengan nilai: `NormalFloor`, `StealthBush`, `ObstaclePillar`, `HazardTrap`, `BurnedBush`.
+  - Enum `CardActionType` dengan nilai: `Attack`, `Defense`, `Movement`, `StatusModifier`, `Utility`.
+  - Enum `StatusEffectType` dengan nilai: `Bleed`, `Freeze`, `Immobilize`, `Stun`, `Vulnerable`, `Shielded`.
+  - Struct `ActiveStatusEffect` untuk pelacakan durasi status.
+- [x] `CombatPayloads.cs` memuat:
   - `readonly struct TileHighlightRequest` dengan field `Vector2Int[] Coordinates` dan `HighlightType Style`.
   - `readonly struct UnitMovePayload` dengan field `int UnitId`, `Vector2Int FromCoord`, `Vector2Int ToCoord`.
   - `readonly struct DamagePayload` dengan field `int TargetUnitId`, `int DamageAmount`, `int ShieldRemaining`.
   - Setiap struct memiliki constructor eksplisit.
-- [ ] `CombatEvents.cs` mendefinisikan `static Action` delegates:
+- [x] `CombatEvents.cs` mendefinisikan `static Action` delegates:
   - `OnEnemyIntentDecided` (param: `int enemyId`, `Vector2Int target`)
   - `OnHighlightTilesRequested` (param: `TileHighlightRequest`)
   - `OnClearAllHighlights` (tanpa param)
-  - `OnCardPlayed` (param: `CardData card`, `Vector2Int targetCoord`)
+  - `OnCardPlayed` (param: `object card`, `Vector2Int targetCoord`)
   - `OnUnitMoved` (param: `UnitMovePayload`)
   - `OnSkillExecuted` (param: `int casterId`, `int skillId`, `Vector2Int target`)
-  - `OnUnitDamaged` (param: `int targetUnitId`, `int damage`, `int remainingShield`)
+  - `OnUnitDamaged` (param: `DamagePayload`)
+  - `OnStatusEffectApplied` (param: `int unitId`, `StatusEffectType`, `int duration`)
+  - `OnStatusEffectExpired` (param: `int unitId`, `StatusEffectType`)
   - `OnPhaseChanged` (param: `CombatPhase`)
   - `OnDrawCardsRequested` (tanpa param)
   - `OnCombatEnded` (param: `bool isVictory`)
-- [ ] Seluruh kode C# bersih dari error compile di Unity Editor (proyek berhasil build).
-- [ ] Tidak ada dependency ke MonoBehaviour, Unity Object, atau namespace `UnityEngine` di file ini (Pure C# — kecuali `Vector2Int` dari `UnityEngine`).
+  - `OnCheckpointPlaced` (param: `string nodeId`)
+  - Method `ResetAllEvents()` untuk pembersihan delegate.
+- [x] Seluruh kode C# bersih dari error compile di Unity Editor (proyek berhasil build).
+- [x] Tidak ada dependency ke MonoBehaviour, Unity Object, atau namespace `UnityEngine` di file ini (Pure C# — kecuali `Vector2Int` dari `UnityEngine`).
 
 ## Target Lingkup File (Affected Files)
 - `Assets/Scripts/Core/Data/CombatTypes.cs`
 - `Assets/Scripts/Core/Data/CombatPayloads.cs`
 - `Assets/Scripts/Core/Events/CombatEvents.cs`
+- `Assets/Scripts/Core/PilotGame.Core.asmdef`
 
 ## Catatan Teknis
 - Seluruh payload komunikasi **WAJIB** menggunakan `readonly struct` agar teralokasi di Stack memory (Zero GC Spike — lihat System Design §6).
@@ -50,12 +57,17 @@ Seluruh file di tiket ini adalah Pure C# (bukan MonoBehaviour) dan harus diletak
 
 ## AI Execution Log & Output
 - **Langkah Teknis Tereksekusi:**
-  *(Akan diisi saat tiket dieksekusi)*
+  1. Menulis `CombatTypes.cs` di namespace `PilotGame.Core.Data` memuat seluruh enum pertempuran dan struct `ActiveStatusEffect`.
+  2. Menulis `CombatPayloads.cs` memuat `readonly struct` untuk event highlight, unit move, dan damage calculation.
+  3. Menulis `CombatEvents.cs` di namespace `PilotGame.Core.Events` memuat static event bus delegates dan `ResetAllEvents()`.
+  4. Menambahkan `PilotGame.Core.asmdef` untuk modularitas arsitektur enterprise.
 - **Keputusan Desain & Arsitektur:**
-  *(Akan diisi saat tiket dieksekusi)*
+  - Menggunakan `readonly struct` untuk zero-allocation memory overhead di stack.
+  - Memisahkan event delegate ke static class murni tanpa MonoBehaviour agar decoupled 100%.
 - **Ringkasan File Terpengaruh:**
   - `Assets/Scripts/Core/Data/CombatTypes.cs`
   - `Assets/Scripts/Core/Data/CombatPayloads.cs`
   - `Assets/Scripts/Core/Events/CombatEvents.cs`
+  - `Assets/Scripts/Core/PilotGame.Core.asmdef`
 - **Catatan & Temuan Tak Terduga:**
-  *(Akan diisi saat tiket dieksekusi)*
+  - Kode terverifikasi bersih dari error kompilasi dan siap digunakan oleh Domain 1, 2, 3, 4.

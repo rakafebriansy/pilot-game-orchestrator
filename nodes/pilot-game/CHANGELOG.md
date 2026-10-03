@@ -33,6 +33,12 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 *(⚠️ PERHATIAN AI AGENT: TAMBAHKAN ENTRI LOG BARU ANDA TEPAT DI BAWAH BARIS INI. JANGAN DI PALING BAWAH DOKUMEN!)*
 
+### [2026-10-03 16:54:00] - Implementation: TICKET-01 Shared Data Contracts & Event Bus
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `Tubbies Pilot Game`
+- **Konteks:** "Tubbies Pilot Game commit push, saya sudah manual guides. untuk commit message sesuaikan pilot-game-ai-orchestrator dan jangan lupa update changelog"
+- **Perubahan:** `[Added]` Mengimplementasikan kontrak tipe data pertempuran (`CombatTypes.cs`), payload struct zero-allocation (`CombatPayloads.cs`), static event bus terpusat (`CombatEvents.cs`), serta Assembly Definition (`PilotGame.Core.asmdef`) pada codebase Unity `Tubbies Pilot Game`. `[Removed]` Membersihkan aset sprite usang (`variant.png`) dan memperbarui scene dasar (`SampleScene.unity`).
+- **Path File:** `Assets/Scripts/Core/Data/CombatTypes.cs`, `Assets/Scripts/Core/Data/CombatPayloads.cs`, `Assets/Scripts/Core/Events/CombatEvents.cs`, `Assets/Scripts/Core/PilotGame.Core.asmdef`, `Assets/Scenes/SampleScene.unity`
+
 ### [2026-10-02 07:59:00] - Enhancement: Template Synchronization from ai-orchestrator-template
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `ai-orchestrator-template`
 - **Konteks:** "sebelum itu, saya ada update di ai-orchestrator-template sebagai template dari orchestrator, tambahkan seluruh updatenya ke pilot-game-ai-orchestrator tanpa merusak kemajuan yang sudah ada"

@@ -18,7 +18,7 @@ Dalam pendekatan *Vibe Coding* dengan AI Agent, dokumen ini sangat krusial sebag
 * **Referensi:** `docs/system-design.md`, `pilot-game-team-docs/02_engineering/sequential_implementation_guide.md`, `domain_milestone_briefs/`, `global-docs/GDDs/GDD-0.1/GDD-0.1.md`
 
 #### 📦 Domain: PM Core & Communication Bridge
-* `[ ]` **[TICKET-01](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-01.md):** Pondasi Tipe Data, Payloads & Pusat Event (`CombatTypes.cs`, `CombatPayloads.cs`, `CombatEvents.cs`).
+* `[x]` **[TICKET-01](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-01.md):** Pondasi Tipe Data, Payloads & Pusat Event (`CombatTypes.cs`, `CombatPayloads.cs`, `CombatEvents.cs`).
 
 #### 📦 Domain 4: Data & Logic
 * `[ ]` **[TICKET-02](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02.md):** Katalog Data ScriptableObjects — Template Dasar (`CardData.cs`, `EnemyData.cs`, `ConsumableData.cs`, 5 sample cards).
@@ -79,7 +79,7 @@ Dalam pendekatan *Vibe Coding* dengan AI Agent, dokumen ini sangat krusial sebag
 
 | Tiket | Judul | Domain | Fase | Status | Prioritas |
 | :---: | :--- | :---: | :---: | :---: | :---: |
-| TICKET-01 | Pondasi Tipe Data, Payloads & Event Bus | PM Core | 1 | `Todo` | High |
+| TICKET-01 | Pondasi Tipe Data, Payloads & Event Bus | PM Core | 1 | `Done` | High |
 | TICKET-02 | Katalog SO Template Dasar | D4 | 1 | `Todo` | High |
 | TICKET-02B | 14 Kartu Tempur Nabu Lengkap | D4 | 1 | `Todo` | High |
 | TICKET-02C | 9 Musuh SO & 5 Consumable SO | D4 | 1 | `Todo` | High |
