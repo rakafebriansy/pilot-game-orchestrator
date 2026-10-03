@@ -89,20 +89,20 @@ namespace PilotGame.EditorTools
 
         private static void GenerateEnemies()
         {
-            CreateEnemy("Enemy_TatteredConscript", "Tattered Conscript", EnemyArchetype.Melee, EnemyHierarchy.Minion, 18, 0, 5, 1, 2);
-            CreateEnemy("Enemy_CuneiformSlicer", "Cuneiform Slicer", EnemyArchetype.Melee, EnemyHierarchy.Regular, 32, 0, 8, 1, 2);
-            CreateEnemy("Enemy_ExecutionerArchive", "Executioner of the Archive", EnemyArchetype.Melee, EnemyHierarchy.Elite, 85, 5, 15, 2, 2);
+            CreateEnemy("Enemy_TatteredConscript", "Tattered Conscript", "Vanguard soldier of the Tower of Babel armed with a worn spear and tattered armor.", EnemyArchetype.Melee, EnemyHierarchy.Minion, 18, 0, 5, 1, 2);
+            CreateEnemy("Enemy_CuneiformSlicer", "Cuneiform Slicer", "Swift melee blade-dancer wielding twin sharpened cuneiform daggers.", EnemyArchetype.Melee, EnemyHierarchy.Regular, 32, 0, 8, 1, 2);
+            CreateEnemy("Enemy_ExecutionerArchive", "Executioner of the Archive", "Towering archive executioner carrying a heavy executioner cleaver.", EnemyArchetype.Melee, EnemyHierarchy.Elite, 85, 5, 15, 2, 2);
 
-            CreateEnemy("Enemy_ArchiveSlingBoy", "Archive Sling-Boy", EnemyArchetype.Ranged, EnemyHierarchy.Minion, 14, 0, 4, 3, 3);
-            CreateEnemy("Enemy_ScrollPyromancer", "Scroll-Pyromancer", EnemyArchetype.Ranged, EnemyHierarchy.Regular, 28, 0, 7, 4, 2);
-            CreateEnemy("Enemy_GrandMarksmanAshur", "Grand Marksman of Ashur", EnemyArchetype.Ranged, EnemyHierarchy.Elite, 70, 0, 12, 5, 2);
+            CreateEnemy("Enemy_ArchiveSlingBoy", "Archive Sling-Boy", "Agile ranged youth harassing intruders with high-velocity clay sling stones.", EnemyArchetype.Ranged, EnemyHierarchy.Minion, 14, 0, 4, 3, 3);
+            CreateEnemy("Enemy_ScrollPyromancer", "Scroll-Pyromancer", "Pyromancer scholar who ignites ancient parchment scrolls into scorching fireballs.", EnemyArchetype.Ranged, EnemyHierarchy.Regular, 28, 0, 7, 4, 2);
+            CreateEnemy("Enemy_GrandMarksmanAshur", "Grand Marksman of Ashur", "Veteran elite sniper with piercing sight across extreme distances.", EnemyArchetype.Ranged, EnemyHierarchy.Elite, 70, 0, 12, 5, 2);
 
-            CreateEnemy("Enemy_TombBellRinger", "Tomb Bell-Ringer", EnemyArchetype.Support, EnemyHierarchy.Minion, 16, 0, 2, 2, 2);
-            CreateEnemy("Enemy_BabelWardTemplar", "Babel Ward-Templar", EnemyArchetype.Support, EnemyHierarchy.Regular, 45, 8, 4, 2, 2);
-            CreateEnemy("Enemy_HighOracleEnki", "High Oracle of Enki", EnemyArchetype.Support, EnemyHierarchy.Elite, 75, 5, 6, 4, 2);
+            CreateEnemy("Enemy_TombBellRinger", "Tomb Bell-Ringer", "Crypt guardian who resonates dissonant bells to disrupt enemies and mend allies.", EnemyArchetype.Support, EnemyHierarchy.Minion, 16, 0, 2, 2, 2);
+            CreateEnemy("Enemy_BabelWardTemplar", "Babel Ward-Templar", "Stalwart temple guardian generating protective radiant aegis barriers for allies.", EnemyArchetype.Support, EnemyHierarchy.Regular, 45, 8, 4, 2, 2);
+            CreateEnemy("Enemy_HighOracleEnki", "High Oracle of Enki", "High priest channeling esoteric prophecies of ruin and divine sanctuaries.", EnemyArchetype.Support, EnemyHierarchy.Elite, 75, 5, 6, 4, 2);
         }
 
-        private static void CreateEnemy(string fileName, string name, EnemyArchetype arch, EnemyHierarchy hier, int hp, int shield, int atk, int range, int move)
+        private static void CreateEnemy(string fileName, string name, string desc, EnemyArchetype arch, EnemyHierarchy hier, int hp, int shield, int atk, int range, int move)
         {
             string path = $"Assets/ScriptableObjects/Enemies/{fileName}.asset";
             var enemy = AssetDatabase.LoadAssetAtPath<EnemyData>(path);
@@ -113,6 +113,7 @@ namespace PilotGame.EditorTools
             }
             enemy.Id = fileName.ToLower();
             enemy.Name = name;
+            enemy.Description = desc;
             enemy.Archetype = arch;
             enemy.Hierarchy = hier;
             enemy.MaxHealth = hp;
@@ -125,11 +126,11 @@ namespace PilotGame.EditorTools
 
         private static void GenerateConsumables()
         {
-            CreateItem("Item_ChainedHarpoon", "Chained Harpoon Hook", "Menembakkan kait untuk menarik musuh 2 ubin mendekat.", ConsumableEffectType.TeleportSafe, 2);
-            CreateItem("Item_EuphratesSmokeGrenade", "Euphrates Smoke Grenade", "Menciptakan tabir asap di sekitar untuk perlindungan.", ConsumableEffectType.InstantShield, 5);
-            CreateItem("Item_ScrollInstantBlink", "Scroll of Instant Blink", "Teleportasi instan ke ubin kosong dalam radius 3 petak.", ConsumableEffectType.TeleportSafe, 3);
-            CreateItem("Item_BronzeCaltrops", "Bronze Caltrops", "Menyebar jebakan duri yang memperlambat dan melukai musuh.", ConsumableEffectType.CleanseDebuff, 5);
-            CreateItem("Item_ElixirOfLife", "Elixir of Life", "Memulihkan 10 HP seketika + 3 Shield pertahanan.", ConsumableEffectType.InstantHeal, 10);
+            CreateItem("Item_ChainedHarpoon", "Chained Harpoon Hook", "Fires a barbed hook to pull an enemy 2 tiles closer.", ConsumableEffectType.TeleportSafe, 2);
+            CreateItem("Item_EuphratesSmokeGrenade", "Euphrates Smoke Grenade", "Deploys a protective smoke screen concealing the immediate area.", ConsumableEffectType.InstantShield, 5);
+            CreateItem("Item_ScrollInstantBlink", "Scroll of Instant Blink", "Instantly teleports the user to an empty tile within 3 tiles range.", ConsumableEffectType.TeleportSafe, 3);
+            CreateItem("Item_BronzeCaltrops", "Bronze Caltrops", "Scatters sharp caltrops that inflict damage and hinder enemy movement.", ConsumableEffectType.CleanseDebuff, 5);
+            CreateItem("Item_ElixirOfLife", "Elixir of Life", "A mystical golden elixir that restores 10 HP and grants 3 Shield.", ConsumableEffectType.InstantHeal, 10);
         }
 
         private static void CreateItem(string fileName, string name, string desc, ConsumableEffectType effect, int val)

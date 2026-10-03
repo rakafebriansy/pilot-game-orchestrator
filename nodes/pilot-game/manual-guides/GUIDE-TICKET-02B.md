@@ -79,20 +79,20 @@ namespace PilotGame.EditorTools
                 AssetDatabase.CreateFolder("Assets/ScriptableObjects", "Cards");
             }
 
-            CreateCard("Card_Teleport", "Teleport", "Berpindah ke petak kosong manapun di arena.", CardActionType.Movement, TargetAreaType.SingleTarget, CombatPhase.IntentPhase, 0, 0, 15, 0, StatusEffectType.None, 0);
-            CreateCard("Card_Decoy", "Decoy", "Meninggalkan boneka tipuan lalu berpindah posisi.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 5, 0, 0, StatusEffectType.None, 0);
-            CreateCard("Card_Frost", "Frost", "Membekukan area 3x3 dan menyebabkan efek licin.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 4, 0, 3, 1, StatusEffectType.Freeze, 1);
-            CreateCard("Card_HeavyRain", "Heavy Rain", "Mengurangi pergerakan semua unit sebesar 1 tile selama 3 ronde.", CardActionType.StatusModifier, TargetAreaType.GlobalAllEnemies, CombatPhase.PlayerPhase, 0, 0, 15, 0, StatusEffectType.Immobilize, 3);
-            CreateCard("Card_Fog", "Fog", "Kabut tebal 5x5: serangan lawan berpeluang meleset.", CardActionType.Utility, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 0, 0, 0, 2, StatusEffectType.None, 0);
-            CreateCard("Card_Storm", "Storm", "Badai arena: damage berkala 2 poin setiap ronde.", CardActionType.Attack, TargetAreaType.GlobalAllEnemies, CombatPhase.PlayerPhase, 2, 0, 15, 0, StatusEffectType.Vulnerable, 3);
-            CreateCard("Card_ClearWeather", "Clear Weather", "Menghapus seluruh efek cuaca aktif di arena.", CardActionType.Utility, TargetAreaType.GlobalAllEnemies, CombatPhase.IntentPhase, 0, 0, 15, 0, StatusEffectType.None, 0);
-            CreateCard("Card_SkeletonArmy", "Skeleton Army", "Memanggil kepungan prajurit tengkorak di sekitar target.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 8, 0, 1, 1, StatusEffectType.None, 0);
-            CreateCard("Card_ThrowingBlade", "Throwing Blade", "Lemparan belati jarak menengah yang memicu pendarahan.", CardActionType.Attack, TargetAreaType.SingleTarget, CombatPhase.PlayerPhase, 5, 0, 3, 0, StatusEffectType.Bleed, 2);
-            CreateCard("Card_SandBurial", "Sand Burial", "Mengurung target dalam timbunan pasir (Immobilize).", CardActionType.StatusModifier, TargetAreaType.SingleTarget, CombatPhase.IntentPhase, 0, 0, 3, 0, StatusEffectType.Immobilize, 1);
-            CreateCard("Card_Clone", "Clone", "Membuat kloning diri untuk mengelabui giliran musuh.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 3, 0, 0, StatusEffectType.None, 0);
-            CreateCard("Card_Dash", "Dash", "Menerjang maju 3 petak dan mendorong rintangan.", CardActionType.Movement, TargetAreaType.LinearLine, CombatPhase.PlayerPhase, 3, 0, 3, 0, StatusEffectType.None, 0);
-            CreateCard("Card_SuperPunch", "Super Punch", "Pukulan bertenaga tinggi dengan recoil dorongan 2 petak.", CardActionType.Attack, TargetAreaType.SingleTarget, CombatPhase.PlayerPhase, 12, 0, 1, 0, StatusEffectType.None, 0);
-            CreateCard("Card_GravityLift", "Gravity Lift", "Meniadakan gravitasi area 3x3 di sekitar caster.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.IntentPhase, 4, 0, 3, 1, StatusEffectType.Stun, 1);
+            CreateCard("Card_Teleport", "Teleport", "Teleport to any unoccupied tile in the arena.", CardActionType.Movement, TargetAreaType.SingleTarget, CombatPhase.IntentPhase, 0, 0, 15, 0, StatusEffectType.None, 0);
+            CreateCard("Card_Decoy", "Decoy", "Leave a decoy illusion behind and reposition.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 5, 0, 0, StatusEffectType.None, 0);
+            CreateCard("Card_Frost", "Frost", "Freeze a 3x3 area, dealing 4 damage and making tiles slippery.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 4, 0, 3, 1, StatusEffectType.Freeze, 1);
+            CreateCard("Card_HeavyRain", "Heavy Rain", "Reduce all enemy movement by 1 tile for 3 rounds.", CardActionType.StatusModifier, TargetAreaType.GlobalAllEnemies, CombatPhase.PlayerPhase, 0, 0, 15, 0, StatusEffectType.Immobilize, 3);
+            CreateCard("Card_Fog", "Fog", "Dense 5x5 fog: enemy attacks inside have a 50% miss chance.", CardActionType.Utility, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 0, 0, 0, 2, StatusEffectType.None, 0);
+            CreateCard("Card_Storm", "Storm", "Arena storm: deals 2 damage each round to all enemies for 3 rounds.", CardActionType.Attack, TargetAreaType.GlobalAllEnemies, CombatPhase.PlayerPhase, 2, 0, 15, 0, StatusEffectType.Vulnerable, 3);
+            CreateCard("Card_ClearWeather", "Clear Weather", "Instantly remove all active weather effects in the arena.", CardActionType.Utility, TargetAreaType.GlobalAllEnemies, CombatPhase.IntentPhase, 0, 0, 15, 0, StatusEffectType.None, 0);
+            CreateCard("Card_SkeletonArmy", "Skeleton Army", "Summon a surrounding ring of skeletal warriors to strike for 8 damage.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 8, 0, 1, 1, StatusEffectType.None, 0);
+            CreateCard("Card_ThrowingBlade", "Throwing Blade", "A medium-range sharp dagger throw dealing 5 damage and inflicting Bleed.", CardActionType.Attack, TargetAreaType.SingleTarget, CombatPhase.PlayerPhase, 5, 0, 3, 0, StatusEffectType.Bleed, 2);
+            CreateCard("Card_SandBurial", "Sand Burial", "Trap the target in a swirl of heavy sand, applying Immobilize.", CardActionType.StatusModifier, TargetAreaType.SingleTarget, CombatPhase.IntentPhase, 0, 0, 3, 0, StatusEffectType.Immobilize, 1);
+            CreateCard("Card_Clone", "Clone", "Create a mirror clone to confuse and distract enemy targeting.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 3, 0, 0, StatusEffectType.None, 0);
+            CreateCard("Card_Dash", "Dash", "Dash forward 3 tiles, shoving obstacles and dealing 3 damage.", CardActionType.Movement, TargetAreaType.LinearLine, CombatPhase.PlayerPhase, 3, 0, 3, 0, StatusEffectType.None, 0);
+            CreateCard("Card_SuperPunch", "Super Punch", "Deliver a heavy punch for 12 damage with a 2-tile recoil knockback.", CardActionType.Attack, TargetAreaType.SingleTarget, CombatPhase.PlayerPhase, 12, 0, 1, 0, StatusEffectType.None, 0);
+            CreateCard("Card_GravityLift", "Gravity Lift", "Nullify gravity in a 3x3 area, dealing 4 damage and stunning targets.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.IntentPhase, 4, 0, 3, 1, StatusEffectType.Stun, 1);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();

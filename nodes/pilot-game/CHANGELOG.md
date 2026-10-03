@@ -33,6 +33,18 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 *(⚠️ PERHATIAN AI AGENT: TAMBAHKAN ENTRI LOG BARU ANDA TEPAT DI BAWAH BARIS INI. JANGAN DI PALING BAWAH DOKUMEN!)*
 
+### [2026-10-03 19:02:00] - Guideline: English Localization for All Asset Description Fields in Manual Guides
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "ganti bahasa inggris untuk deskripsi assetnya @[/Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/manual-guides]"
+- **Perubahan:**
+  - `[Changed]` Menerjemahkan seluruh teks field `Description` pada ScriptableObject kartu, musuh, dan item consumable di dalam `GUIDE-TICKET-02.md`, `GUIDE-TICKET-02B.md`, `GUIDE-TICKET-02C.md`, dan `GUIDE-TICKET-06.md` menjadi 100% Bahasa Inggris, memastikan seluruh data teks runtime game seragam dalam Bahasa Inggris.
+- **Path File:**
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-02.md`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-02B.md`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-02C.md`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-06.md`
+  - `nodes/pilot-game/CHANGELOG.md`
+
 ### [2026-10-03 18:55:00] - Guideline: Standardize Sample Entities in Manual Guides to Throwing Blade, Tattered Conscript, and Elixir of Life
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `Tubbies Pilot Game` & `pilot-game-ai-orchestrator`
 - **Konteks:** "ganti contoh@[/Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/manual-guides] ke throwing blade dan tattered conscript dan elixir of life"

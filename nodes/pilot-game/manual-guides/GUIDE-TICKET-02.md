@@ -53,7 +53,7 @@ Setelah script di Bagian 3 diketik dan di-save:
 3. Di panel **Inspector**, isi:
    * `Id`: `card_throwing_blade`
    * `Name`: `Throwing Blade`
-   * `Description`: `Lemparan belati tajam jarak menengah yang memberikan 5 damage dan memicu efek pendarahan (Bleed).`
+   * `Description`: `A medium-range sharp dagger throw dealing 5 damage and inflicting Bleed for 2 turns.`
    * `ActionType`: `Attack`
    * `TargetArea`: `SingleTarget`
    * `PhaseRestriction`: `PlayerPhase`
@@ -72,7 +72,7 @@ Setelah script di Bagian 3 diketik dan di-save:
 3. Di panel **Inspector**, isi:
    * `Id`: `enemy_tattered_conscript`
    * `Name`: `Tattered Conscript`
-   * `Description`: `Prajurit garda depan Menara Babel bersenjatakan tombak usang dan pelindung koyak.`
+   * `Description`: `Vanguard soldier of the Tower of Babel armed with a worn spear and tattered armor.`
    * `Archetype`: `Melee`
    * `Hierarchy`: `Minion`
    * `MaxHealth`: `18`
@@ -87,7 +87,7 @@ Setelah script di Bagian 3 diketik dan di-save:
 3. Di panel **Inspector**, isi:
    * `Id`: `item_elixir_of_life`
    * `Name`: `Elixir of Life`
-   * `Description`: `Cairan emas mistis yang memulihkan 10 poin kesehatan secara instan.`
+   * `Description`: `A mystical golden elixir that instantly restores 10 health points.`
    * `EffectType`: `InstantHeal`
    * `EffectValue`: `10`
    * `Icon`: Seret sprite `Item_ElixirOfLife_Icon` ke slot ini.
