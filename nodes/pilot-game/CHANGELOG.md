@@ -33,6 +33,12 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 *(⚠️ PERHATIAN AI AGENT: TAMBAHKAN ENTRI LOG BARU ANDA TEPAT DI BAWAH BARIS INI. JANGAN DI PALING BAWAH DOKUMEN!)*
 
+### [2026-10-03 18:33:00] - Guideline: Standardize VFXPrefab and SFX Fields across EnemyData and ConsumableData
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "public GameObject VFXPrefab; public AudioClip SFX; tidak ada di enemy?"
+- **Perubahan:** `[Added]` Menambahkan field `GameObject VFXPrefab` dan `AudioClip SFX` ke dalam `EnemyData.cs` serta menyeragamkannya pada `ConsumableData.cs` dan `CardData.cs` di bawah header `[Header("UX & Visual FX")]` pada `GUIDE-TICKET-02.md` dan kriteria penerimaan `TICKET-02.md`.
+- **Path File:** `nodes/pilot-game/manual-guides/GUIDE-TICKET-02.md`, `nodes/pilot-game/tickets/TICKET-02.md`
+
 ### [2026-10-03 18:29:00] - Guideline: Standardize Clean OOP Field Names (Id, Name, Description) across All Data Templates
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
 - **Konteks:** "okelah paramsnya, tapi kan ini field class, pasti ya CardName.id pemakaiannya bukan?"

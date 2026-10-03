@@ -134,8 +134,8 @@ namespace PilotGame.Cards
         public int StatusDuration = 0;
 
         [Header("UX & Visual FX")]
-        public GameObject CastVFXPrefab;
-        public AudioClip CastSFX;
+        public GameObject VFXPrefab;
+        public AudioClip SFX;
     }
 }
 ```
@@ -192,8 +192,10 @@ namespace PilotGame.Cards
         [Header("Classless Default Deck")]
         public List<CardData> EnemyDeck = new List<CardData>();
 
-        [Header("Visual Prefab")]
+        [Header("UX & Visual FX")]
         public GameObject CharacterPrefab;
+        public GameObject VFXPrefab;
+        public AudioClip SFX;
     }
 }
 ```
@@ -229,7 +231,10 @@ namespace PilotGame.Cards
         [Header("Consumable Effect (Free Action)")]
         public ConsumableEffectType EffectType = ConsumableEffectType.InstantHeal;
         public int EffectValue = 10;
-        public AudioClip UseSFX;
+
+        [Header("UX & Visual FX")]
+        public GameObject VFXPrefab;
+        public AudioClip SFX;
     }
 }
 ```

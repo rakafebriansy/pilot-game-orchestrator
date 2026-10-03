@@ -19,6 +19,7 @@ Tiket ini bergantung pada TICKET-01 (enum `CardActionType` diperlukan oleh `Card
   - `CardActionType ActionType` — Tipe aksi (`Attack`, `Defense`, `Movement`, `Utility`).
   - `int BaseDamage`, `int BaseShield`, `int Range`, `int AreaRadius`.
   - `Sprite Art` — Sprite visual kartu.
+  - `GameObject VFXPrefab`, `AudioClip SFX`.
   - `[CreateAssetMenu]` attribute menggunakan menuName: `"PilotGame/Data/Card Data"`.
 - [ ] `EnemyData.cs` (`ScriptableObject`) mengimplementasikan:
   - `string Id` — ID unik musuh.
@@ -29,9 +30,11 @@ Tiket ini bergantung pada TICKET-01 (enum `CardActionType` diperlukan oleh `Card
   - `int MoveSpeedTiles` — Jangkauan gerak per giliran (dalam tile).
   - `int AttackRange` — Jangkauan serangan (dalam tile).
   - `Sprite Sprite` — Sprite visual musuh.
+  - `GameObject CharacterPrefab`, `GameObject VFXPrefab`, `AudioClip SFX`.
   - `[CreateAssetMenu]` attribute menggunakan menuName: `"PilotGame/Data/Enemy Data"`.
 - [ ] `ConsumableData.cs` (`ScriptableObject`) mengimplementasikan:
   - `string Id`, `string Name`, `string Description`, `int EffectValue`, `Sprite Icon`.
+  - `GameObject VFXPrefab`, `AudioClip SFX`.
   - `[CreateAssetMenu]` attribute menggunakan menuName: `"PilotGame/Data/Consumable Data"`.
 - [ ] Minimal **5 file aset kartu** dibuat di `Assets/ScriptableObjects/Cards/` berdasarkan data desain:
   - `Card_PageCutter.asset` — Attack | Damage: 6 | Range: 1
