@@ -103,7 +103,7 @@ namespace PilotGame.Cards
         public int AreaRadius = 0;
 
         [Header("Status Effect")]
-        public StatusEffectType InflictedStatus = StatusEffectType.Shielded;
+        public StatusEffectType InflictedStatus = StatusEffectType.None;
         public int StatusDuration = 0;
 
         [Header("UX & Visual FX")]

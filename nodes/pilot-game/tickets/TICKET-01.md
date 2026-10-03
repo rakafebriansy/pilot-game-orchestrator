@@ -17,7 +17,7 @@ Seluruh file di tiket ini adalah Pure C# (bukan MonoBehaviour) dan harus diletak
   - Enum `HighlightType` dengan nilai: `None`, `DangerEnemyIntent`, `ValidCardTarget`, `MovementRange`, `HoverPreview`.
   - Enum `TileType` dengan nilai: `NormalFloor`, `StealthBush`, `ObstaclePillar`, `HazardTrap`, `BurnedBush`.
   - Enum `CardActionType` dengan nilai: `Attack`, `Defense`, `Movement`, `StatusModifier`, `Utility`.
-  - Enum `StatusEffectType` dengan nilai: `Bleed`, `Freeze`, `Immobilize`, `Stun`, `Vulnerable`, `Shielded`.
+  - Enum `StatusEffectType` dengan nilai: `None`, `Bleed`, `Freeze`, `Immobilize`, `Stun`, `Vulnerable`, `Shielded`, `Poison`, `Burn`.
   - Struct `ActiveStatusEffect` untuk pelacakan durasi status.
 - [x] `CombatPayloads.cs` memuat:
   - `readonly struct TileHighlightRequest` dengan field `Vector2Int[] Coordinates` dan `HighlightType Style`.

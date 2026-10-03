@@ -79,19 +79,19 @@ namespace PilotGame.EditorTools
                 AssetDatabase.CreateFolder("Assets/ScriptableObjects", "Cards");
             }
 
-            CreateCard("Card_Teleport", "Teleport", "Berpindah ke petak kosong manapun di arena.", CardActionType.Movement, TargetAreaType.SingleTarget, CombatPhase.IntentPhase, 0, 0, 15, 0, StatusEffectType.Shielded, 0);
-            CreateCard("Card_Decoy", "Decoy", "Meninggalkan boneka tipuan lalu berpindah posisi.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 5, 0, 0, StatusEffectType.Shielded, 0);
+            CreateCard("Card_Teleport", "Teleport", "Berpindah ke petak kosong manapun di arena.", CardActionType.Movement, TargetAreaType.SingleTarget, CombatPhase.IntentPhase, 0, 0, 15, 0, StatusEffectType.None, 0);
+            CreateCard("Card_Decoy", "Decoy", "Meninggalkan boneka tipuan lalu berpindah posisi.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 5, 0, 0, StatusEffectType.None, 0);
             CreateCard("Card_Frost", "Frost", "Membekukan area 3x3 dan menyebabkan efek licin.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 4, 0, 3, 1, StatusEffectType.Freeze, 1);
             CreateCard("Card_HeavyRain", "Heavy Rain", "Mengurangi pergerakan semua unit sebesar 1 tile selama 3 ronde.", CardActionType.StatusModifier, TargetAreaType.GlobalAllEnemies, CombatPhase.PlayerPhase, 0, 0, 15, 0, StatusEffectType.Immobilize, 3);
-            CreateCard("Card_Fog", "Fog", "Kabut tebal 5x5: serangan lawan berpeluang meleset.", CardActionType.Utility, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 0, 0, 0, 2, StatusEffectType.Shielded, 0);
+            CreateCard("Card_Fog", "Fog", "Kabut tebal 5x5: serangan lawan berpeluang meleset.", CardActionType.Utility, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 0, 0, 0, 2, StatusEffectType.None, 0);
             CreateCard("Card_Storm", "Storm", "Badai arena: damage berkala 2 poin setiap ronde.", CardActionType.Attack, TargetAreaType.GlobalAllEnemies, CombatPhase.PlayerPhase, 2, 0, 15, 0, StatusEffectType.Vulnerable, 3);
-            CreateCard("Card_ClearWeather", "Clear Weather", "Menghapus seluruh efek cuaca aktif di arena.", CardActionType.Utility, TargetAreaType.GlobalAllEnemies, CombatPhase.IntentPhase, 0, 0, 15, 0, StatusEffectType.Shielded, 0);
-            CreateCard("Card_SkeletonArmy", "Skeleton Army", "Memanggil kepungan prajurit tengkorak di sekitar target.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 8, 0, 1, 1, StatusEffectType.Shielded, 0);
+            CreateCard("Card_ClearWeather", "Clear Weather", "Menghapus seluruh efek cuaca aktif di arena.", CardActionType.Utility, TargetAreaType.GlobalAllEnemies, CombatPhase.IntentPhase, 0, 0, 15, 0, StatusEffectType.None, 0);
+            CreateCard("Card_SkeletonArmy", "Skeleton Army", "Memanggil kepungan prajurit tengkorak di sekitar target.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 8, 0, 1, 1, StatusEffectType.None, 0);
             CreateCard("Card_ThrowingBlade", "Throwing Blade", "Lemparan belati jarak menengah yang memicu pendarahan.", CardActionType.Attack, TargetAreaType.SingleTarget, CombatPhase.PlayerPhase, 5, 0, 3, 0, StatusEffectType.Bleed, 2);
             CreateCard("Card_SandBurial", "Sand Burial", "Mengurung target dalam timbunan pasir (Immobilize).", CardActionType.StatusModifier, TargetAreaType.SingleTarget, CombatPhase.IntentPhase, 0, 0, 3, 0, StatusEffectType.Immobilize, 1);
-            CreateCard("Card_Clone", "Clone", "Membuat kloning diri untuk mengelabui giliran musuh.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 3, 0, 0, StatusEffectType.Shielded, 0);
-            CreateCard("Card_Dash", "Dash", "Menerjang maju 3 petak dan mendorong rintangan.", CardActionType.Movement, TargetAreaType.LinearLine, CombatPhase.PlayerPhase, 3, 0, 3, 0, StatusEffectType.Stun, 0);
-            CreateCard("Card_SuperPunch", "Super Punch", "Pukulan bertenaga tinggi dengan recoil dorongan 2 petak.", CardActionType.Attack, TargetAreaType.SingleTarget, CombatPhase.PlayerPhase, 12, 0, 1, 0, StatusEffectType.Shielded, 0);
+            CreateCard("Card_Clone", "Clone", "Membuat kloning diri untuk mengelabui giliran musuh.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 3, 0, 0, StatusEffectType.None, 0);
+            CreateCard("Card_Dash", "Dash", "Menerjang maju 3 petak dan mendorong rintangan.", CardActionType.Movement, TargetAreaType.LinearLine, CombatPhase.PlayerPhase, 3, 0, 3, 0, StatusEffectType.None, 0);
+            CreateCard("Card_SuperPunch", "Super Punch", "Pukulan bertenaga tinggi dengan recoil dorongan 2 petak.", CardActionType.Attack, TargetAreaType.SingleTarget, CombatPhase.PlayerPhase, 12, 0, 1, 0, StatusEffectType.None, 0);
             CreateCard("Card_GravityLift", "Gravity Lift", "Meniadakan gravitasi area 3x3 di sekitar caster.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.IntentPhase, 4, 0, 3, 1, StatusEffectType.Stun, 1);
 
             AssetDatabase.SaveAssets();

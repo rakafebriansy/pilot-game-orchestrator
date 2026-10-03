@@ -49,7 +49,7 @@ Kedua class ini adalah **Logic Layer** — tidak boleh mengandung MonoBehaviour 
 - [ ] Integrasi: `CardPlayValidator` dipanggil oleh `PlayerPhaseState` sebelum broadcast `OnCardPlayed`.
 
 ### C. `StatusEffectType` Enum & Data
-- [ ] Enum `StatusEffectType` di `CombatTypes.cs`: `Bleed`, `Freeze`, `Immobilize`, `Stun`, `Vulnerable`, `Shielded`.
+- [ ] Enum `StatusEffectType` di `CombatTypes.cs`: `None`, `Bleed`, `Freeze`, `Immobilize`, `Stun`, `Vulnerable`, `Shielded`, `Poison`, `Burn`.
 - [ ] Struct `ActiveStatusEffect`: `StatusEffectType Type`, `int RemainingDuration`, `int UnitId`.
 - [ ] `CombatEvents.cs` update: tambah `OnStatusEffectApplied(int unitId, StatusEffectType, int duration)` dan `OnStatusEffectExpired(int unitId, StatusEffectType)`.
 

@@ -33,6 +33,12 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 *(⚠️ PERHATIAN AI AGENT: TAMBAHKAN ENTRI LOG BARU ANDA TEPAT DI BAWAH BARIS INI. JANGAN DI PALING BAWAH DOKUMEN!)*
 
+### [2026-10-03 18:15:00] - Guideline: Add None to StatusEffectType Enum Definition across Orchestrator & Manual Guides
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "saya menambahkan status effect none"
+- **Perubahan:** `[Added]` Menambahkan nilai `None` (serta sinkronisasi `Poison` dan `Burn`) pada definisi enum `StatusEffectType` di `GUIDE-TICKET-01.md`, `TICKET-01.md`, `TICKET-03B.md`, serta memperbarui default field `InflictedStatus = StatusEffectType.None` pada `GUIDE-TICKET-02.md` dan kartu netral di `GUIDE-TICKET-02B.md`.
+- **Path File:** `nodes/pilot-game/manual-guides/GUIDE-TICKET-01.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-02.md`, `nodes/pilot-game/manual-guides/GUIDE-TICKET-02B.md`, `nodes/pilot-game/tickets/TICKET-01.md`, `nodes/pilot-game/tickets/TICKET-03B.md`
+
 ### [2026-10-03 18:04:00] - Guideline: Standardize English Code Syntax & Indonesian Comments across Manual Guides
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
 - **Konteks:** "seluruh kode bahasa inggris, yang bahasa indonesia hanya comments"

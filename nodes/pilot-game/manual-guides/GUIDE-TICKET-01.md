@@ -129,12 +129,15 @@ namespace PilotGame.Core.Data
     /// </summary>
     public enum StatusEffectType
     {
+        None,              // Tidak ada efek status aktif
         Bleed,             // Menerima damage saat berpindah ubin
         Freeze,            // Membekukan giliran / skip aksi
         Immobilize,        // Tidak dapat menggunakan kartu pergerakan
         Stun,              // Terpental dan kehilangan giliran
         Vulnerable,        // Menerima +50% damage tambahan
-        Shielded           // Memiliki perlindungan perisai yang menyerap damage
+        Shielded,          // Memiliki perlindungan perisai yang menyerap damage
+        Poison,            // Menerima damage racun berkala
+        Burn               // Memberikan damage api saat ubin terbakar
     }
 
     /// <summary>
