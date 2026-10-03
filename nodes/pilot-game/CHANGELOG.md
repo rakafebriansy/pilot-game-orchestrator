@@ -33,6 +33,19 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 *(⚠️ PERHATIAN AI AGENT: TAMBAHKAN ENTRI LOG BARU ANDA TEPAT DI BAWAH BARIS INI. JANGAN DI PALING BAWAH DOKUMEN!)*
 
+### [2026-10-03 21:38:00] - Game Design: Consolidation and De-duplication of Team Card Submissions
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "berikut pdf berisi seluruh kartu dari anggota anggota lain. buatlah other-cards.md di 01_game_design" & keputusan de-duplikasi kartu
+- **Perubahan:**
+  - `[Added]` Membuat dokumen `pilot-game-team-docs/01_game_design/other-cards.md` yang merangkum seluruh 44 ide kartu dari 4 dokumen submission anggota tim.
+  - `[Changed]` Menyelaraskan dan mengeliminasi kartu duplikat: membedakan `Decoy` (taunt bait + reposition 3 tile) dan `Clone` (klon peniru serangan), menghapus `Duplicate` & `Foothold`, menggabungkan `Shield Up` ke `Brace`, merevisi `Serrated Dagger` sebagai finisher vs Bleed, `Machete Cleave` sebagai AoE Arc 3 ubin, `Immobilize Root` sebagai area hazard 2x2 (*Tangled Overgrowth*), dan menggabungkan `Conjure Cover` + `Earthen Wall` menjadi `Earthen Bulwark`.
+  - `[Changed]` Memperbarui `cards.md` dan `GUIDE-TICKET-02B.md` sesuai spesifikasi baru `Decoy` dan `Clone`.
+- **Path File:**
+  - `pilot-game-team-docs/01_game_design/cards.md`
+  - `pilot-game-team-docs/01_game_design/other-cards.md`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-02B.md`
+  - `nodes/pilot-game/CHANGELOG.md`
+
 ### [2026-10-03 19:02:00] - Guideline: English Localization for All Asset Description Fields in Manual Guides
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
 - **Konteks:** "ganti bahasa inggris untuk deskripsi assetnya @[/Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/manual-guides]"

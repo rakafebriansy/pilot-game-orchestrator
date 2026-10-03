@@ -39,7 +39,7 @@ Assets/
 | No | Nama Kartu | Action Type | Phase Restriction | Area Type | Range / Radius | Damage / Shield | Efek Spesial / Status |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
 | 1 | **Teleport** | `Movement` | `IntentPhase` | `SingleTarget` | Global (15) | 0 / 0 | Berpindah ke petak kosong manapun di arena sebelum fase utama. |
-| 2 | **Decoy** | `Utility` | `RoundResetPhase` | `SelfOnly` | 0 | 0 / 5 | Meninggalkan ilusi tiruan di posisi lama, lalu teleport instan. |
+| 2 | **Decoy** | `Utility` | `RoundResetPhase` | `SelfOnly` | 0 | 0 / 5 | Meninggalkan ilusi tiruan di posisi lama (taunt), lalu teleport jarak menengah (radius 3 petak). |
 | 3 | **Frost** | `Attack` | `PlayerPhase` | `RadiusArea` | Range 3, Radius 1 | 4 / 0 | Memberikan status `Freeze` (1 turn) + ubin licin pada ronde berikutnya. |
 | 4 | **Heavy Rain** | `StatusModifier` | `PlayerPhase` | `GlobalAllEnemies` | Global | 0 / 0 | Mengurangi mobilitas seluruh musuh (-1 Movement) selama 3 ronde. |
 | 5 | **Fog** | `Utility` | `PlayerPhase` | `RadiusArea` | Range 0, Radius 2 | 0 / 0 | Menyelimuti area sekitar dengan kabut: serangan yang masuk memiliki miss chance 50%. |
@@ -48,7 +48,7 @@ Assets/
 | 8 | **Skeleton Army** | `Attack` | `PlayerPhase` | `RadiusArea` | Range 1, Radius 1 | 8 / 0 | Memanggil lingkaran tulang di sekitar target untuk menyerang serentak. |
 | 9 | **Throwing Blade** | `Attack` | `PlayerPhase` | `SingleTarget` | Range 3 | 5 / 0 | Melempar belati tajam: memberikan 5 damage + status `Bleed` (2 turn). |
 | 10 | **Sand Burial** | `StatusModifier` | `IntentPhase` | `SingleTarget` | Range 3 | 0 / 0 | Mengurung musuh dengan pasir: status `Immobilize` (abaikan movement). |
-| 11 | **Clone** | `Utility` | `RoundResetPhase` | `SelfOnly` | 0 | 0 / 3 | Menciptakan bayangan ganda pengalih perhatian musuh. |
+| 11 | **Clone** | `Utility` | `RoundResetPhase` | `SelfOnly` | 0 | 0 / 3 | Membuat bayangan kloning yang aktif di ronde berikutnya dan ikut meniru serangan pemain. |
 | 12 | **Dash** | `Movement` | `PlayerPhase` | `LinearLine` | Range 3 | 3 / 0 | Melesat 3 petak ke depan; mendorong unit penghalang dan mengurangi 1 move. |
 | 13 | **Super Punch** | `Attack` | `PlayerPhase` | `SingleTarget` | Range 1 | 12 / 0 | Serangan pukulan dahsyat (12 damage); menimbulkan recoil mundur 2 petak. |
 | 14 | **Gravity Lift** | `Attack` | `IntentPhase` | `RadiusArea` | Range 3, Radius 1 | 4 / 0 | Mengangkat sekeliling ubin 3 petak ke udara; membatalkan aksi unit terangkat. |
@@ -80,7 +80,7 @@ namespace PilotGame.EditorTools
             }
 
             CreateCard("Card_Teleport", "Teleport", "Teleport to any unoccupied tile in the arena.", CardActionType.Movement, TargetAreaType.SingleTarget, CombatPhase.IntentPhase, 0, 0, 15, 0, StatusEffectType.None, 0);
-            CreateCard("Card_Decoy", "Decoy", "Leave a decoy illusion behind and reposition.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 5, 0, 0, StatusEffectType.None, 0);
+            CreateCard("Card_Decoy", "Decoy", "Leave a decoy illusion behind and teleport up to 3 tiles.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 5, 0, 0, StatusEffectType.None, 0);
             CreateCard("Card_Frost", "Frost", "Freeze a 3x3 area, dealing 4 damage and making tiles slippery.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 4, 0, 3, 1, StatusEffectType.Freeze, 1);
             CreateCard("Card_HeavyRain", "Heavy Rain", "Reduce all enemy movement by 1 tile for 3 rounds.", CardActionType.StatusModifier, TargetAreaType.GlobalAllEnemies, CombatPhase.PlayerPhase, 0, 0, 15, 0, StatusEffectType.Immobilize, 3);
             CreateCard("Card_Fog", "Fog", "Dense 5x5 fog: enemy attacks inside have a 50% miss chance.", CardActionType.Utility, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 0, 0, 0, 2, StatusEffectType.None, 0);
@@ -89,7 +89,7 @@ namespace PilotGame.EditorTools
             CreateCard("Card_SkeletonArmy", "Skeleton Army", "Summon a surrounding ring of skeletal warriors to strike for 8 damage.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 8, 0, 1, 1, StatusEffectType.None, 0);
             CreateCard("Card_ThrowingBlade", "Throwing Blade", "A medium-range sharp dagger throw dealing 5 damage and inflicting Bleed.", CardActionType.Attack, TargetAreaType.SingleTarget, CombatPhase.PlayerPhase, 5, 0, 3, 0, StatusEffectType.Bleed, 2);
             CreateCard("Card_SandBurial", "Sand Burial", "Trap the target in a swirl of heavy sand, applying Immobilize.", CardActionType.StatusModifier, TargetAreaType.SingleTarget, CombatPhase.IntentPhase, 0, 0, 3, 0, StatusEffectType.Immobilize, 1);
-            CreateCard("Card_Clone", "Clone", "Create a mirror clone to confuse and distract enemy targeting.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 3, 0, 0, StatusEffectType.None, 0);
+            CreateCard("Card_Clone", "Clone", "Summon a clone next round that mirrors offensive attack cards played.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 3, 0, 0, StatusEffectType.None, 0);
             CreateCard("Card_Dash", "Dash", "Dash forward 3 tiles, shoving obstacles and dealing 3 damage.", CardActionType.Movement, TargetAreaType.LinearLine, CombatPhase.PlayerPhase, 3, 0, 3, 0, StatusEffectType.None, 0);
             CreateCard("Card_SuperPunch", "Super Punch", "Deliver a heavy punch for 12 damage with a 2-tile recoil knockback.", CardActionType.Attack, TargetAreaType.SingleTarget, CombatPhase.PlayerPhase, 12, 0, 1, 0, StatusEffectType.None, 0);
             CreateCard("Card_GravityLift", "Gravity Lift", "Nullify gravity in a 3x3 area, dealing 4 damage and stunning targets.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.IntentPhase, 4, 0, 3, 1, StatusEffectType.Stun, 1);
