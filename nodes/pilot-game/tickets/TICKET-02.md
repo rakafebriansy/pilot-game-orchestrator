@@ -23,6 +23,7 @@ Tiket ini bergantung pada TICKET-01 (enum `CardActionType` diperlukan oleh `Card
 - [ ] `EnemyData.cs` (`ScriptableObject`) mengimplementasikan:
   - `string EnemyId` — ID unik musuh.
   - `string EnemyName` — Nama musuh.
+  - `string Description` — Deskripsi latar naratif musuh.
   - `int MaxHealth` — HP maksimum musuh.
   - `int BaseAttackDamage` — Damage serangan dasar.
   - `int MoveRange` — Jangkauan gerak per giliran (dalam tile).

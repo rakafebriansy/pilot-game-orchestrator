@@ -33,6 +33,12 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 *(⚠️ PERHATIAN AI AGENT: TAMBAHKAN ENTRI LOG BARU ANDA TEPAT DI BAWAH BARIS INI. JANGAN DI PALING BAWAH DOKUMEN!)*
 
+### [2026-10-03 18:23:00] - Guideline: Add Description Field to EnemyData ScriptableObject
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "tambah enemy desc"
+- **Perubahan:** `[Added]` Menambahkan field `[TextArea(2, 4)] public string Description;` pada kelas `EnemyData.cs` di `GUIDE-TICKET-02.md`, memperkaya panduan langkah pembuatan aset musuh di Unity Editor (`Enemy_TatteredConscript.asset`), serta menyinkronkan kriteria penerimaan pada `TICKET-02.md`.
+- **Path File:** `nodes/pilot-game/manual-guides/GUIDE-TICKET-02.md`, `nodes/pilot-game/tickets/TICKET-02.md`
+
 ### [2026-10-03 18:15:00] - Guideline: Add None to StatusEffectType Enum Definition across Orchestrator & Manual Guides
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
 - **Konteks:** "saya menambahkan status effect none"

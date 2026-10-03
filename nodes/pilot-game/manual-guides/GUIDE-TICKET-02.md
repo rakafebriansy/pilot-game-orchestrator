@@ -46,10 +46,11 @@ Sebelum memasukkan gambar/ikon ke ScriptableObject, pastikan tekstur pixel art d
 
 ### Langkah 2.3: Pembuatan File `.asset` ScriptableObject via Unity GUI
 Setelah script di Bagian 3 diketik dan di-save:
+
+**A. Membuat Kartu (`Card_PageCutter.asset`):**
 1. Masuk ke folder `Assets/ScriptableObjects/Cards/`.
-2. Klik kanan pada area kosong Project View > pilih **Create > PilotGame > Data > Card Data**.
-3. Beri nama file: `Card_PageCutter.asset`.
-4. Klik file `Card_PageCutter.asset` tersebut, lalu isi nilai pada panel **Inspector**:
+2. Klik kanan > **Create > PilotGame > Data > Card Data**, beri nama `Card_PageCutter.asset`.
+3. Di panel **Inspector**, isi:
    * `CardId`: `card_page_cutter`
    * `CardName`: `Page Cutter`
    * `Description`: `Tebasan lembaran kitab kuno yang memberikan 6 damage ke musuh di depannya.`
@@ -58,7 +59,33 @@ Setelah script di Bagian 3 diketik dan di-save:
    * `EnergyCost`: `1`
    * `BaseDamage`: `6`
    * `Range`: `1`
-   * `CardArt`: Seret sprite ikon pedang/kitab ke slot ini.
+   * `CardArt`: Seret sprite `Card_PageCutter_Art` ke slot ini.
+
+**B. Membuat Musuh (`Enemy_TatteredConscript.asset`):**
+1. Masuk ke folder `Assets/ScriptableObjects/Enemies/`.
+2. Klik kanan > **Create > PilotGame > Data > Enemy Data**, beri nama `Enemy_TatteredConscript.asset`.
+3. Di panel **Inspector**, isi:
+   * `EnemyId`: `enemy_tattered_conscript`
+   * `EnemyName`: `Tattered Conscript`
+   * `Description`: `Prajurit garda depan Menara Babel bersenjatakan tombak usang dan pelindung koyak.`
+   * `Archetype`: `Melee`
+   * `Hierarchy`: `Minion`
+   * `MaxHealth`: `18`
+   * `AttackPower`: `5`
+   * `AttackRange`: `1`
+   * `MoveSpeedTiles`: `2`
+   * `EnemySprite`: Seret sprite `Enemy_TatteredConscript_Sprite` ke slot ini.
+
+**C. Membuat Consumable (`Item_ElixirOfLife.asset`):**
+1. Masuk ke folder `Assets/ScriptableObjects/Consumables/`.
+2. Klik kanan > **Create > PilotGame > Data > Consumable Data**, beri nama `Item_ElixirOfLife.asset`.
+3. Di panel **Inspector**, isi:
+   * `ItemId`: `item_elixir_of_life`
+   * `ItemName`: `Elixir of Life`
+   * `Description`: `Cairan emas mistis yang memulihkan 10 poin kesehatan secara instan.`
+   * `EffectType`: `InstantHeal`
+   * `EffectValue`: `10`
+   * `ItemIcon`: Seret sprite `Item_ElixirOfLife_Icon` ke slot ini.
 
 ---
 
@@ -143,6 +170,8 @@ namespace PilotGame.Cards
         [Header("Enemy Identity")]
         public string EnemyId;
         public string EnemyName;
+        [TextArea(2, 4)]
+        public string Description;
         public Sprite EnemySprite;
 
         [Header("Classification")]
@@ -155,6 +184,10 @@ namespace PilotGame.Cards
         public int AttackPower = 5;
         public int AttackRange = 1;
         public int MoveSpeedTiles = 1;
+
+        [Header("Status Effect")]
+        public StatusEffectType InflictedStatus = StatusEffectType.None;
+        public int StatusDuration = 0;
 
         [Header("Classless Default Deck")]
         public List<CardData> EnemyDeck = new List<CardData>();
