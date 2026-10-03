@@ -43,7 +43,7 @@ using PilotGame.Core.Events;
 namespace PilotGame.UI
 {
     /// <summary>
-    /// Menampilkan HUD utama pertempuran: Banner transisi fase dan Action Points.
+    /// Menampilkan HUD utama pertempuran: Banner transisi fase dan giliran pertempuran.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class CombatHUDPresenter : MonoBehaviour

@@ -220,10 +220,10 @@ namespace PilotGame.UI
             var desc = new Label(card.Description);
             desc.AddToClassList("card-desc");
 
-            var cost = new Label($"{card.energyCost} AP");
-            cost.AddToClassList("card-cost");
+            var actionType = new Label(card.ActionType.ToString());
+            actionType.AddToClassList("card-type-tag");
 
-            cardBox.Add(cost);
+            cardBox.Add(actionType);
             cardBox.Add(title);
             cardBox.Add(desc);
 

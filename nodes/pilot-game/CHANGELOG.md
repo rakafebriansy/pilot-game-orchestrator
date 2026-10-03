@@ -33,6 +33,24 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 *(⚠️ PERHATIAN AI AGENT: TAMBAHKAN ENTRI LOG BARU ANDA TEPAT DI BAWAH BARIS INI. JANGAN DI PALING BAWAH DOKUMEN!)*
 
+### [2026-10-03 22:12:00] - Game Design: Adopt GDD 0.1 Cost System (1 Turn = 1 Card) & Eliminate Action Points (AP)
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "opsi a, perbaiki juga cards.md dan cards.pdf serta semua document yang pakai ap"
+- **Perubahan:**
+  - `[Changed]` Menyelaraskan seluruh 53 kartu pada `pilot-game-team-docs/01_game_design/cards.md` dengan **Cost System GDD 0.1 (§4.1: 1 Turn = 1 Kartu)** dan menghapus sistem Action Points (AP).
+  - `[Changed]` Menyeimbangkan kartu-kartu berdaya rusak tinggi (*finisher/mass AoE*) menggunakan mekanisme trade-off (*Exhaust*, *Fatigue/Recoil*, *HP Sacrifice*, *Status Prerequisite*) alih-alih biaya AP multi-poin.
+  - `[Changed]` Mengganti kolom AP menjadi `Cost / Sifat Khusus` pada *Master Balance Matrix* dan mendefinisikan *1 Turn Budget Math*.
+  - `[Changed]` Memperbarui berkas [cards.pdf](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-team-docs/05_deliverables/cards.pdf) dan `cards.html` di `05_deliverables` untuk merefleksikan sistem murni 1 Turn = 1 Kartu.
+  - `[Changed]` Memperbarui panduan manual UI pada `GUIDE-TICKET-06.md` dan `GUIDE-TICKET-06B.md` dengan menghapus referensi teks AP.
+- **Path File:**
+  - `pilot-game-team-docs/01_game_design/cards.md`
+  - `pilot-game-team-docs/05_deliverables/cards.html`
+  - `pilot-game-team-docs/05_deliverables/cards.pdf`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-06.md`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-06B.md`
+  - `nodes/pilot-game/CHANGELOG.md`
+
+
 ### [2026-10-03 21:44:00] - Game Design: Unified Master Card Library and Mathematical Balance Matrix
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
 - **Konteks:** "gabung cards.md dan other-cards.md , jadikan satu, dan samakan boundariesnya, berikan perhitungan sederhananya juga untuk yang belum ada. buatlah semua kartu setara"
