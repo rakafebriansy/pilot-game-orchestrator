@@ -82,24 +82,28 @@ using UnityEngine;
 namespace PilotGame.Map
 {
     /// <summary>
-    /// Generator prosedural graf peta rute bercabang (Pure C#).
+    /// Generator prosedural graf peta rute bercabang (Directed Acyclic Graph / DAG - Pure C#).
+    /// Mengelola struktur lantai, titik istirahat garansi, koneksi cabang, dan probabilitas tipe node.
     /// </summary>
     public class MapGenerator
     {
         public const int TotalFloors = 15;
         public const int Columns = 4;
 
+        /// <summary>
+        /// Menghasilkan tata letak peta lengkap berbasis Seed deterministik.
+        /// </summary>
         public MapLayout GenerateMap(int seed)
         {
             Random.InitState(seed);
             MapLayout layout = new MapLayout();
 
-            // 1. Generate Nodes per lantai
+            // 1. Tahap Pembentukan Node per Lantai (0 s/d 14)
             for (int floor = 0; floor < TotalFloors; floor++)
             {
                 if (floor == TotalFloors - 1)
                 {
-                    // Lantai terakhir selalu 1 Boss Node
+                    // Lantai Terakhir (Lantai 14): Selalu berupa 1 Boss Node di tengah kolom
                     var bossNode = new MapNodeData($"node_{floor}_boss", floor, Columns / 2, MapNodeType.BossFloor);
                     layout.AddNode(bossNode);
                     continue;
@@ -107,7 +111,7 @@ namespace PilotGame.Map
 
                 for (int col = 0; col < Columns; col++)
                 {
-                    // 75% probabilitas node aktif di kolom
+                    // 75% probabilitas node aktif di kolom untuk menghasilkan variasi celah rute
                     if (Random.value < 0.75f || col == 0)
                     {
                         MapNodeType type = DetermineNodeType(floor);
@@ -117,7 +121,7 @@ namespace PilotGame.Map
                 }
             }
 
-            // 2. Hubungkan jalur (Outgoing Edges) antar lantai
+            // 2. Tahap Penghubungan Jalur (Outgoing Edges) antar lantai yang berurutan
             for (int floor = 0; floor < TotalFloors - 1; floor++)
             {
                 var currentFloorNodes = layout.GetNodesAtFloor(floor);
@@ -127,14 +131,15 @@ namespace PilotGame.Map
                 {
                     foreach (var nextNode in nextFloorNodes)
                     {
-                        // Hubungkan jika kolom berdekatan (|colA - colB| <= 1)
+                        // Hanya sambungkan jika kolom berada tepat di atas atau diagonal 1 langkah (|colA - colB| <= 1)
                         if (Mathf.Abs(currentNode.ColumnIndex - nextNode.ColumnIndex) <= 1)
                         {
                             currentNode.OutgoingNodeIds.Add(nextNode.NodeId);
                         }
                     }
 
-                    // Fallback garansi: jika tidak ada koneksi, sambungkan ke node terdekat
+                    // Garansi Anti Jalur Buntu (Dead-End Fallback):
+                    // Jika node tidak memiliki koneksi keluar, paksa sambungkan ke node terdekat di lantai atasnya
                     if (currentNode.OutgoingNodeIds.Count == 0 && nextFloorNodes.Count > 0)
                     {
                         currentNode.OutgoingNodeIds.Add(nextFloorNodes[0].NodeId);
@@ -142,7 +147,7 @@ namespace PilotGame.Map
                 }
             }
 
-            // Aktifkan node lantai 0 sebagai titik awal
+            // 3. Inisialisasi Ketersediaan: Aktifkan seluruh node di lantai 0 sebagai opsi rute awal
             foreach (var startNode in layout.GetNodesAtFloor(0))
             {
                 startNode.IsAvailable = true;
@@ -151,17 +156,20 @@ namespace PilotGame.Map
             return layout;
         }
 
+        /// <summary>
+        /// Menentukan tipe konten node berdasarkan lantai dan kurva distribusi probabilitas.
+        /// </summary>
         private MapNodeType DetermineNodeType(int floor)
         {
-            if (floor == 0) return MapNodeType.BattleNormal;
-            if (floor == 7) return MapNodeType.CampfireRest; // Rest point pertengahan
+            if (floor == 0) return MapNodeType.BattleNormal; // Lantai 0 selalu pertarungan normal
+            if (floor == 7) return MapNodeType.CampfireRest; // Lantai 7 selalu titik istirahat (Midpoint Rest)
 
             float roll = Random.value;
-            if (roll < 0.50f) return MapNodeType.BattleNormal;
-            if (roll < 0.70f) return MapNodeType.MysteryEvent;
-            if (roll < 0.85f) return MapNodeType.BattleElite;
-            if (roll < 0.95f) return MapNodeType.MerchantShop;
-            return MapNodeType.CampfireRest;
+            if (roll < 0.50f) return MapNodeType.BattleNormal; // 50% Pertarungan Biasa
+            if (roll < 0.70f) return MapNodeType.MysteryEvent; // 20% Event Misteri
+            if (roll < 0.85f) return MapNodeType.BattleElite;   // 15% Pertarungan Musuh Elite
+            if (roll < 0.95f) return MapNodeType.MerchantShop;  // 10% Toko Pedagang
+            return MapNodeType.CampfireRest;                   // 5% Api Unggun
         }
     }
 

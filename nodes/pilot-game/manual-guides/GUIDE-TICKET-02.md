@@ -81,16 +81,16 @@ Setelah script di Bagian 3 diketik dan di-save:
    * `MoveSpeedTiles`: `2`
    * `Sprite`: Seret sprite `Enemy_TatteredConscript_Sprite` ke slot ini.
 
-**C. Membuat Consumable (`Item_ElixirOfLife.asset`):**
+**C. Membuat Consumable (`Consumable_ElixirOfLife.asset`):**
 1. Masuk ke folder `Assets/ScriptableObjects/Consumables/`.
-2. Klik kanan > **Create > PilotGame > Data > Consumable Data**, beri nama `Item_ElixirOfLife.asset`.
+2. Klik kanan > **Create > PilotGame > Data > Consumable Data**, beri nama `Consumable_ElixirOfLife.asset`.
 3. Di panel **Inspector**, isi:
-   * `Id`: `item_elixir_of_life`
+   * `Id`: `consumable_elixir_of_life`
    * `Name`: `Elixir of Life`
    * `Description`: `A mystical golden elixir that instantly restores 10 health points.`
    * `EffectType`: `InstantHeal`
    * `EffectValue`: `10`
-   * `Icon`: Seret sprite `Item_ElixirOfLife_Icon` ke slot ini.
+   * `Icon`: Seret sprite `Consumable_ElixirOfLife_Icon` ke slot ini.
 
 ---
 

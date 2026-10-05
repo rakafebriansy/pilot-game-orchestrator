@@ -88,23 +88,36 @@ using PilotGame.Cards;
 
 namespace PilotGame.Map
 {
+    /// <summary>
+    /// Mengelola opsi istirahat di node Api Unggun (Campfire): Pemulihan HP atau Upgrade Kartu.
+    /// </summary>
     public class CampfireManager : MonoBehaviour
     {
         [Header("Campfire Healing Stats")]
-        [SerializeField] private float _healPercentage = 0.30f; // 30% MaxHP
+        [SerializeField] private float _healPercentage = 0.30f; // Standar roguelike: 30% dari MaxHP
 
+        /// <summary>
+        /// Menghitung jumlah HP yang dipulihkan berdasarkan persentase Max HP pemain.
+        /// Menggunakan Mathf.RoundToInt untuk pembulatan integer terdekat.
+        /// </summary>
         public int CalculateHealAmount(int maxHP)
         {
             return Mathf.RoundToInt(maxHP * _healPercentage);
         }
 
+        /// <summary>
+        /// Menerapkan efek pemulihan ke HP pemain dengan batas atas MaxHP (Mathf.Min).
+        /// </summary>
         public void ApplyHeal(ref int currentHP, int maxHP)
         {
             int heal = CalculateHealAmount(maxHP);
-            currentHP = Mathf.Min(maxHP, currentHP + heal);
+            currentHP = Mathf.Min(maxHP, currentHP + heal); // Cegah over-heal melampaui MaxHP
             Debug.Log($"[Campfire] Pemain pulih sebesar +{heal} HP (HP sekarang: {currentHP}/{maxHP})");
         }
 
+        /// <summary>
+        /// Menangani peningkatan kartu tempur menjadi versi yang lebih kuat (Upgrade Card).
+        /// </summary>
         public void UpgradeCard(CardData baseCard, CardData upgradedCard)
         {
             Debug.Log($"[Campfire] Kartu {baseCard.Name} berhasil ditingkatkan menjadi {upgradedCard.Name}!");

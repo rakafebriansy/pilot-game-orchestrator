@@ -45,17 +45,21 @@ namespace PilotGame.Cards
         [SerializeField] private List<CardData> _rewardCardPool = new();
 
         /// <summary>
-        /// Mengambil 3 kartu unik acak dari reward pool.
+        /// Mengambil 3 kartu unik acak dari reward pool menggunakan algoritma sampling tanpa pengembalian.
+        /// Mencegah munculnya duplikat kartu yang sama dalam satu kali penawaran draft.
         /// </summary>
         public List<CardData> GenerateThreeCardDraft()
         {
             List<CardData> result = new List<CardData>();
+            // Salin daftar referensi pool agar pool asli tidak termodifikasi
             List<CardData> tempPool = new List<CardData>(_rewardCardPool);
 
+            // Ambil maksimal 3 kartu atau sebanyak sisa kartu di pool
             for (int i = 0; i < 3 && tempPool.Count > 0; i++)
             {
                 int randomIndex = Random.Range(0, tempPool.Count);
                 result.Add(tempPool[randomIndex]);
+                // Hapus kartu terpilih dari salinan pool agar tidak terpilih dua kali
                 tempPool.RemoveAt(randomIndex);
             }
 
@@ -77,6 +81,9 @@ using PilotGame.UI;
 
 namespace PilotGame.UI
 {
+    /// <summary>
+    /// Mengelola modal hadiah drafting kartu pasca-menang gelombang pertempuran (GDD §3.4).
+    /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class DraftScreenController : MonoBehaviour
     {
@@ -92,6 +99,9 @@ namespace PilotGame.UI
             _uiDocument = GetComponent<UIDocument>();
         }
 
+        /// <summary>
+        /// Membuka jendela UI drafting hadiah dan men-generate 3 kartu pilihan.
+        /// </summary>
         public void OpenDraftScreen()
         {
             gameObject.SetActive(true);
@@ -100,8 +110,10 @@ namespace PilotGame.UI
             _skipButton = root.Q<Button>("skip-draft-button");
 
             _draftCardsContainer.Clear();
+            // Ambil 3 opsi kartu hadiah acak
             List<CardData> offeredCards = _draftManager.GenerateThreeCardDraft();
 
+            // Bangun kartu UI secara dinamis
             foreach (var card in offeredCards)
             {
                 var cardBox = new VisualElement();
@@ -127,6 +139,9 @@ namespace PilotGame.UI
             _skipButton?.RegisterCallback<ClickEvent>(evt => CloseDraftScreen());
         }
 
+        /// <summary>
+        /// Menangani pemilihan kartu oleh pemain: menambahkan kartu ke deck aktif pemain.
+        /// </summary>
         private void OnCardSelected(CardData chosenCard)
         {
             Debug.Log($"[Draft] Pemain menambahkan kartu: {chosenCard.Name} ke deck!");

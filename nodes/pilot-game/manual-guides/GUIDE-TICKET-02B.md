@@ -1,4 +1,4 @@
-# 📖 Manual Guide: TICKET-02B — 14 Kartu Tempur Nabu Lengkap & Metadata Parameter
+# 📖 Manual Guide: TICKET-02B — Kartu Sinergi 1: Bleed & Assassination Archetype
 
 > **Referensi Tiket:** [TICKET-02B.md](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02B.md)  
 > **Domain:** `[📊 DOMAIN 4: DATA & LOGIC]`  
@@ -7,58 +7,111 @@
 ---
 
 ## 🎯 1. Ringkasan & Tujuan
-Tiket ini mewujudkan **14 Kartu Tempur Nabu** (protagonis bersenjatakan Kitab Kuno / *Grimoire*) sebagai aset `CardData.asset` di Unity. Setiap kartu memiliki karakteristik tempur unik, pembatasan fase (*PhaseRestriction*), area jangkauan (*AreaType*), efek abnormal (*StatusEffect*), dan parameter recoil/knockback.
+Tiket ini mengimplementasikan **Set Kartu Sinergi 1: Bleed & Assassination Archetype** mengacu pada `cards.md` (§11) sebagai aset `CardData.asset` di Unity. 
+
+Sinergi ini merupakan siklus kombo pembunuh (*Assassination Burst Loop*):
+1. **Throwing Blade (`CARD-009`):** Pembuka kombo jarak jauh (Range 3) yang memberikan 5 Damage dan menginfeksi target dengan status **`Bleed`** (2 Direct Damage per ronde selama 3 ronde, menembus shield).
+2. **Shadow Step (`CARD-034`):** Manuver reposisi instan (*Teleport*) ke petak tepat di belakang musuh sasaran (Range 4), dan memberikan bonus status `Bleed` pada serangan penyerangan berikutnya.
+3. **Serrated Dagger (`CARD-031`):** Eksekutor melee (*Bleed Finisher*) berjarak 1 petak yang memberikan 6 Physical Damage. Jika musuh **sudah memiliki status `Bleed`**, serangannya otomatis berlipat ganda menjadi **$2\times\text{ Damage}$ (12 Damage)** dan me-refresh durasi `Bleed` target kembali ke durasi penuh (3 ronde).
 
 ---
 
-## 📂 2. Struktur File & Lokasi
+## 📂 2. Struktur File & Lokasi Aset
 ```text
 Assets/
+├── Art/
+│   └── Sprites/
+│       ├── Card_ThrowingBlade_Art.jpg
+│       ├── Card_ShadowStep_Art.jpg
+│       └── Card_SerratedDagger_Art.jpg
 └── ScriptableObjects/
     └── Cards/
-        ├── Card_Teleport.asset
-        ├── Card_Decoy.asset
-        ├── Card_Frost.asset
-        ├── Card_HeavyRain.asset
-        ├── Card_Fog.asset
-        ├── Card_Storm.asset
-        ├── Card_ClearWeather.asset
-        ├── Card_SkeletonArmy.asset
         ├── Card_ThrowingBlade.asset
-        ├── Card_SandBurial.asset
-        ├── Card_Clone.asset
-        ├── Card_Dash.asset
-        ├── Card_SuperPunch.asset
-        └── Card_GravityLift.asset
+        ├── Card_ShadowStep.asset
+        └── Card_SerratedDagger.asset
 ```
 
 ---
 
-## 📊 3. Spesifikasi Rinci 14 Kartu Tempur Nabu
+## 📊 3. Spesifikasi Rinci & Konfigurasi Kartu (Inspector Setup)
 
-| No | Nama Kartu | Action Type | Phase Restriction | Area Type | Range / Radius | Damage / Shield | Efek Spesial / Status |
-| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| 1 | **Teleport** | `Movement` | `IntentPhase` | `SingleTarget` | Global (15) | 0 / 0 | Berpindah ke petak kosong manapun di arena sebelum fase utama. |
-| 2 | **Decoy** | `Utility` | `RoundResetPhase` | `SelfOnly` | 0 | 0 / 5 | Meninggalkan ilusi tiruan di posisi lama (taunt), lalu teleport jarak menengah (radius 3 petak). |
-| 3 | **Frost** | `Attack` | `PlayerPhase` | `RadiusArea` | Range 3, Radius 1 | 4 / 0 | Memberikan status `Freeze` (1 turn) + ubin licin pada ronde berikutnya. |
-| 4 | **Heavy Rain** | `StatusModifier` | `PlayerPhase` | `GlobalAllEnemies` | Global | 0 / 0 | Mengurangi mobilitas seluruh musuh (-1 Movement) selama 3 ronde. |
-| 5 | **Fog** | `Utility` | `PlayerPhase` | `RadiusArea` | Range 0, Radius 2 | 0 / 0 | Menyelimuti area sekitar dengan kabut: serangan yang masuk memiliki miss chance 50%. |
-| 6 | **Storm** | `Attack` | `PlayerPhase` | `GlobalAllEnemies` | Global | 2 / 0 | Menciptakan badai petir: memberikan 2 damage rutin setiap ronde selama 3 ronde. |
-| 7 | **Clear Weather** | `Utility` | `IntentPhase` | `GlobalAllEnemies` | Global | 0 / 0 | *Immediate Action*: Menghapus seluruh efek cuaca aktif secara instan. |
-| 8 | **Skeleton Army** | `Attack` | `PlayerPhase` | `RadiusArea` | Range 1, Radius 1 | 8 / 0 | Memanggil lingkaran tulang di sekitar target untuk menyerang serentak. |
-| 9 | **Throwing Blade** | `Attack` | `PlayerPhase` | `SingleTarget` | Range 3 | 5 / 0 | Melempar belati tajam: memberikan 5 damage + status `Bleed` (2 turn). |
-| 10 | **Sand Burial** | `StatusModifier` | `IntentPhase` | `SingleTarget` | Range 3 | 0 / 0 | Mengurung musuh dengan pasir: status `Immobilize` (abaikan movement). |
-| 11 | **Clone** | `Utility` | `RoundResetPhase` | `SelfOnly` | 0 | 0 / 3 | Membuat bayangan kloning yang aktif di ronde berikutnya dan ikut meniru serangan pemain. |
-| 12 | **Dash** | `Movement` | `PlayerPhase` | `LinearLine` | Range 3 | 3 / 0 | Melesat 3 petak ke depan; mendorong unit penghalang dan mengurangi 1 move. |
-| 13 | **Super Punch** | `Attack` | `PlayerPhase` | `SingleTarget` | Range 1 | 12 / 0 | Serangan pukulan dahsyat (12 damage); menimbulkan recoil mundur 2 petak. |
-| 14 | **Gravity Lift** | `Attack` | `IntentPhase` | `RadiusArea` | Range 3, Radius 1 | 4 / 0 | Mengangkat sekeliling ubin 3 petak ke udara; membatalkan aksi unit terangkat. |
+### 🗡️ Kartu 1: Throwing Blade (`CARD-009`)
+* **ID:** `CARD-009` (atau `card_throwing_blade`)
+* **Nama:** `Throwing Blade`
+* **Deskripsi (English):** `Hurl a concealed dagger at a single target up to 3 tiles away. Deals 5 Physical Damage and inflicts Bleed (2 Direct Damage per turn for 3 turns, bypassing Shield).`
+* **Pengaturan Inspector Unity (`Card_ThrowingBlade.asset`):**
+  * `Id`: `CARD-009`
+  * `Name`: `Throwing Blade`
+  * `Description`: `Hurl a concealed dagger at a target up to 3 tiles away. Deals 5 Damage and inflicts Bleed (2 Direct Dmg/turn for 3 turns).`
+  * `ActionType`: `Attack`
+  * `TargetArea`: `SingleTarget`
+  * `PhaseRestriction`: `PlayerPhase`
+  * `BaseDamage`: `5`
+  * `BaseShield`: `0`
+  * `Range` (*Cast Range*): `3`
+  * `AreaRadius` (*AoE Radius*): `0`
+  * `InflictedStatus`: `Bleed`
+  * `StatusDuration`: `3`
+  * `Art`: Seret sprite `Card_ThrowingBlade_Art` ke slot ini.
+
+---
+
+### 🌑 Kartu 2: Shadow Step (`CARD-034`)
+* **ID:** `CARD-034` (atau `card_shadow_step`)
+* **Nama:** `Shadow Step`
+* **Deskripsi (English):** `Instantly teleport to the tile directly behind a target enemy within 4 tiles. The next attack from behind inflicts Bleed (2 Direct Damage per turn for 2 turns).`
+* **Pengaturan Inspector Unity (`Card_ShadowStep.asset`):**
+  * `Id`: `CARD-034`
+  * `Name`: `Shadow Step`
+  * `Description`: `Teleport directly behind a target enemy within 4 tiles. Next attack from behind inflicts Bleed (2 Direct Dmg/turn for 2 turns).`
+  * `ActionType`: `Movement`
+  * `TargetArea`: `SingleTarget`
+  * `PhaseRestriction`: `PlayerPhase`
+  * `BaseDamage`: `0`
+  * `BaseShield`: `0`
+  * `Range` (*Cast Range*): `4`
+  * `AreaRadius` (*AoE Radius*): `0`
+  * `InflictedStatus`: `None`
+  * `StatusDuration`: `0`
+  * `Art`: Seret sprite `Card_ShadowStep_Art` ke slot ini.
+
+---
+
+### 🩸 Kartu 3: Serrated Dagger (`CARD-031`)
+* **ID:** `CARD-031` (atau `card_serrated_dagger`)
+* **Nama:** `Serrated Dagger`
+* **Deskripsi (English):** `Stab an adjacent enemy dealing 6 Physical Damage. If the target is already Bleeding, deals double damage (12 Damage) and refreshes the target's Bleed duration to full (3 turns).`
+* **Pengaturan Inspector Unity (`Card_SerratedDagger.asset`):**
+  * `Id`: `CARD-031`
+  * `Name`: `Serrated Dagger`
+  * `Description`: `Stab an adjacent enemy for 6 Damage. Deals 2x Damage (12 Damage) and refreshes Bleed if target is Bleeding.`
+  * `ActionType`: `Attack`
+  * `TargetArea`: `SingleTarget`
+  * `PhaseRestriction`: `PlayerPhase`
+  * `BaseDamage`: `6`
+  * `BaseShield`: `0`
+  * `Range` (*Cast Range*): `1`
+  * `AreaRadius` (*AoE Radius*): `0`
+  * `InflictedStatus`: `None`
+  * `StatusDuration`: `0`
+  * `Art`: Seret sprite `Card_SerratedDagger_Art` ke slot ini.
+
+---
+
+## 📊 Matriks Ringkasan Parameter Sinergi 1
+
+| ID | Nama Kartu | Action Type | Phase | Cast Range | AoE Radius | Base Dmg | Base Shld | Inflicted Status | Durasi | Aset Sprite | Ringkasan Mekanik & Sinergi (English) |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- | :--- |
+| `CARD-009` | **Throwing Blade** | `Attack` | `PlayerPhase` | 3 Tiles | 0 (Single) | 5 | 0 | `Bleed` | 3 | `Card_ThrowingBlade_Art` | Ranged Bleed Opener: 5 Dmg + Bleed (2 Direct Dmg/turn, direct to HP). |
+| `CARD-034` | **Shadow Step** | `Movement` | `PlayerPhase` | 4 Tiles | 0 (Single) | 0 | 0 | `None` | 0 | `Card_ShadowStep_Art` | Flanker Teleport: Teleport behind target (Range 4) + next hit applies Bleed. |
+| `CARD-031` | **Serrated Dagger** | `Attack` | `PlayerPhase` | 1 Tile (Melee) | 0 (Single) | 6 | 0 | `None` | 0 | `Card_SerratedDagger_Art` | Bleed Finisher: Melee 6 Dmg $\rightarrow$ **$2\times$ (12 Dmg)** if target Bleeding + refresh DoT. |
 
 ---
 
 ## 🛠️ 4. Script Batch Pembuatan ScriptableObjects Otomatis
-Untuk mempermudah pembuatan ke-14 file `.asset` sekaligus tanpa input manual satu per satu di Unity Editor, buat script editor berikut:
 
-### `Assets/Scripts/Editor/CardGeneratorEditor.cs`
+Script editor di `Assets/Scripts/Editor/CardGeneratorEditor.cs` menghubungkan otomatis ID, Nama, Deskripsi (English), dan Sprite Art ke setiap file `.asset`:
+
 ```csharp
 #if UNITY_EDITOR
 using UnityEditor;
@@ -70,8 +123,8 @@ namespace PilotGame.EditorTools
 {
     public static class CardGeneratorEditor
     {
-        [MenuItem("PilotGame/Generate/14 Starter Cards")]
-        public static void GenerateAllStarterCards()
+        [MenuItem("PilotGame/Generate/Bleed Synergy Cards (Sinergi 1)")]
+        public static void GenerateBleedSynergyCards()
         {
             string folderPath = "Assets/ScriptableObjects/Cards";
             if (!AssetDatabase.IsValidFolder(folderPath))
@@ -79,27 +132,80 @@ namespace PilotGame.EditorTools
                 AssetDatabase.CreateFolder("Assets/ScriptableObjects", "Cards");
             }
 
-            CreateCard("Card_Teleport", "Teleport", "Teleport to any unoccupied tile in the arena.", CardActionType.Movement, TargetAreaType.SingleTarget, CombatPhase.IntentPhase, 0, 0, 15, 0, StatusEffectType.None, 0);
-            CreateCard("Card_Decoy", "Decoy", "Leave a decoy illusion behind and teleport up to 3 tiles.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 5, 0, 0, StatusEffectType.None, 0);
-            CreateCard("Card_Frost", "Frost", "Freeze a 3x3 area, dealing 4 damage and making tiles slippery.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 4, 0, 3, 1, StatusEffectType.Freeze, 1);
-            CreateCard("Card_HeavyRain", "Heavy Rain", "Reduce all enemy movement by 1 tile for 3 rounds.", CardActionType.StatusModifier, TargetAreaType.GlobalAllEnemies, CombatPhase.PlayerPhase, 0, 0, 15, 0, StatusEffectType.Immobilize, 3);
-            CreateCard("Card_Fog", "Fog", "Dense 5x5 fog: enemy attacks inside have a 50% miss chance.", CardActionType.Utility, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 0, 0, 0, 2, StatusEffectType.None, 0);
-            CreateCard("Card_Storm", "Storm", "Arena storm: deals 2 damage each round to all enemies for 3 rounds.", CardActionType.Attack, TargetAreaType.GlobalAllEnemies, CombatPhase.PlayerPhase, 2, 0, 15, 0, StatusEffectType.Vulnerable, 3);
-            CreateCard("Card_ClearWeather", "Clear Weather", "Instantly remove all active weather effects in the arena.", CardActionType.Utility, TargetAreaType.GlobalAllEnemies, CombatPhase.IntentPhase, 0, 0, 15, 0, StatusEffectType.None, 0);
-            CreateCard("Card_SkeletonArmy", "Skeleton Army", "Summon a surrounding ring of skeletal warriors to strike for 8 damage.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.PlayerPhase, 8, 0, 1, 1, StatusEffectType.None, 0);
-            CreateCard("Card_ThrowingBlade", "Throwing Blade", "A medium-range sharp dagger throw dealing 5 damage and inflicting Bleed.", CardActionType.Attack, TargetAreaType.SingleTarget, CombatPhase.PlayerPhase, 5, 0, 3, 0, StatusEffectType.Bleed, 2);
-            CreateCard("Card_SandBurial", "Sand Burial", "Trap the target in a swirl of heavy sand, applying Immobilize.", CardActionType.StatusModifier, TargetAreaType.SingleTarget, CombatPhase.IntentPhase, 0, 0, 3, 0, StatusEffectType.Immobilize, 1);
-            CreateCard("Card_Clone", "Clone", "Summon a clone next round that mirrors offensive attack cards played.", CardActionType.Utility, TargetAreaType.SelfOnly, CombatPhase.RoundResetPhase, 0, 3, 0, 0, StatusEffectType.None, 0);
-            CreateCard("Card_Dash", "Dash", "Dash forward 3 tiles, shoving obstacles and dealing 3 damage.", CardActionType.Movement, TargetAreaType.LinearLine, CombatPhase.PlayerPhase, 3, 0, 3, 0, StatusEffectType.None, 0);
-            CreateCard("Card_SuperPunch", "Super Punch", "Deliver a heavy punch for 12 damage with a 2-tile recoil knockback.", CardActionType.Attack, TargetAreaType.SingleTarget, CombatPhase.PlayerPhase, 12, 0, 1, 0, StatusEffectType.None, 0);
-            CreateCard("Card_GravityLift", "Gravity Lift", "Nullify gravity in a 3x3 area, dealing 4 damage and stunning targets.", CardActionType.Attack, TargetAreaType.RadiusArea, CombatPhase.IntentPhase, 4, 0, 3, 1, StatusEffectType.Stun, 1);
+            // 1. Throwing Blade (CARD-009)
+            CreateCard(
+                fileName: "Card_ThrowingBlade",
+                cardId: "CARD-009",
+                cardName: "Throwing Blade",
+                desc: "Hurl a concealed dagger at a target up to 3 tiles away. Deals 5 Damage and inflicts Bleed (2 Direct Dmg/turn for 3 turns).",
+                actionType: CardActionType.Attack,
+                targetArea: TargetAreaType.SingleTarget,
+                phase: CombatPhase.PlayerPhase,
+                baseDamage: 5,
+                baseShield: 0,
+                castRange: 3,
+                aoeRadius: 0,
+                status: StatusEffectType.Bleed,
+                duration: 3,
+                artSpritePath: "Assets/Art/Sprites/Card_ThrowingBlade_Art.jpg"
+            );
+
+            // 2. Shadow Step (CARD-034)
+            CreateCard(
+                fileName: "Card_ShadowStep",
+                cardId: "CARD-034",
+                cardName: "Shadow Step",
+                desc: "Teleport directly behind a target enemy within 4 tiles. Next attack from behind inflicts Bleed (2 Direct Dmg/turn for 2 turns).",
+                actionType: CardActionType.Movement,
+                targetArea: TargetAreaType.SingleTarget,
+                phase: CombatPhase.PlayerPhase,
+                baseDamage: 0,
+                baseShield: 0,
+                castRange: 4,
+                aoeRadius: 0,
+                status: StatusEffectType.None,
+                duration: 0,
+                artSpritePath: "Assets/Art/Sprites/Card_ShadowStep_Art.jpg"
+            );
+
+            // 3. Serrated Dagger (CARD-031)
+            CreateCard(
+                fileName: "Card_SerratedDagger",
+                cardId: "CARD-031",
+                cardName: "Serrated Dagger",
+                desc: "Stab an adjacent enemy for 6 Damage. Deals 2x Damage (12 Damage) and refreshes Bleed if target is Bleeding.",
+                actionType: CardActionType.Attack,
+                targetArea: TargetAreaType.SingleTarget,
+                phase: CombatPhase.PlayerPhase,
+                baseDamage: 6,
+                baseShield: 0,
+                castRange: 1,
+                aoeRadius: 0,
+                status: StatusEffectType.None,
+                duration: 0,
+                artSpritePath: "Assets/Art/Sprites/Card_SerratedDagger_Art.jpg"
+            );
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log("[CardGeneratorEditor] Sukses membuat 14 Starter Card SO!");
+            Debug.Log("[CardGeneratorEditor] Sukses membuat Kartu Sinergi 1 (Bleed & Assassination) dengan data & sprite art lengkap!");
         }
 
-        private static void CreateCard(string fileName, string cardName, string desc, CardActionType actionType, TargetAreaType areaType, CombatPhase phase, int dmg, int shield, int range, int radius, StatusEffectType status, int duration)
+        private static void CreateCard(
+            string fileName,
+            string cardId,
+            string cardName,
+            string desc,
+            CardActionType actionType,
+            TargetAreaType targetArea,
+            CombatPhase phase,
+            int baseDamage,
+            int baseShield,
+            int castRange,
+            int aoeRadius,
+            StatusEffectType status,
+            int duration,
+            string artSpritePath)
         {
             string path = $"Assets/ScriptableObjects/Cards/{fileName}.asset";
             var card = AssetDatabase.LoadAssetAtPath<CardData>(path);
@@ -109,18 +215,24 @@ namespace PilotGame.EditorTools
                 AssetDatabase.CreateAsset(card, path);
             }
 
-            card.Id = fileName.ToLower();
+            card.Id = cardId;
             card.Name = cardName;
             card.Description = desc;
             card.ActionType = actionType;
-            card.TargetArea = areaType;
+            card.TargetArea = targetArea;
             card.PhaseRestriction = phase;
-            card.BaseDamage = dmg;
-            card.BaseShield = shield;
-            card.Range = range;
-            card.AreaRadius = radius;
+            card.BaseDamage = baseDamage;
+            card.BaseShield = baseShield;
+            card.Range = castRange;
+            card.AreaRadius = aoeRadius;
             card.InflictedStatus = status;
             card.StatusDuration = duration;
+
+            if (!string.IsNullOrEmpty(artSpritePath))
+            {
+                card.Art = AssetDatabase.LoadAssetAtPath<Sprite>(artSpritePath);
+            }
+
             EditorUtility.SetDirty(card);
         }
     }
@@ -131,6 +243,9 @@ namespace PilotGame.EditorTools
 ---
 
 ## 🧪 5. Langkah Verifikasi
-1. Di Unity Editor menu bar, klik **PilotGame > Generate > 14 Starter Cards**.
+1. Di Unity Editor menu bar, klik **PilotGame > Generate > Bleed Synergy Cards (Sinergi 1)**.
 2. Buka folder `Assets/ScriptableObjects/Cards/` di Project View.
-3. Periksa bahwa ke-14 aset `.asset` telah dibuat dengan parameter yang valid.
+3. Klik masing-masing file `.asset` (`Card_ThrowingBlade.asset`, `Card_ShadowStep.asset`, `Card_SerratedDagger.asset`) dan periksa di Inspector:
+   * **Id, Name, dan Description (English)** terisi lengkap sesuai spesifikasi di atas.
+   * **Slot Art** terhubung dengan file Sprite masing-masing di `Assets/Art/Sprites/`.
+4. Pasang ke-3 kartu ini ke dalam list starter deck `DeckManager.cs` (masing-masing 5 lembar kartu untuk membentuk deck 15 kartu) untuk menguji kombo *Bleed & Assassination* di scene pertempuran.

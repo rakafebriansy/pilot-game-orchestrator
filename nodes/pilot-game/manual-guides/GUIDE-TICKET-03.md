@@ -71,11 +71,21 @@ namespace PilotGame.Grid
             return coord.x >= 0 && coord.x < Width && coord.y >= 0 && coord.y < Height;
         }
 
+        /// <summary>
+        /// Mengecek apakah suatu koordinat ubin dapat dilalui/dimasuki (walkable).
+        /// </summary>
         public bool IsWalkable(Vector2Int coord)
         {
+            // 1. Validasi Batas Arena: Menolak koordinat jika berada di luar batas grid 15x15 (out-of-bounds/tembok terluar)
             if (!IsInsideGrid(coord)) return false;
+
+            // 2. Validasi Rintangan Statis: Menolak ubin jika bertipe pilar/rintangan solid yang memblokir pergerakan fisik
             if (_tiles[coord.x, coord.y] == TileType.ObstaclePillar) return false;
+
+            // 3. Validasi Okupansi Unit: Menolak ubin jika sudah ditempati oleh unit lain (pemain atau musuh)
             if (_occupants[coord.x, coord.y] != 0) return false;
+
+            // Seluruh syarat terpenuhi -> ubin kosong, valid, dan dapat dilalui
             return true;
         }
 
@@ -86,24 +96,34 @@ namespace PilotGame.Grid
         }
 
         /// <summary>
-        /// Menghitung titik henti pergerakan linear. Jika jalur menabrak musuh/rintangan,
-        /// unit akan tertabrak dan berhenti tepat 1 petak di depan rintangan (GDD §4.6).
+        /// Menghitung titik henti pergerakan linear bertahap per petak (Raymarch step-by-step).
+        /// Jika jalur menabrak musuh, tembok batas, atau pilar rintangan di tengah jalan,
+        /// unit otomatis tertabrak dan berhenti tepat 1 petak di depan rintangan (GDD §4.6 - Path Collision).
         /// </summary>
         public Vector2Int CalculateLinearMoveDestination(Vector2Int start, Vector2Int direction, int distance)
         {
             Vector2Int current = start;
+
+            // Normalisasi arah ke unit vector step: (-1, 0, atau 1) untuk x dan y
             Vector2Int step = new Vector2Int(Math.Sign(direction.x), Math.Sign(direction.y));
 
+            // Simulasikan langkah demi langkah sejauh 'distance'
             for (int i = 1; i <= distance; i++)
             {
                 Vector2Int nextCoord = current + step;
+
+                // Cek tabrakan: jika petak berikutnya di luar arena atau terhalang rintangan/unit lain
                 if (!IsInsideGrid(nextCoord) || !IsWalkable(nextCoord))
                 {
-                    // Tertabrak rintangan atau unit lain -> berhenti di posisi saat ini
+                    // Terjadi tabrakan fisik -> hentikan pergerakan di petak terakhir yang valid (current)
                     return current;
                 }
+
+                // Maju 1 langkah ke petak berikutnya
                 current = nextCoord;
             }
+
+            // Selesai melangkah tanpa tabrakan -> kembalikan posisi akhir
             return current;
         }
 
@@ -152,7 +172,8 @@ using PilotGame.Grid;
 namespace PilotGame.Units
 {
     /// <summary>
-    /// Mesin kalkulasi kecerdasan buatan musuh untuk fase niat (Pure C#).
+    /// Mesin kalkulasi kecerdasan buatan musuh untuk fase niat (Pure C# Non-MonoBehaviour).
+    /// Menghitung targeting musuh, jarak Manhattan, dan aturan semak siluman (Stealth Bush).
     /// </summary>
     public class EnemyAICalculator
     {
@@ -164,33 +185,40 @@ namespace PilotGame.Units
         }
 
         /// <summary>
-        /// Merencanakan serangan linear ke arah pemain.
+        /// Merencanakan serangan linear (garis lurus) ke arah koordinat target pemain.
+        /// Mengabaikan target jika pemain bersembunyi di semak pada jarak >= 2 petak (hanya bisa dilihat pada jarak 1 petak / bersebelahan - GDD §4.1).
         /// </summary>
         public void PlanLinearAttack(int enemyId, Vector2Int enemyCoord, Vector2Int playerCoord, int attackRange)
         {
-            // Periksa aturan Stealth Bush (GDD §4.1)
+            // 1. Hitung Jarak Manhattan (|x1-x2| + |y1-y2|) antara musuh dan pemain
             int distanceToPlayer = Math.Abs(enemyCoord.x - playerCoord.x) + Math.Abs(enemyCoord.y - playerCoord.y);
-            if (_grid.IsStealthed(playerCoord) && distanceToPlayer > 2)
+
+            // 2. Evaluasi Aturan Stealth Bush (GDD §4.1):
+            // Jika pemain berada di dalam semak taktis (StealthBush) dan jarak >= 2 ubin (bukan 1 ubin bersebelahan), AI kehilangan Line of Sight
+            if (_grid.IsStealthed(playerCoord) && distanceToPlayer >= 2)
             {
-                // Pemain sembunyi di dalam semak dan jarak > 2 -> AI tidak bisa menarget pemain!
+                // Pemain tersamarkan -> Batalkan niat serangan terarah ke pemain
                 return;
             }
 
+            // 3. Tentukan arah vektor normalisasi (-1, 0, atau 1) menuju pemain
             Vector2Int direction = new Vector2Int(
                 Math.Sign(playerCoord.x - enemyCoord.x),
                 Math.Sign(playerCoord.y - enemyCoord.y)
             );
 
+            // 4. Bangun area bahaya linear (Danger Area) sepanjang jangkauan serangan musuh
             List<Vector2Int> dangerArea = new List<Vector2Int>();
             for (int i = 1; i <= attackRange; i++)
             {
                 Vector2Int target = enemyCoord + (direction * i);
-                if (_grid.IsInsideGrid(target))
-                {
-                    dangerArea.Add(target);
-                }
+                // Jika langkah menabrak dinding batas terluar grid, hentikan raymarch seketika (break)
+                if (!_grid.IsInsideGrid(target)) break;
+
+                dangerArea.Add(target);
             }
 
+            // 5. Publikasikan niat serangan ke Event Bus untuk visualisasi telegraf merah di HUD & Tilemap
             if (dangerArea.Count > 0)
             {
                 CombatEvents.OnEnemyIntentDecided?.Invoke(enemyId, dangerArea[0]);
@@ -201,17 +229,24 @@ namespace PilotGame.Units
         }
 
         /// <summary>
-        /// Merencanakan serangan area (Radius Area).
+        /// Merencanakan serangan area multi-bentuk yang skalabel menggunakan evaluasi matematis C# Switch Expression.
+        /// Menjamin keabsahan bentuk geometris dan melempar NotImplementedException secara otomatis jika ada bentuk baru yang belum terdaftar.
         /// </summary>
-        public void PlanAreaAttack(int enemyId, Vector2Int targetCenter, int radius)
+        public void PlanAreaAttack(int enemyId, Vector2Int targetCenter, int radius, AreaShapeType shape = AreaShapeType.Square)
         {
             List<Vector2Int> dangerArea = new List<Vector2Int>();
 
+            // 1. Pindai area bounding box [-radius s/d +radius]
             for (int x = -radius; x <= radius; x++)
             {
                 for (int y = -radius; y <= radius; y++)
                 {
+                    // 2. Evaluasi matematis bentuk area (otomatis throw NotImplementedException jika enum shape belum di-handle)
+                    if (!AreaShapeEvaluator.IsOffsetInShape(shape, x, y, radius)) continue;
+
                     Vector2Int coord = new Vector2Int(targetCenter.x + x, targetCenter.y + y);
+
+                    // 3. Pemotongan Batas Arena (Boundary Clipping)
                     if (_grid.IsInsideGrid(coord))
                     {
                         dangerArea.Add(coord);
@@ -219,6 +254,7 @@ namespace PilotGame.Units
                 }
             }
 
+            // 4. Publikasikan seluruh koordinat area bahaya ke sistem telegraf HUD & Tilemap
             if (dangerArea.Count > 0)
             {
                 CombatEvents.OnEnemyIntentDecided?.Invoke(enemyId, targetCenter);
@@ -227,6 +263,31 @@ namespace PilotGame.Units
                 );
             }
         }
+    }
+
+    // =========================================================================
+    // 📐 EVALUATOR GEOMETRIS BENTUK AOE (EXHAUSTIVE PATTERN MATCHING)
+    // =========================================================================
+
+    /// <summary>
+    /// Evaluator bentuk geometris serangan area (AoE).
+    /// Menggunakan C# Switch Expression modern yang ringkas, cepat, dan terpusat.
+    /// Menjamin kepatuhan tipe data: melempar NotImplementedException jika ada AreaShapeType yang belum diimplementasikan.
+    /// </summary>
+    public static class AreaShapeEvaluator
+    {
+        public static bool IsOffsetInShape(AreaShapeType shape, int x, int y, int radius) => shape switch
+        {
+            AreaShapeType.Square    => true,                                            // Kotak penuh (Chebyshev: 3x3, 5x5)
+            AreaShapeType.Diamond   => (Math.Abs(x) + Math.Abs(y)) <= radius,          // Belah ketupat (Manhattan: |x| + |y| <= r)
+            AreaShapeType.Cross     => (x == 0 || y == 0),                              // Salib / Plus (+) lurus vertikal & horizontal
+            AreaShapeType.Circle    => (x * x + y * y) <= (radius * radius),            // Lingkaran Euclidean halus
+            AreaShapeType.DiagonalX => Math.Abs(x) == Math.Abs(y),                      // Silang diagonal (X)
+            AreaShapeType.Ring      => Math.Max(Math.Abs(x), Math.Abs(y)) == radius,    // Cincin / Bingkai batas terluar
+            
+            // ⚠️ Melempar error jika ada nilai enum AreaShapeType baru di CombatTypes.cs yang belum diimplementasikan
+            _ => throw new NotImplementedException($"[AreaShapeEvaluator] AoE Shape '{shape}' is not implemented! Please add geometric evaluation for this shape.")
+        };
     }
 }
 ```
@@ -294,10 +355,10 @@ namespace PilotGame.Tests.EditMode
         }
 
         [Test]
-        public void EnemyAI_IgnoresPlayerInStealthBushIfDistanceGreaterThanTwo()
+        public void EnemyAI_IgnoresPlayerInStealthBushIfDistanceGreaterThanOrEqualToTwo()
         {
             Vector2Int enemyPos = new Vector2Int(0, 0);
-            Vector2Int playerPos = new Vector2Int(5, 0); // Jarak 5 ubin
+            Vector2Int playerPos = new Vector2Int(2, 0); // Jarak 2 ubin (>= 2)
             _grid.SetTileType(playerPos, TileType.StealthBush);
 
             bool intentTriggered = false;
@@ -305,8 +366,44 @@ namespace PilotGame.Tests.EditMode
 
             _ai.PlanLinearAttack(1, enemyPos, playerPos, 5);
 
-            // Karena pemain di dalam bush pada jarak 5, intent tidak boleh terpicu
+            // Karena pemain di dalam bush pada jarak >= 2 (jarak 2), intent tidak boleh terpicu
             Assert.IsFalse(intentTriggered);
+        }
+
+        [Test]
+        public void PlanAreaAttack_SquareShape_GeneratesNineTilesForRadiusOne()
+        {
+            Vector2Int center = new Vector2Int(5, 5);
+            TileHighlightRequest capturedRequest = default;
+            CombatEvents.OnHighlightTilesRequested += req => capturedRequest = req;
+
+            _ai.PlanAreaAttack(1, center, 1, AreaShapeType.Square);
+
+            Assert.AreEqual(9, capturedRequest.Coordinates.Length);
+        }
+
+        [Test]
+        public void PlanAreaAttack_DiamondShape_GeneratesFiveTilesForRadiusOne()
+        {
+            Vector2Int center = new Vector2Int(5, 5);
+            TileHighlightRequest capturedRequest = default;
+            CombatEvents.OnHighlightTilesRequested += req => capturedRequest = req;
+
+            _ai.PlanAreaAttack(1, center, 1, AreaShapeType.Diamond);
+
+            // Radius 1 Diamond membuang 4 sudut diagonal, menyisakan 5 petak
+            Assert.AreEqual(5, capturedRequest.Coordinates.Length);
+        }
+
+        [Test]
+        public void PlanAreaAttack_UnimplementedShape_ThrowsNotImplementedException()
+        {
+            Vector2Int center = new Vector2Int(5, 5);
+            // Menjamin kepatuhan: melempar NotImplementedException jika tipe bentuk tidak terdaftar di AreaShapeEvaluator
+            Assert.Throws<System.NotImplementedException>(() =>
+            {
+                _ai.PlanAreaAttack(1, center, 1, (AreaShapeType)999);
+            });
         }
     }
 }

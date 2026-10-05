@@ -59,6 +59,10 @@ namespace PilotGame.Map
         }
     }
 
+    /// <summary>
+    /// Mengelola penempatan Checkpoint di peta ekspedisi (Maksimal 3 slot per run - GDD §4.4).
+    /// Membutuhkan pengorbanan (sacrifice) 1 kartu aktif setiap penempatan.
+    /// </summary>
     public class CheckpointManager : MonoBehaviour
     {
         public const int MaxCheckpoints = 3;
@@ -66,35 +70,54 @@ namespace PilotGame.Map
 
         private readonly List<CheckpointData> _activeCheckpoints = new();
 
+        /// <summary>
+        /// Validasi apakah pemain memenuhi syarat menaruh checkpoint:
+        /// 1. Masih memiliki sisa kuota checkpoint (> 0).
+        /// 2. Memiliki minimal 2 kartu di deck (agar pemain tidak kehabisan kartu sama sekali).
+        /// </summary>
         public bool CanPlaceCheckpoint(List<CardData> currentDeck)
         {
             return AvailableCheckpoints > 0 && currentDeck != null && currentDeck.Count > 1;
         }
 
+        /// <summary>
+        /// Menempatkan checkpoint baru di node peta yang ditentukan:
+        /// - Mengurangi kuota slot checkpoint.
+        /// - Menghapus kartu yang dikorbankan secara permanen dari deck run saat ini.
+        /// - Menyimpan snapshot HP pemain dan koordinat node.
+        /// </summary>
         public bool PlaceCheckpoint(string nodeId, int floor, CardData sacrificedCard, int currentHP, List<CardData> deck)
         {
             if (!CanPlaceCheckpoint(deck) || sacrificedCard == null) return false;
 
-            // Kurangi kuota checkpoint
+            // 1. Kurangi kuota checkpoint yang tersedia
             AvailableCheckpoints--;
 
-            // Hapus kartu yang dikorbankan dari deck aktif
+            // 2. Hapus kartu yang dikorbankan dari deck aktif pemain
             deck.Remove(sacrificedCard);
 
+            // 3. Simpan data checkpoint
             var cp = new CheckpointData(nodeId, floor, sacrificedCard.Id, currentHP);
             _activeCheckpoints.Add(cp);
 
+            // 4. Siarkan event notifikasi
             CombatEvents.OnCheckpointPlaced?.Invoke(nodeId);
             Debug.Log($"[Checkpoint] Checkpoint aktif di Node {nodeId}. Mengorbankan kartu: {sacrificedCard.Name}. Sisa slot: {AvailableCheckpoints}");
 
             return true;
         }
 
+        /// <summary>
+        /// Mengembalikan data checkpoint paling terakhir (LIFO - Last In First Out) menggunakan operator [^1].
+        /// </summary>
         public CheckpointData GetLatestCheckpoint()
         {
             return _activeCheckpoints.Count > 0 ? _activeCheckpoints[^1] : null;
         }
 
+        /// <summary>
+        /// Mereset status checkpoint saat memulai ekspedisi baru.
+        /// </summary>
         public void ResetForNewRun()
         {
             AvailableCheckpoints = MaxCheckpoints;

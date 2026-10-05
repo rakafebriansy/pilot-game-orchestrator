@@ -59,6 +59,10 @@ using UnityEngine;
 
 namespace PilotGame.Persistence
 {
+    /// <summary>
+    /// Mengelola penyimpanan dan pemuatan berkas progres permainan lokal (JSON Serialization).
+    /// Menggunakan Application.persistentDataPath untuk kompatibilitas lintas platform (PC, Mac, Mobile).
+    /// </summary>
     public class SaveDataManager : MonoBehaviour
     {
         public static SaveDataManager Instance { get; private set; }
@@ -78,6 +82,9 @@ namespace PilotGame.Persistence
             LoadGame();
         }
 
+        /// <summary>
+        /// Menyimpan data progres aktif ke file JSON lokal secara terformat (pretty-print).
+        /// </summary>
         public void SaveGame()
         {
             string json = JsonUtility.ToJson(CurrentSave, true);
@@ -85,6 +92,10 @@ namespace PilotGame.Persistence
             Debug.Log($"[SaveDataManager] Progres tersimpan ke: {SaveFilePath}");
         }
 
+        /// <summary>
+        /// Memuat data simpanan dari file JSON. Jika file belum ada (pengguna baru),
+        /// buat instance simpanan default baru dan simpan ke disk.
+        /// </summary>
         public void LoadGame()
         {
             if (File.Exists(SaveFilePath))
@@ -95,6 +106,7 @@ namespace PilotGame.Persistence
             }
             else
             {
+                // Inisialisasi save data kosong untuk run pertama kali
                 CurrentSave = new GameSaveData();
                 SaveGame();
             }
@@ -111,18 +123,30 @@ using UnityEngine;
 
 namespace PilotGame.Persistence
 {
+    /// <summary>
+    /// Menghitung akumulasi skor ekspedisi saat pemain menang atau gugur,
+    /// dan mengonversinya menjadi mata uang meta-progres permanen (Knowledge Shards).
+    /// </summary>
     public class ExpeditionPointsManager : MonoBehaviour
     {
+        /// <summary>
+        /// Formula Konversi Skor Ekspedisi:
+        /// - Poin Lantai: +10 Shards per lantai yang berhasil diselesaikan.
+        /// - Poin Eliminasi: +5 Shards per musuh yang dikalahkan.
+        /// - Poin Sisa Gold: +1 Shards per 10 sisa koin emas yang dibawa.
+        /// </summary>
         public int CalculateShards(int floorReached, int enemiesKilled, int goldRemaining)
         {
-            // Formula konversi poin ekspedisi:
+            // 1. Hitung subtotal poin masing-masing komponen
             int floorPoints = floorReached * 10;
             int killPoints = enemiesKilled * 5;
-            int goldPoints = goldRemaining / 10;
+            int goldPoints = goldRemaining / 10; // Pembagian integer: sisa di bawah 10 diabaikan
 
+            // 2. Akumulasi total Shards
             int totalShards = floorPoints + killPoints + goldPoints;
             Debug.Log($"[Expedition] Hasil konversi: {floorReached} Lantai + {enemiesKilled} Kill + {goldRemaining} Gold = {totalShards} Shards");
 
+            // 3. Simpan langsung ke Save Data persisten
             if (SaveDataManager.Instance != null)
             {
                 SaveDataManager.Instance.CurrentSave.TotalKnowledgeShards += totalShards;

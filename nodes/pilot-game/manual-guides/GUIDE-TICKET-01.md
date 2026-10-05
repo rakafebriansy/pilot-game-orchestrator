@@ -101,12 +101,25 @@ namespace PilotGame.Core.Data
     }
 
     /// <summary>
+    /// Bentuk sebaran pola area serangan (Area of Effect Shapes) untuk desainer game.
+    /// </summary>
+    public enum AreaShapeType
+    {
+        Square,      // Kotak penuh (Chebyshev: 3x3, 5x5)
+        Diamond,     // Belah ketupat (Manhattan: |x| + |y| <= r)
+        Cross,       // Salib / Plus (+) lurus vertikal & horizontal
+        Circle,      // Lingkaran Euclidean halus (x^2 + y^2 <= r^2)
+        DiagonalX,   // Silang diagonal (X)
+        Ring         // Cincin / Donat (hanya bingkai batas terluar)
+    }
+
+    /// <summary>
     /// Tipe properti dan karakteristik medan ubin di arena 15x15.
     /// </summary>
     public enum TileType
     {
         NormalFloor,       // Lantai ubin biasa (walkable)
-        StealthBush,       // Semak taktis: musuh tidak bisa menarget dari jarak > 2 petak
+        StealthBush,       // Semak taktis: musuh tidak bisa menarget dari jarak >= 2 petak (hanya terlihat pada jarak 1 petak)
         ObstaclePillar,    // Pilar/Rintangan permanen (non-walkable & block attack linear)
         HazardTrap,        // Jebakan duri/api: memberikan damage saat diinjak
         BurnedBush         // Semak yang hangus akibat skill elemen api

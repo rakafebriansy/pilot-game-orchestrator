@@ -52,7 +52,7 @@ Tiket ini bergantung pada TICKET-01 (enum `CardActionType` diperlukan oleh `Card
 - `Assets/Scripts/Cards/ConsumableData.cs`
 - `Assets/Art/Sprites/Card_ThrowingBlade_Art.jpg`
 - `Assets/Art/Sprites/Enemy_TatteredConscript_Sprite.jpg`
-- `Assets/Art/Sprites/Item_ElixirOfLife_Icon.jpg`
+- `Assets/Art/Sprites/Consumable_ElixirOfLife_Icon.jpg`
 - `Assets/ScriptableObjects/Cards/`
 - `Assets/ScriptableObjects/Enemies/`
 - `Assets/ScriptableObjects/Consumables/`

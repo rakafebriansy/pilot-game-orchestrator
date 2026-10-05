@@ -119,24 +119,33 @@ namespace PilotGame.Units
 
         private void HandleUnitMoved(UnitMovePayload payload)
         {
+            // Abaikan event jika event ini ditujukan untuk unit ID lain
             if (payload.UnitId != _unitId) return;
 
+            // Hentikan coroutine pergerakan sebelumnya jika unit masih bergerak di tengah jalan
             if (_moveCoroutine != null)
             {
                 StopCoroutine(_moveCoroutine);
             }
 
+            // Offset +0.5f pada koordinat x dan y agar unit berdiri tepat di tengah ubin (Tile Center Pivot)
             Vector3 targetWorldPos = new Vector3(payload.ToCoord.x + 0.5f, payload.ToCoord.y + 0.5f, 0f);
             _moveCoroutine = StartCoroutine(MoveRoutine(targetWorldPos));
         }
 
+        /// <summary>
+        /// Coroutine interpolasi halus posisi unit menuju petak target frame demi frame.
+        /// </summary>
         private IEnumerator MoveRoutine(Vector3 targetPos)
         {
+            // Terus bergerak secara linear hingga jarak ke target kurang dari batas toleransi 0.01f
             while (Vector3.Distance(transform.position, targetPos) > 0.01f)
             {
                 transform.position = Vector3.MoveTowards(transform.position, targetPos, _moveSpeed * Time.deltaTime);
                 yield return null;
             }
+
+            // Snap presisi ke koordinat akhir setelah mendekati target
             transform.position = targetPos;
             _moveCoroutine = null;
         }
@@ -156,6 +165,7 @@ namespace PilotGame.Units
 {
     /// <summary>
     /// Mengatur trigger parameter Animator sesuai sinyal event pertempuran.
+    /// Menggunakan hashing integer untuk performa optimal tanpa alokasi string di runtime.
     /// </summary>
     [RequireComponent(typeof(Animator))]
     public class UnitAnimatorPresenter : MonoBehaviour
@@ -163,6 +173,7 @@ namespace PilotGame.Units
         [SerializeField] private int _unitId = 1;
         private Animator _animator;
 
+        // Caching StringToHash untuk menghindari overhead string lookup pada setiap frame/event
         private static readonly int AttackHash = Animator.StringToHash("Attack");
         private static readonly int HitHash = Animator.StringToHash("Hit");
         private static readonly int DieHash = Animator.StringToHash("Die");
@@ -188,6 +199,7 @@ namespace PilotGame.Units
         {
             if (casterId == _unitId && _animator != null)
             {
+                // Memicu animasi serang (Attack)
                 _animator.SetTrigger(AttackHash);
             }
         }
@@ -196,6 +208,7 @@ namespace PilotGame.Units
         {
             if (payload.TargetUnitId == _unitId && _animator != null)
             {
+                // Memicu animasi terkena pukulan (Hit Reaction)
                 _animator.SetTrigger(HitHash);
             }
         }

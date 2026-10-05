@@ -131,6 +131,7 @@ namespace PilotGame.Environment
         private void Awake()
         {
             _light2D = GetComponent<Light2D>();
+            // Offset acak agar setiap obor di scene memiliki variasi kedipan unik (tidak seragam)
             _noiseOffset = Random.Range(0f, 100f);
         }
 
@@ -138,8 +139,13 @@ namespace PilotGame.Environment
         {
             if (_light2D == null) return;
 
+            // 1. Sampel Perlin Noise 1D/2D yang menghasilkan nilai transisi kontinu halus (0.0 s/d 1.0)
             float noise = Mathf.PerlinNoise(_noiseOffset, Time.time * _flickerSpeed);
+
+            // 2. Interpolasi linier (Lerp) intensitas cahaya berdasarkan nilai noise
             _light2D.intensity = Mathf.Lerp(_minIntensity, _maxIntensity, noise);
+
+            // 3. Interpolasi radius jangkauan cahaya agar ukuran halo api terasa berdenyut alami
             _light2D.pointLightOuterRadius = Mathf.Lerp(_minRadius, _maxRadius, noise);
         }
     }
@@ -155,7 +161,7 @@ using UnityEngine;
 namespace PilotGame.Audio
 {
     /// <summary>
-    /// Mengelola pemutaran background music (BGM) dan efek suara (SFX) pertempuran.
+    /// Mengelola pemutaran background music (BGM) dan efek suara (SFX) pertempuran secara terpusat (Singleton).
     /// </summary>
     public class AudioManager : MonoBehaviour
     {
@@ -173,6 +179,7 @@ namespace PilotGame.Audio
 
         private void Awake()
         {
+            // Pola Singleton: Memastikan hanya ada 1 instance aktif di seluruh scene dan bertahan antar scene
             if (Instance != null && Instance != this)
             {
                 Destroy(gameObject);
@@ -190,6 +197,9 @@ namespace PilotGame.Audio
             }
         }
 
+        /// <summary>
+        /// Memainkan BGM dengan proteksi agar lagu yang sama tidak diputar ulang dari awal.
+        /// </summary>
         public void PlayBGM(AudioClip clip, bool loop = true)
         {
             if (_bgmSource == null || clip == null) return;
@@ -198,6 +208,9 @@ namespace PilotGame.Audio
             _bgmSource.Play();
         }
 
+        /// <summary>
+        /// Memainkan efek suara one-shot (dapat ditumpuk/overlap tanpa memotong suara sebelumnya).
+        /// </summary>
         public void PlaySFX(AudioClip clip, float volume = 1f)
         {
             if (_sfxSource == null || clip == null) return;

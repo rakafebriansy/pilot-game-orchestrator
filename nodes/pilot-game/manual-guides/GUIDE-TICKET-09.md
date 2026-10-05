@@ -68,11 +68,16 @@ namespace PilotGame.UI
             RenderMapNodes();
         }
 
+        /// <summary>
+        /// Merender seluruh node peta Menara Babel ke dalam ScrollView UI Toolkit.
+        /// Urutan perulangan dibalik (Lantai 15 -> Lantai 1) agar Lantai 1 berada di posisi bawah scroll view.
+        /// </summary>
         public void RenderMapNodes()
         {
             if (_mapScrollView == null || _currentMap == null) return;
             _mapScrollView.Clear();
 
+            // Loop dari lantai tertinggi ke terendah (vertikal menara)
             for (int floor = MapGenerator.TotalFloors - 1; floor >= 0; floor--)
             {
                 var floorRow = new VisualElement();
@@ -82,6 +87,7 @@ namespace PilotGame.UI
                 floorLabel.AddToClassList("floor-label");
                 floorRow.Add(floorLabel);
 
+                // Buat tombol untuk setiap node di lantai ini
                 foreach (var node in _currentMap.GetNodesAtFloor(floor))
                 {
                     var nodeBtn = new Button(() => OnNodeClicked(node));
@@ -89,6 +95,7 @@ namespace PilotGame.UI
                     nodeBtn.AddToClassList("map-node-button");
                     nodeBtn.AddToClassList($"node-{node.NodeType.ToString().ToLower()}");
 
+                    // Kunci tombol jika node belum dapat diakses (belum dibuka jalurnya)
                     if (!node.IsAvailable)
                     {
                         nodeBtn.SetEnabled(false);
@@ -102,24 +109,31 @@ namespace PilotGame.UI
             }
         }
 
+        /// <summary>
+        /// Menangani klik node oleh pemain: menandai node selesai,
+        /// membuka node anak berikutnya (DAG Outgoing Edges), dan transisi ke scene terkait.
+        /// </summary>
         private void OnNodeClicked(MapNodeData node)
         {
             Debug.Log($"[MapScreen] Pemain memilih node: {node.NodeId} ({node.NodeType})");
             node.IsVisited = true;
             node.IsAvailable = false;
 
-            // Aktifkan node tujuan berikutnya
+            // Buka akses ke semua node turunan yang terhubung langsung
             foreach (var outId in node.OutgoingNodeIds)
             {
                 var nextNode = _currentMap.GetNodeById(outId);
                 if (nextNode != null) nextNode.IsAvailable = true;
             }
 
-            // Pindah ke scene terkait
+            // Arahkan ke Scene pertempuran atau Toko Pedagang dengan transisi fade
             string targetScene = node.NodeType == MapNodeType.MerchantShop ? "ShopScene" : "MainBattleScene";
             _sceneTransition.LoadSceneWithFade(targetScene);
         }
 
+        /// <summary>
+        /// Mengembalikan simbol teks/ikon representatif untuk tiap tipe node.
+        /// </summary>
         private string GetNodeSymbol(MapNodeType type)
         {
             return type switch
@@ -149,7 +163,8 @@ using UnityEngine.UI;
 namespace PilotGame.Core
 {
     /// <summary>
-    /// Mengatur transisi layar gelap (Fade to Black) antar-scene.
+    /// Mengatur transisi layar gelap (Fade to Black) antar-scene secara asinkron.
+    /// Pola Singleton persisten (DontDestroyOnLoad).
     /// </summary>
     public class SceneTransitionManager : MonoBehaviour
     {
@@ -174,8 +189,15 @@ namespace PilotGame.Core
             StartCoroutine(FadeAndSwitchScene(sceneName));
         }
 
+        /// <summary>
+        /// Coroutine 3-tahap transisi scene:
+        /// 1. Fade Out: Naikkan alpha CanvasGroup dari 0 -> 1 (layar gelap)
+        /// 2. Async Load: Muat scene Unity di background hingga selesai
+        /// 3. Fade In: Turunkan alpha CanvasGroup dari 1 -> 0 (layar terang kembali)
+        /// </summary>
         private IEnumerator FadeAndSwitchScene(string sceneName)
         {
+            // TAHAP 1: Fade to Black (Layar menggelap)
             if (_fadeCanvasGroup != null)
             {
                 float elapsed = 0f;
@@ -188,9 +210,11 @@ namespace PilotGame.Core
                 _fadeCanvasGroup.alpha = 1f;
             }
 
+            // TAHAP 2: Pemuatan Scene Baru secara Asinkron
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
             while (!asyncLoad.isDone) yield return null;
 
+            // TAHAP 3: Fade to Clear (Layar kembali terang di scene baru)
             if (_fadeCanvasGroup != null)
             {
                 float elapsed = 0f;

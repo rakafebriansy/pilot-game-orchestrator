@@ -1,4 +1,4 @@
-# 📖 Manual Guide: TICKET-05B — 14 Skill VFX Prefab, Damage Popups & Object Pooling
+# 📖 Manual Guide: TICKET-05B — Skill VFX Prefabs (Sinergi 1: Bleed & Assassination) & Object Pooling
 
 > **Referensi Tiket:** [TICKET-05B.md](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-05B.md)  
 > **Domain:** `[🤺 DOMAIN 2: CHARACTER & ANIMATION]`  
@@ -7,7 +7,11 @@
 ---
 
 ## 🎯 1. Ringkasan & Tujuan
-Tiket ini mengimplementasikan sistem efisiensi memori **Object Pooling System** (`VFXPoolManager.cs`) untuk menangani instansiasi partikel skill dan angka kerusakan melayang (*Damage Popups*), serta memproduksi **14 Prefab Skill VFX** yang dihubungkan ke event eksekusi kemampuan kartu.
+Tiket ini mengimplementasikan sistem efisiensi memori **Object Pooling System** (`VFXPoolManager.cs`) untuk menangani instansiasi partikel skill dan angka kerusakan melayang (*Damage Popups*), serta memproduksi **4 Prefab Skill VFX khusus Sinergi 1 (Bleed & Assassination Archetype)**:
+1. `VFX_ThrowingBlade.prefab`: Proyektil belati terbang lurus + percikan darah merah.
+2. `VFX_ShadowStep_Blink.prefab`: Efek kabut bayangan / teleportasi shadow ke belakang target.
+3. `VFX_SerratedDagger_Slash.prefab`: Tebasan ganda merah menyala dengan ledakan darah ganda jika target terkena status Bleed.
+4. `VFX_Bleed_Tick.prefab`: Tetesan darah DoT saat resolusi ronde di `RoundResetPhase`.
 
 ---
 
@@ -22,11 +26,10 @@ Assets/
 └── Prefabs/
     └── VFX/
         ├── DamagePopup_Prefab.prefab
-        ├── VFX_Teleport.prefab
-        ├── VFX_FrostBlast.prefab
-        ├── VFX_StormLightning.prefab
-        ├── VFX_SlashBlade.prefab
-        └── VFX_SuperPunch.prefab
+        ├── VFX_ThrowingBlade.prefab
+        ├── VFX_ShadowStep_Blink.prefab
+        ├── VFX_SerratedDagger_Slash.prefab
+        └── VFX_Bleed_Tick.prefab
 ```
 
 ---
@@ -64,12 +67,16 @@ namespace PilotGame.VFX
             if (prefab == null) return null;
 
             string key = prefab.name;
+
+            // Buat queue pool baru jika prefab ini belum pernah di-spawn sebelumnya
             if (!_pools.ContainsKey(key))
             {
                 _pools[key] = new Queue<GameObject>();
             }
 
             GameObject obj;
+
+            // 1. Ambil dari Pool (Reuse) jika ada objek non-aktif yang tersedia
             if (_pools[key].Count > 0)
             {
                 obj = _pools[key].Dequeue();
@@ -79,12 +86,16 @@ namespace PilotGame.VFX
             }
             else
             {
+                // 2. Jika pool kosong, instantiate objek baru sebagai child dari VFXPoolManager
                 obj = Instantiate(prefab, position, rotation, transform);
             }
 
             return obj;
         }
 
+        /// <summary>
+        /// Mengembalikan instance objek ke dalam pool (dengan opsi delay).
+        /// </summary>
         public void Despawn(GameObject prefab, GameObject instance, float delay = 0f)
         {
             if (instance == null || prefab == null) return;
@@ -95,6 +106,7 @@ namespace PilotGame.VFX
         {
             if (delay > 0f) yield return new WaitForSeconds(delay);
 
+            // Matikan visual GameObject dan masukkan kembali ke antrian (Queue)
             instance.SetActive(false);
             if (!_pools.ContainsKey(key))
             {
@@ -119,7 +131,8 @@ using PilotGame.Core.Events;
 namespace PilotGame.VFX
 {
     /// <summary>
-    /// Menampilkan angka damage / shield melayang ke atas saat unit terkena serangan.
+    /// Menampilkan angka damage / status DoT melayang ke atas saat unit terkena serangan.
+    /// Menggunakan sistem Object Pooling untuk meminimalkan alokasi Garbage Collection (GC Alloc).
     /// </summary>
     public class DamagePopupPresenter : MonoBehaviour
     {
@@ -139,22 +152,26 @@ namespace PilotGame.VFX
 
         private void HandleDamagePopup(DamagePayload payload)
         {
-            if (_damagePopupPrefab == null) return;
+            if (_damagePopupPrefab == null || VFXPoolManager.Instance == null) return;
 
-            // Dapatkan posisi target unit dari world/grid
+            // Spawn popup sedikit di atas kepala unit (+1.2f pada sumbu Y)
             Vector3 spawnPos = transform.position + new Vector3(0, 1.2f, 0);
             GameObject popup = VFXPoolManager.Instance.Spawn(_damagePopupPrefab, spawnPos, Quaternion.identity);
 
             var tmp = popup.GetComponentInChildren<TextMeshPro>();
             if (tmp != null)
             {
+                // Tampilkan angka damage merah jika tembus, atau teks cyan BLOCKED jika sepenuhnya diserap shield
                 tmp.text = payload.DamageAmount > 0 ? $"-{payload.DamageAmount}" : "BLOCKED";
-                tmp.color = payload.DamageAmount > 0 ? Color.red : Color.cyan;
+                tmp.color = payload.DamageAmount >= 10 ? new Color(1f, 0.2f, 0.2f) : (payload.DamageAmount > 0 ? Color.red : Color.cyan);
             }
 
             StartCoroutine(AnimateAndDespawn(popup));
         }
 
+        /// <summary>
+        /// Menggerakkan teks melayang vertikal ke atas sebelum mengembalikannya ke pool.
+        /// </summary>
         private IEnumerator AnimateAndDespawn(GameObject popup)
         {
             float elapsed = 0f;
@@ -162,11 +179,13 @@ namespace PilotGame.VFX
 
             while (elapsed < _fadeDuration)
             {
+                // Hitung posisi lerp melayang ke atas berdasarkan rasio waktu
                 popup.transform.position = startPos + new Vector3(0, _floatSpeed * (elapsed / _fadeDuration), 0);
                 elapsed += Time.deltaTime;
                 yield return null;
             }
 
+            // Kembalikan ke pool setelah durasi animasi selesai
             VFXPoolManager.Instance.Despawn(_damagePopupPrefab, popup);
         }
     }
@@ -184,46 +203,58 @@ using PilotGame.Core.Events;
 namespace PilotGame.VFX
 {
     /// <summary>
-    /// Menyimulasikan pemutaran VFX skill di koordinat ubin target saat skill dieksekusi.
+    /// Memutar VFX skill Sinergi 1 (Throwing Blade, Shadow Step, Serrated Dagger, Bleed Tick) di koordinat target.
     /// </summary>
     public class SkillVFXPresenter : MonoBehaviour
     {
-        [Header("Skill VFX Prefabs Catalog")]
-        [SerializeField] private GameObject _slashVFXPrefab;
-        [SerializeField] private GameObject _frostVFXPrefab;
-        [SerializeField] private GameObject _lightningVFXPrefab;
-        [SerializeField] private GameObject _teleportVFXPrefab;
+        [Header("Sinergi 1 VFX Prefabs")]
+        [SerializeField] private GameObject _throwingBladeVFXPrefab;
+        [SerializeField] private GameObject _shadowStepVFXPrefab;
+        [SerializeField] private GameObject _serratedDaggerVFXPrefab;
+        [SerializeField] private GameObject _bleedTickVFXPrefab;
 
         private void OnEnable()
         {
             CombatEvents.OnSkillExecuted += HandleSkillVFX;
+            CombatEvents.OnStatusEffectApplied += HandleStatusVFX;
         }
 
         private void OnDisable()
         {
             CombatEvents.OnSkillExecuted -= HandleSkillVFX;
+            CombatEvents.OnStatusEffectApplied -= HandleStatusVFX;
         }
 
-        private void HandleSkillVFX(int casterId, int skillId, Vector2Int targetCoord)
+        private void HandleSkillVFX(int casterId, string cardId, Vector2Int targetCoord)
         {
             Vector3 worldPos = new Vector3(targetCoord.x + 0.5f, targetCoord.y + 0.5f, 0);
-            GameObject vfxPrefab = GetVFXBySkillId(skillId);
+            GameObject vfxPrefab = GetVFXByCardId(cardId);
 
             if (vfxPrefab != null && VFXPoolManager.Instance != null)
             {
                 GameObject vfxInstance = VFXPoolManager.Instance.Spawn(vfxPrefab, worldPos, Quaternion.identity);
-                VFXPoolManager.Instance.Despawn(vfxPrefab, vfxInstance, 1.5f);
+                VFXPoolManager.Instance.Despawn(vfxPrefab, vfxInstance, 1.2f);
             }
         }
 
-        private GameObject GetVFXBySkillId(int skillId)
+        private void HandleStatusVFX(int unitId, StatusEffectType status, int duration)
         {
-            return skillId switch
+            if (status == StatusEffectType.Bleed && _bleedTickVFXPrefab != null && VFXPoolManager.Instance != null)
             {
-                1 => _teleportVFXPrefab,
-                3 => _frostVFXPrefab,
-                6 => _lightningVFXPrefab,
-                _ => _slashVFXPrefab
+                Vector3 worldPos = transform.position + new Vector3(0, 0.8f, 0);
+                GameObject vfx = VFXPoolManager.Instance.Spawn(_bleedTickVFXPrefab, worldPos, Quaternion.identity);
+                VFXPoolManager.Instance.Despawn(_bleedTickVFXPrefab, vfx, 1.0f);
+            }
+        }
+
+        private GameObject GetVFXByCardId(string cardId)
+        {
+            return cardId switch
+            {
+                "CARD-009" or "card_throwingblade" => _throwingBladeVFXPrefab,
+                "CARD-034" or "card_shadowstep" => _shadowStepVFXPrefab,
+                "CARD-031" or "card_serrateddagger" => _serratedDaggerVFXPrefab,
+                _ => _throwingBladeVFXPrefab
             };
         }
     }
@@ -233,6 +264,7 @@ namespace PilotGame.VFX
 ---
 
 ## 🧪 4. Langkah Verifikasi
-1. Pasang `VFXPoolManager` pada Scene.
-2. Panggil event `CombatEvents.OnUnitDamaged?.Invoke(new DamagePayload(1, 8, 0))` di Play Mode.
-3. Periksa angka `-8` merah meluncur ke atas lalu hilang kembali ke Object Pool tanpa `Destroy()`.
+1. Pasang `VFXPoolManager` dan `SkillVFXPresenter` pada Scene pertempuran.
+2. Panggil event `CombatEvents.OnSkillExecuted?.Invoke(1, "CARD-009", new Vector2Int(3, 2))` di Play Mode.
+3. Periksa partikel proyektil `VFX_ThrowingBlade` muncul di koordinat (3, 2) lalu kembali ke pool.
+4. Panggil event `CombatEvents.OnSkillExecuted?.Invoke(1, "CARD-031", new Vector2Int(3, 2))` untuk memeriksa tebasan ganda `VFX_SerratedDagger`.

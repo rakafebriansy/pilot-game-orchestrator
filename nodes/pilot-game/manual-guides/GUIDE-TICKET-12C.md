@@ -61,17 +61,23 @@ namespace PilotGame.Arena
         public AudioClip BiomeBGM;
     }
 
+    /// <summary>
+    /// Mengelola perubahan tema visual dan audio 3 Bioma Menara Babel (GDD §5.2).
+    /// </summary>
     public class BiomeManager : MonoBehaviour
     {
         [SerializeField] private Tilemap _floorTilemap;
-        [SerializeField] private BiomeData[] _biomes;
+        [SerializeField] private BiomeData[] _biomes; // Indeks: 0 = Perpustakaan, 1 = Arcane, 2 = Ziggurat
 
+        /// <summary>
+        /// Mengaplikasikan tema visual bioma ke seluruh arena (15x15) sesuai nomor lantai.
+        /// </summary>
         public void ApplyBiome(int floorNumber)
         {
             BiomeData selected = GetBiomeForFloor(floorNumber);
             if (selected == null || _floorTilemap == null) return;
 
-            // Warnai ubin lantai sesuai bioma
+            // Warnai ulang seluruh 15x15 ubin lantai sesuai palet bioma yang terpilih
             for (int x = 0; x < 15; x++)
             {
                 for (int y = 0; y < 15; y++)
@@ -83,6 +89,12 @@ namespace PilotGame.Arena
             Debug.Log($"[BiomeManager] Memasang Bioma: {selected.BiomeName} untuk Lantai {floorNumber}");
         }
 
+        /// <summary>
+        /// Pemetaan rentang lantai ke bioma:
+        /// - Lantai 1-5: Medieval Dark Fantasy Library
+        /// - Lantai 6-10: Distorted Arcane Archive
+        /// - Lantai 11-15: Ancient Mesopotamian Ziggurat
+        /// </summary>
         private BiomeData GetBiomeForFloor(int floor)
         {
             if (floor <= 5) return _biomes[0];
@@ -105,6 +117,9 @@ using PilotGame.Grid;
 
 namespace PilotGame.Arena
 {
+    /// <summary>
+    /// Mengelola interaksi ubin dinamis arena: pembakaran semak siluman menjadi abu oleh elemen api/petir.
+    /// </summary>
     public class DynamicTileManager : MonoBehaviour
     {
         [SerializeField] private Tilemap _floorTilemap;
@@ -128,6 +143,11 @@ namespace PilotGame.Arena
             CombatEvents.OnSkillExecuted -= HandleSkillExecuted;
         }
 
+        /// <summary>
+        /// Mendengarkan eksekusi skill pertempuran.
+        /// Jika skill berelemen Api/Petir (SkillId == 6) mengenai koordinat berisi StealthBush,
+        /// picu pembakaran semak.
+        /// </summary>
         private void HandleSkillExecuted(int casterId, int skillId, Vector2Int targetCoord)
         {
             // Skill 6 = Storm / Fire: membakar semak jika mengenai target
@@ -137,14 +157,24 @@ namespace PilotGame.Arena
             }
         }
 
+        /// <summary>
+        /// Mengubah semak hidup (StealthBush) menjadi semak hangus (BurnedBush):
+        /// 1. Mengubah TileType di data model grid (menghilangkan efek stealth).
+        /// 2. Mengganti visual sprite pada Tilemap menjadi abu hitam.
+        /// 3. Men-spawn efek partikel asap di posisi koordinat (+0.5f center offset).
+        /// </summary>
         public void BurnBush(Vector2Int coord)
         {
+            // 1. Mutasi data logika: semak tidak lagi memberikan buff stealth
             _grid.SetTileType(coord, TileType.BurnedBush);
+
+            // 2. Pembaruan visual tilemap
             if (_floorTilemap != null && _burnedBushTile != null)
             {
                 _floorTilemap.SetTile(new Vector3Int(coord.x, coord.y, 0), _burnedBushTile);
             }
 
+            // 3. Efek visual partikel asap
             if (_smokeParticlePrefab != null)
             {
                 Vector3 worldPos = new Vector3(coord.x + 0.5f, coord.y + 0.5f, 0);

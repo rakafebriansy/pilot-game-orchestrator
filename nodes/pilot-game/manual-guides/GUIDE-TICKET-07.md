@@ -140,6 +140,10 @@ namespace PilotGame.Core.FSM
             ChangeState(IntentState);
         }
 
+        /// <summary>
+        /// Mengganti state FSM secara asinkron (Coroutines) dengan memanggil Exit() state lama
+        /// dan Enter() pada state baru untuk transisi yang mulus.
+        /// </summary>
         public void ChangeState(ICombatState nextState)
         {
             if (_currentState != null)
@@ -155,8 +159,13 @@ namespace PilotGame.Core.FSM
 
         private IEnumerator TransitionRoutine(ICombatState nextState)
         {
+            // 1. Jalankan proses pembersihan / pelepasan listener dari state sebelumnya
             yield return StartCoroutine(_currentState.Exit());
+
+            // 2. Ganti referensi state aktif
             _currentState = nextState;
+
+            // 3. Jalankan inisialisasi / trigger animasi pada state yang baru
             yield return StartCoroutine(_currentState.Enter());
         }
 
@@ -179,6 +188,10 @@ using PilotGame.Core.Events;
 
 namespace PilotGame.Core.FSM
 {
+    /// <summary>
+    /// Fase 1: Intent Phase (Fase Niat Musuh).
+    /// Musuh menghitung target dan memproyeksikan area bahaya merah sebelum giliran pemain dimulai.
+    /// </summary>
     public class IntentPhaseState : ICombatState
     {
         private readonly CombatStateMachine _fsm;
@@ -190,13 +203,18 @@ namespace PilotGame.Core.FSM
 
         public IEnumerator Enter()
         {
+            // 1. Publikasikan pergantian fase ke IntentPhase
             CombatEvents.OnPhaseChanged?.Invoke(CombatPhase.IntentPhase);
             yield return new WaitForSeconds(0.6f);
 
-            // Musuh ID 2 di posisi (6,2) merencanakan serangan ke Nabu di (2,2)
+            // 2. Kalkulasi niat serangan AI Musuh:
+            // Musuh ID 2 di posisi (6,2) merencanakan serangan linear ke Nabu di posisi (2,2)
             _fsm.AICalculator.PlanLinearAttack(2, new Vector2Int(6, 2), new Vector2Int(2, 2), 4);
 
+            // 3. Beri jeda 0.8 detik agar pemain dapat membaca telegraf bahaya musuh
             yield return new WaitForSeconds(0.8f);
+
+            // 4. Lanjut secara otomatis ke PlayerPhase
             _fsm.ChangeState(_fsm.PlayerState);
         }
 
@@ -223,6 +241,10 @@ using PilotGame.UI;
 
 namespace PilotGame.Core.FSM
 {
+    /// <summary>
+    /// Fase 2: Player Phase (Giliran Aksi Pemain).
+    /// Menunggu pemain memainkan 1 kartu aksi wajib (1 Turn = 1 Card) dengan validasi ketat.
+    /// </summary>
     public class PlayerPhaseState : ICombatState
     {
         private readonly CombatStateMachine _fsm;
@@ -241,22 +263,30 @@ namespace PilotGame.Core.FSM
         {
             _cardPlayedThisTurn = false;
             CombatEvents.OnPhaseChanged?.Invoke(CombatPhase.PlayerPhase);
+
+            // Berlangganan event penjatuhan kartu pemain
             CombatEvents.OnCardPlayed += HandleCardPlayed;
             yield return null;
         }
 
         public void UpdateState() { }
 
+        /// <summary>
+        /// Handler saat pemain melepaskan/menjatuhkan kartu ke grid arena.
+        /// </summary>
         private void HandleCardPlayed(object cardObj, Vector2Int targetCoord)
         {
+            // Cegah input ganda jika kartu sudah dimainkan pada giliran ini
             if (_cardPlayedThisTurn || !(cardObj is CardData card)) return;
 
             Vector2Int playerPos = new Vector2Int(2, 2);
+
+            // Validasi keabsahan kartu (Jarak, Fase, Rintangan, Stealth) via CardPlayValidator
             if (CardPlayValidator.CanPlayCard(card, playerPos, targetCoord, _fsm.GridModel, CombatPhase.PlayerPhase, out string reason))
             {
-                _cardPlayedThisTurn = true;
+                _cardPlayedThisTurn = true; // Kunci input pemain
 
-                // Eksekusi efek kartu
+                // Eksekusi efek kartu sesuai klasifikasi ActionType
                 if (card.ActionType == CardActionType.Attack)
                 {
                     DamagePayload result = _fsm.MathEngine.CalculateDamage(2, card.BaseDamage, 0);
@@ -268,10 +298,11 @@ namespace PilotGame.Core.FSM
                     CombatEvents.OnUnitMoved?.Invoke(new UnitMovePayload(1, playerPos, targetCoord));
                 }
 
+                // Buang kartu ke discard pile dan perbarui UI tangan
                 _deck.DiscardCard(card);
                 _ui.RefreshHandVisuals();
 
-                // Lanjut ke fase giliran musuh
+                // Lanjut ke fase giliran musuh setelah jeda animasi singkat
                 _fsm.StartCoroutine(DelayToEnemyPhase());
             }
             else
@@ -288,6 +319,7 @@ namespace PilotGame.Core.FSM
 
         public IEnumerator Exit()
         {
+            // Lepas event listener saat keluar dari PlayerPhase agar tidak terpanggil ganda
             CombatEvents.OnCardPlayed -= HandleCardPlayed;
             yield return null;
         }
@@ -307,6 +339,10 @@ using PilotGame.UI;
 
 namespace PilotGame.Core.FSM
 {
+    /// <summary>
+    /// Fase 3: Enemy Phase (Eksekusi Serangan Musuh).
+    /// Musuh mengeksekusi niat aksi yang telah direncanakan sebelumnya ke arah pemain.
+    /// </summary>
     public class EnemyPhaseState : ICombatState
     {
         private readonly CombatStateMachine _fsm;
@@ -318,7 +354,7 @@ namespace PilotGame.Core.FSM
             CombatEvents.OnPhaseChanged?.Invoke(CombatPhase.EnemyPhase);
             yield return new WaitForSeconds(0.6f);
 
-            // Musuh mengeksekusi serangan tombak ke (2,2)
+            // Musuh mengeksekusi serangan yang telah ditelegrafkan
             DamagePayload dmg = _fsm.MathEngine.CalculateDamage(1, 5, 0);
             CombatEvents.OnSkillExecuted?.Invoke(2, 1, new Vector2Int(2, 2));
             CombatEvents.OnUnitDamaged?.Invoke(dmg);
@@ -331,6 +367,10 @@ namespace PilotGame.Core.FSM
         public IEnumerator Exit() { yield return null; }
     }
 
+    /// <summary>
+    /// Fase 4: Round Reset Phase (Evaluasi Efek Status & Persiapan Ronde Baru).
+    /// Mengurangi durasi DoT/Buff, membersihkan highlight ubin, dan menarik kartu hingga penuh.
+    /// </summary>
     public class RoundResetPhaseState : ICombatState
     {
         private readonly CombatStateMachine _fsm;
@@ -345,12 +385,17 @@ namespace PilotGame.Core.FSM
         public IEnumerator Enter()
         {
             CombatEvents.OnPhaseChanged?.Invoke(CombatPhase.RoundResetPhase);
-            CombatEvents.OnClearAllHighlights?.Invoke();
+            CombatEvents.OnClearAllHighlights?.Invoke(); // Bersihkan telegraf ubin merah/kuning
 
+            // 1. Kurangi durasi seluruh status abnormal (Bleed, Stun, Vulnerable, dsb.)
             _fsm.MathEngine.TickStatusEffects();
+
+            // 2. Isi kembali kartu di tangan pemain hingga 5 kartu
             _deck.DrawToFullHand();
 
             yield return new WaitForSeconds(0.8f);
+
+            // 3. Putaran selesai -> Kembali ke IntentPhase untuk ronde berikutnya
             _fsm.ChangeState(_fsm.IntentState);
         }
 

@@ -65,33 +65,46 @@ namespace PilotGame.Inventory
         public int BonusShield = 0;
     }
 
+    /// <summary>
+    /// Mengelola inventaris dua lapis: Gudang Sanctuary (Stash) dan 3 Slot Beban Tempur (Wearable Slots).
+    /// </summary>
     public class InventoryManager : MonoBehaviour
     {
-        public const int MaxWearableSlots = 3;
+        public const int MaxWearableSlots = 3; // Batas beban ekspedisi 3 item (GDD §4.3)
 
-        public List<EquipmentData> StashItems = new();
-        public EquipmentData[] WearableSlots = new EquipmentData[MaxWearableSlots];
+        public List<EquipmentData> StashItems = new(); // Gudang penyimpanan kapasitas besar
+        public EquipmentData[] WearableSlots = new EquipmentData[MaxWearableSlots]; // Slot aktif dibawa ke run
 
+        /// <summary>
+        /// Memasang equipment dari Stash ke slot Wearable:
+        /// - Jika slot target sudah terisi, pindahkan item lama kembali ke Stash secara otomatis (Auto-swap).
+        /// - Pasang item baru ke slot target dan hapus dari Stash.
+        /// </summary>
         public bool EquipItem(EquipmentData item, int targetSlotIndex)
         {
             if (item == null || targetSlotIndex < 0 || targetSlotIndex >= MaxWearableSlots) return false;
 
-            // Jika slot sudah ada item, pindahkan item lama kembali ke Stash
+            // 1. Jika slot target sudah ada item, kembalikan item lama ke Stash
             if (WearableSlots[targetSlotIndex] != null)
             {
                 StashItems.Add(WearableSlots[targetSlotIndex]);
             }
 
+            // 2. Pasang item baru ke slot aktif dan keluarkan dari Stash
             StashItems.Remove(item);
             WearableSlots[targetSlotIndex] = item;
             Debug.Log($"[Inventory] Berhasil memasang {item.Name} di slot {targetSlotIndex + 1}");
             return true;
         }
 
+        /// <summary>
+        /// Melepaskan equipment dari slot Wearable dan mengembalikannya ke Stash.
+        /// </summary>
         public bool UnequipItem(int slotIndex)
         {
             if (slotIndex < 0 || slotIndex >= MaxWearableSlots || WearableSlots[slotIndex] == null) return false;
 
+            // Pindahkan kembali ke Stash dan kosongkan slot
             StashItems.Add(WearableSlots[slotIndex]);
             WearableSlots[slotIndex] = null;
             return true;
@@ -111,6 +124,9 @@ using PilotGame.Inventory;
 
 namespace PilotGame.UI
 {
+    /// <summary>
+    /// Mengontrol modal pemilihan hadiah equipment langka pasca-mengalahkan Boss Lantai 15 (GDD §4.7).
+    /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class BossLootModalController : MonoBehaviour
     {
@@ -120,6 +136,9 @@ namespace PilotGame.UI
         private UIDocument _uiDocument;
         private VisualElement _lootOptionsContainer;
 
+        /// <summary>
+        /// Membuka modal reward dan menampilkan hingga 3 pilihan equipment langka.
+        /// </summary>
         public void OpenBossLootModal()
         {
             gameObject.SetActive(true);
@@ -128,7 +147,7 @@ namespace PilotGame.UI
 
             _lootOptionsContainer.Clear();
 
-            // Berikan 3 opsi equipment langka
+            // Berikan maksimal 3 opsi equipment langka dari loot pool
             for (int i = 0; i < 3 && i < _bossLootPool.Count; i++)
             {
                 var equip = _bossLootPool[i];
@@ -147,6 +166,9 @@ namespace PilotGame.UI
             }
         }
 
+        /// <summary>
+        /// Mengklaim item pilihan dan menyimpannya langsung ke Stash Sanctuary permanen.
+        /// </summary>
         private void ClaimLoot(EquipmentData equip)
         {
             _inventory.StashItems.Add(equip);

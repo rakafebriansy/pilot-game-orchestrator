@@ -120,12 +120,14 @@ namespace PilotGame.Arena
         [SerializeField] private TileBase _moveTileSprite;    // Biru: Jangkauan gerak
         [SerializeField] private TileBase _hoverTileSprite;   // Oranye/Kuning: Preview kursor
 
+        // Berlangganan (Subscribe) ke event bus saat komponen aktif di scene
         private void OnEnable()
         {
             CombatEvents.OnHighlightTilesRequested += RenderHighlights;
             CombatEvents.OnClearAllHighlights += ClearHighlights;
         }
 
+        // Melepas langganan (Unsubscribe) saat non-aktif untuk mencegah memory leak
         private void OnDisable()
         {
             CombatEvents.OnHighlightTilesRequested -= RenderHighlights;
@@ -133,24 +135,28 @@ namespace PilotGame.Arena
         }
 
         /// <summary>
-        /// Menggambar ubin warna pada koordinat yang diminta.
+        /// Menggambar ubin warna (Highlight Overlay) secara batch pada koordinat yang diminta.
+        /// Mengonversi koordinat logika 2D (Vector2Int) ke koordinat sel Tilemap Unity (Vector3Int).
         /// </summary>
         public void RenderHighlights(TileHighlightRequest request)
         {
             if (_highlightTilemap == null || request.Coordinates == null) return;
 
+            // Dapatkan aset TileBase yang sesuai dengan gaya highlight yang diminta
             TileBase selectedTile = GetTileSpriteByStyle(request.Style);
             if (selectedTile == null) return;
 
+            // Gambar ubin satu per satu ke dalam lapisan Tilemap Overlay
             foreach (var coord in request.Coordinates)
             {
+                // Konversi koordinat grid (x, y) ke koordinat sel Tilemap Unity (x, y, z=0)
                 Vector3Int tilemapCoord = new Vector3Int(coord.x, coord.y, 0);
                 _highlightTilemap.SetTile(tilemapCoord, selectedTile);
             }
         }
 
         /// <summary>
-        /// Menghapus seluruh visual highlight di arena.
+        /// Menghapus seluruh visual highlight di arena dengan mengosongkan ubin pada Tilemap Overlay.
         /// </summary>
         public void ClearHighlights()
         {
@@ -160,14 +166,17 @@ namespace PilotGame.Arena
             }
         }
 
+        /// <summary>
+        /// Memetakan tipe enum HighlightType ke aset sprite TileBase yang sesuai.
+        /// </summary>
         private TileBase GetTileSpriteByStyle(HighlightType style)
         {
             return style switch
             {
-                HighlightType.DangerEnemyIntent => _dangerTileSprite,
-                HighlightType.ValidCardTarget => _validTileSprite,
-                HighlightType.MovementRange => _moveTileSprite,
-                HighlightType.HoverPreview => _hoverTileSprite,
+                HighlightType.DangerEnemyIntent => _dangerTileSprite, // Merah: Indikator bahaya intent musuh
+                HighlightType.ValidCardTarget => _validTileSprite,    // Hijau: Target kartu yang valid
+                HighlightType.MovementRange => _moveTileSprite,       // Biru: Jangkauan langkah/gerak
+                HighlightType.HoverPreview => _hoverTileSprite,       // Oranye/Kuning: Ubin yang sedang disorot kursor
                 _ => null
             };
         }

@@ -62,17 +62,24 @@ namespace PilotGame.Economy
             DontDestroyOnLoad(gameObject);
         }
 
+        /// <summary>
+        /// Mencoba mengurangi Gold pemain jika saldo mencukupi (Atomic validation).
+        /// Mengembalikan true jika transaksi berhasil.
+        /// </summary>
         public bool TrySpendGold(int amount)
         {
             if (CurrentGold >= amount)
             {
                 CurrentGold -= amount;
-                OnGoldChanged?.Invoke(CurrentGold);
+                OnGoldChanged?.Invoke(CurrentGold); // Siarkan perubahan saldo ke UI
                 return true;
             }
             return false;
         }
 
+        /// <summary>
+        /// Menambahkan Gold reward dari pertarungan atau event ke pundi pemain.
+        /// </summary>
         public void AddGold(int amount)
         {
             CurrentGold += amount;
@@ -95,6 +102,9 @@ using PilotGame.UI;
 
 namespace PilotGame.UI
 {
+    /// <summary>
+    /// Mengontrol tampilan Toko Pedagang (Merchant Shop): Pembelian kartu dan Purge deck.
+    /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class ShopScreenController : MonoBehaviour
     {
@@ -105,7 +115,7 @@ namespace PilotGame.UI
         private Label _goldLabel;
         private VisualElement _cardShelf;
         private Button _purgeDeckButton;
-        private int _purgeCost = 75;
+        private int _purgeCost = 75; // Biaya awal layanan penghapusan kartu
 
         private void Awake()
         {
@@ -130,15 +140,19 @@ namespace PilotGame.UI
             if (_goldLabel != null) _goldLabel.text = $"Gold: {currentGold} 💰";
         }
 
+        /// <summary>
+        /// Mengisi etalase toko dengan 3 kartu acak dari pool kartu toko.
+        /// </summary>
         private void PopulateShopCards()
         {
             if (_cardShelf == null) return;
             _cardShelf.Clear();
 
+            // Batasi tampilan maksimal 3 kartu di etalase
             for (int i = 0; i < 3 && i < _shopCardPool.Count; i++)
             {
                 CardData card = _shopCardPool[i];
-                int cardPrice = 50;
+                int cardPrice = 50; // Harga flat standar kartu
 
                 var itemBox = new VisualElement();
                 itemBox.AddToClassList("shop-item-box");
@@ -153,23 +167,31 @@ namespace PilotGame.UI
             }
         }
 
+        /// <summary>
+        /// Menangani transaksi pembelian kartu: potong gold, nonaktifkan kotak kartu (Sold Out),
+        /// dan perbarui saldo tampilan.
+        /// </summary>
         private void BuyCard(CardData card, int price, VisualElement itemBox)
         {
             if (GoldManager.Instance != null && GoldManager.Instance.TrySpendGold(price))
             {
                 Debug.Log($"[Shop] Berhasil membeli kartu: {card.Name}");
                 itemBox.SetEnabled(false);
-                itemBox.AddToClassList("sold-out");
+                itemBox.AddToClassList("sold-out"); // Visual feedback sold out
                 UpdateGoldDisplay(GoldManager.Instance.CurrentGold);
             }
         }
 
+        /// <summary>
+        /// Menangani layanan Purge Deck: menghapus kartu yang tidak diinginkan dari deck.
+        /// Biaya bertambah +25G setiap kali digunakan (Eskalasi harga roguelike).
+        /// </summary>
         private void OnPurgeDeckClicked()
         {
             if (GoldManager.Instance != null && GoldManager.Instance.TrySpendGold(_purgeCost))
             {
                 Debug.Log("[Shop] Membuka modal hapus kartu dari deck!");
-                _purgeCost += 25; // Biaya naik setiap kali dipakai
+                _purgeCost += 25; // Eskalasi biaya untuk penggunaan berikutnya
                 _purgeDeckButton.text = $"Purge Deck ({_purgeCost} G)";
                 UpdateGoldDisplay(GoldManager.Instance.CurrentGold);
             }

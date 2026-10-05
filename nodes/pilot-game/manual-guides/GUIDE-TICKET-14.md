@@ -72,31 +72,43 @@ using PilotGame.Persistence;
 
 namespace PilotGame.Sanctuary
 {
+    /// <summary>
+    /// Mengelola pembukaan pohon talenta permanen (Talent Tree) di Markas Sanctuary (GDD §4.4).
+    /// </summary>
     public class TalentTreeManager : MonoBehaviour
     {
+        /// <summary>
+        /// Mencoba membuka node talenta baru:
+        /// 1. Validasi keberadaan data dan save manager.
+        /// 2. Validasi status node (apakah sudah pernah dibuka sebelumnya).
+        /// 3. Validasi graf dependensi prasyarat (apakah talenta pendahulu sudah dibuka).
+        /// 4. Validasi saldo Knowledge Shards yang dimiliki.
+        /// 5. Eksekusi transaksi, potong shard, catat status Unlocked, dan simpan permanen ke disk.
+        /// </summary>
         public bool TryUnlockTalent(TalentNodeData talent)
         {
             if (talent == null || SaveDataManager.Instance == null) return false;
 
             var save = SaveDataManager.Instance.CurrentSave;
 
-            // Periksa apakah sudah terbuka
+            // 1. Periksa apakah talenta ini sudah terbuka sebelumnya
             if (save.UnlockedTalentNodeIds.Contains(talent.TalentId)) return false;
 
-            // Periksa prasyarat
+            // 2. Periksa graf dependensi: apakah talenta prasyarat (parent) sudah terbuka?
             if (talent.PrerequisiteTalent != null && !save.UnlockedTalentNodeIds.Contains(talent.PrerequisiteTalent.TalentId))
             {
                 Debug.LogWarning("[Talent] Prasyarat talenta belum terbuka!");
                 return false;
             }
 
-            // Periksa shard
+            // 3. Periksa kecukupan saldo mata uang meta (Knowledge Shards)
             if (save.TotalKnowledgeShards < talent.ShardCost)
             {
                 Debug.LogWarning("[Talent] Knowledge Shard tidak mencukupi!");
                 return false;
             }
 
+            // 4. Eksekusi transaksi: kurangi shard dan masukkan ke daftar terbuka
             save.TotalKnowledgeShards -= talent.ShardCost;
             save.UnlockedTalentNodeIds.Add(talent.TalentId);
             SaveDataManager.Instance.SaveGame();

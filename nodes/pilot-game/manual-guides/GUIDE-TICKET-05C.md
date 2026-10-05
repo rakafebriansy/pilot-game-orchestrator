@@ -77,7 +77,7 @@ namespace PilotGame.Polish
 
         private void HandleDamageShake(DamagePayload payload)
         {
-            // Tambahkan trauma sebanding dengan besaran damage
+            // Tambahkan trauma sebanding dengan besaran damage yang diterima (Clamped 0 s/d 1)
             float addedTrauma = Mathf.Clamp01(payload.DamageAmount / 20f + 0.2f);
             AddTrauma(addedTrauma);
         }
@@ -91,19 +91,25 @@ namespace PilotGame.Polish
         {
             if (_trauma > 0f)
             {
-                float shake = _trauma * _trauma; // Non-linear shake intensity
+                // 1. Formula Trauma Kuadratik (shake = trauma^2):
+                // Menghasilkan intensitas guncangan non-linear yang terasa organik dan tidak membuat pusing
+                float shake = _trauma * _trauma;
 
+                // 2. Sampling Perlin Noise pada 3 seed berbeda (0, 1, 2) dengan mapping range [-1, +1] via (* 2f - 1f)
                 float offsetX = _maxOffset * shake * (Mathf.PerlinNoise(0, Time.time * 25f) * 2f - 1f);
                 float offsetY = _maxOffset * shake * (Mathf.PerlinNoise(1, Time.time * 25f) * 2f - 1f);
                 float angle = _maxAngle * shake * (Mathf.PerlinNoise(2, Time.time * 25f) * 2f - 1f);
 
+                // 3. Terapkan displacement translasi dan rotasi z-axis ke kamera
                 transform.localPosition = _originalPos + new Vector3(offsetX, offsetY, 0);
                 transform.localRotation = Quaternion.Euler(0, 0, angle);
 
+                // 4. Redam nilai trauma secara bertahap seiring waktu (Linear Decay)
                 _trauma = Mathf.Max(0f, _trauma - _traumaDecay * Time.deltaTime);
             }
             else
             {
+                // Reset posisi dan rotasi kamera ke posisi asal ketika trauma = 0
                 transform.localPosition = _originalPos;
                 transform.localRotation = Quaternion.identity;
             }
@@ -125,6 +131,7 @@ namespace PilotGame.Polish
 {
     /// <summary>
     /// Memberikan efek freeze frame mikro (Hit Stop) saat benturan kuat terjadi.
+    /// Menghentikan simulasi waktu global sementara untuk memberikan sensasi hantaman fisik yang mantap.
     /// </summary>
     public class HitStopManager : MonoBehaviour
     {
@@ -149,9 +156,10 @@ namespace PilotGame.Polish
 
         private void HandleDamageHitStop(DamagePayload payload)
         {
+            // Memicu hit stop hanya jika damage signifikan (>= 6)
             if (payload.DamageAmount >= 6)
             {
-                TriggerHitStop(0.06f); // Freeze 60 ms untuk pukulan berat
+                TriggerHitStop(0.06f); // Freeze 60 milidetik untuk pukulan berat
             }
         }
 
@@ -163,11 +171,20 @@ namespace PilotGame.Polish
             }
         }
 
+        /// <summary>
+        /// Coroutine hit stop: Menyetel Time.timeScale = 0f dan menunggu durasi realtime.
+        /// </summary>
         private IEnumerator HitStopRoutine(float duration)
         {
             _isFreezing = true;
+
+            // Jeda seluruh waktu game (animasi, physics, update delta time)
             Time.timeScale = 0f;
+
+            // Tunggu berdasarkan waktu nyata (Realtime) karena Time.timeScale sedang 0
             yield return new WaitForSecondsRealtime(duration);
+
+            // Kembalikan aliran waktu normal
             Time.timeScale = 1f;
             _isFreezing = false;
         }

@@ -73,12 +73,15 @@ using PilotGame.Persistence;
 
 namespace PilotGame.Meta
 {
+    /// <summary>
+    /// Mengelola tingkat kesulitan berjenjang (Ascension Tiers 1-10) ala Slay the Spire / Hades (GDD §5.8).
+    /// </summary>
     public class AscensionManager : MonoBehaviour
     {
         public static AscensionManager Instance { get; private set; }
 
         [SerializeField] private AscensionModifierData _catalog;
-        public int SelectedAscensionLevel { get; private set; } = 0;
+        public int SelectedAscensionLevel { get; private set; } = 0; // 0 = Normal/Standard run
 
         private void Awake()
         {
@@ -91,12 +94,17 @@ namespace PilotGame.Meta
             DontDestroyOnLoad(gameObject);
         }
 
+        /// <summary>
+        /// Memilih tingkat kesulitan Ascension untuk ekspedisi berikutnya.
+        /// Memastikan pemain hanya dapat memilih tier yang sudah terbuka di Save Data.
+        /// </summary>
         public bool SetAscensionLevel(int level)
         {
             int maxUnlocked = SaveDataManager.Instance != null
                 ? SaveDataManager.Instance.CurrentSave.UnlockedAscensionTier
                 : 0;
 
+            // Validasi: level harus berada di antara 0 s/d batas maksimum tier yang sudah terbuka
             if (level >= 0 && level <= maxUnlocked)
             {
                 SelectedAscensionLevel = level;
@@ -106,15 +114,24 @@ namespace PilotGame.Meta
             return false;
         }
 
+        /// <summary>
+        /// Mengembalikan objek modifikator aktif untuk memengaruhi kalkulasi pertempuran,
+        /// bonus attack musuh, harga toko pedagang, dan HP awal pemain.
+        /// </summary>
         public AscensionTier GetCurrentModifiers()
         {
             if (_catalog == null || SelectedAscensionLevel == 0 || SelectedAscensionLevel > _catalog.Tiers.Length)
             {
                 return new AscensionTier { TierLevel = 0, Title = "Normal" };
             }
+            // Array 0-indexed: Ascension 1 berada di indeks 0
             return _catalog.Tiers[SelectedAscensionLevel - 1];
         }
 
+        /// <summary>
+        /// Dipanggil saat pemain berhasil mengalahkan Boss Lantai 15:
+        /// Jika pemain menamatkan tier tertinggi yang dimilikinya saat ini, buka Ascension Tier berikutnya (hingga tier 10).
+        /// </summary>
         public void OnRunWon()
         {
             if (SaveDataManager.Instance != null)

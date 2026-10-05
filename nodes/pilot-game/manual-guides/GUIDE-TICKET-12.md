@@ -75,10 +75,13 @@ using PilotGame.Grid;
 
 namespace PilotGame.Units
 {
+    /// <summary>
+    /// Mengontrol kecerdasan buatan Boss Menara Babel (Multi-tile, Enrage Transition, dan Serangan AoE Masif).
+    /// </summary>
     public class BossAIController : MonoBehaviour
     {
         [SerializeField] private BossData _bossData;
-        [SerializeField] private int _bossUnitId = 99;
+        [SerializeField] private int _bossUnitId = 99; // ID unik entitas Bos
 
         private int _currentHealth;
         private bool _isEnraged = false;
@@ -97,6 +100,10 @@ namespace PilotGame.Units
             CheckEnrageThreshold();
         }
 
+        /// <summary>
+        /// Memeriksa apakah persentase sisa HP Bos telah turun di bawah ambang batas Enrage (<= 50% HP).
+        /// Jika tercapai, Bos bertransisi ke Fase Murka secara permanen hingga akhir pertempuran.
+        /// </summary>
         private void CheckEnrageThreshold()
         {
             if (!_isEnraged && (float)_currentHealth / _bossData.MaxHealth <= _bossData.EnrageHealthThreshold)
@@ -112,6 +119,11 @@ namespace PilotGame.Units
             // Tambahkan partikel aura merah menyala dan suara raungan boss
         }
 
+        /// <summary>
+        /// Merencanakan aksi telegraf serangan bos pada Intent Phase.
+        /// - Fase Normal: Serangan area 3x3 (Archive Smash).
+        /// - Fase Enrage: Serangan area bencana masif 5x5 (Cataclysmic Strike).
+        /// </summary>
         public void PlanBossTurn(Vector2Int bossCenter, Vector2Int playerPos)
         {
             if (_isEnraged)
@@ -126,36 +138,48 @@ namespace PilotGame.Units
             }
         }
 
+        /// <summary>
+        /// Menghasilkan pola telegraf bahaya 3x3 (radius 1 petak) berpusat pada posisi pemain.
+        /// </summary>
         private void PlanArchiveSmash(Vector2Int target)
         {
             List<Vector2Int> tiles = new List<Vector2Int>();
+            // Perulangan offset [-1 s/d +1] pada sumbu X dan Y (Area 3x3)
             for (int x = -1; x <= 1; x++)
             {
                 for (int y = -1; y <= 1; y++)
                 {
                     Vector2Int c = new Vector2Int(target.x + x, target.y + y);
+                    // Validasi batas arena 15x15
                     if (_grid.IsInsideGrid(c)) tiles.Add(c);
                 }
             }
 
+            // Siarkan niat aksi dan telegraf ubin merah bahaya
             CombatEvents.OnEnemyIntentDecided?.Invoke(_bossUnitId, target);
             CombatEvents.OnHighlightTilesRequested?.Invoke(
                 new TileHighlightRequest(tiles.ToArray(), HighlightType.DangerEnemyIntent)
             );
         }
 
+        /// <summary>
+        /// Menghasilkan pola telegraf bahaya 5x5 (radius 2 petak) saat Bos dalam status Enrage.
+        /// </summary>
         private void PlanCataclysmicStrike(Vector2Int target)
         {
             List<Vector2Int> tiles = new List<Vector2Int>();
+            // Perulangan offset [-2 s/d +2] pada sumbu X dan Y (Area 5x5 masif)
             for (int x = -2; x <= 2; x++)
             {
                 for (int y = -2; y <= 2; y++)
                 {
                     Vector2Int c = new Vector2Int(target.x + x, target.y + y);
+                    // Validasi batas arena 15x15
                     if (_grid.IsInsideGrid(c)) tiles.Add(c);
                 }
             }
 
+            // Siarkan niat aksi dan telegraf ubin merah bahaya
             CombatEvents.OnEnemyIntentDecided?.Invoke(_bossUnitId, target);
             CombatEvents.OnHighlightTilesRequested?.Invoke(
                 new TileHighlightRequest(tiles.ToArray(), HighlightType.DangerEnemyIntent)

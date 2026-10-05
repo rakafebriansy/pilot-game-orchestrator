@@ -31,6 +31,29 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 ## Log Perubahan (Pilot Game)
 
+### [2026-10-05 16:20:00] - Architecture, Game Design & Implementation: 15x15 Grid Spasial, Enemy AI AoE Shapes, Stealth Bush Distance Rule & MVP Asset Datasets
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "kenapa di jarak > 2 petak tak bisa melihat?", "buat >=, lihat bisa di 1 petak saja", "kan berbeda beda nanti jenis serangannya tergantung game designer. bisa kotak, lingkaran, belah ketupat, salib dan bentuk2 lainnya. buatlah skalabel", "buatlah IsOffsetInShape di GUIDE-TICKET-03.md error jika salah satu type di GUIDE-TICKET-01.md tidak diimplementasikan", "commit push, update ticket dan changelog dari manual update saya"
+- **Perubahan:**
+  - `[Added]` Mengimplementasikan enum `AreaShapeType` (`Square`, `Diamond`, `Cross`, `Circle`, `DiagonalX`, `Ring`) pada `GUIDE-TICKET-01.md` dan evaluator geometris `AreaShapeEvaluator` berbasis C# Switch Expression dengan deteksi error otomatis (`throw NotImplementedException`) pada `GUIDE-TICKET-03.md`.
+  - `[Changed]` Menyelaraskan aturan *Stealth Bush* (GDD 0.1 §4.1, GDD Gaps, Tiket, dan Manual Guides) menjadi `distance >= 2` (unit di dalam semak taktis hanya dapat dideteksi musuh jika musuh berada di petak bersebelahan / `distance == 1`).
+  - `[Changed]` Mengoptimasi raymarching *Linear Attack* pada `EnemyAICalculator.cs` dengan penghentian seketika (`break`) saat menabrak batas terluar grid.
+  - `[Added]` Melengkapi seluruh manual guides ([GUIDE-TICKET-01.md](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/manual-guides/GUIDE-TICKET-01.md) hingga [GUIDE-TICKET-15.md](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/manual-guides/GUIDE-TICKET-15.md)) dengan penjelasan edukatif dan komentar arsitektural bahasa Indonesia untuk setiap algoritma pertempuran, shader pulse, UI Toolkit pointer math, DAG map generator, dan FSM combat loop.
+  - `[Changed]` Memperbarui status [TICKET-02B.md](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02B.md), [TICKET-02C.md](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-02C.md), dan [TICKET-03.md](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-03.md) menjadi `Done` serta mencatat ringkasan eksekusi teknis pada seksi `AI Execution Log & Output`.
+- **Path File:**
+  - `global-docs/GDDs/GDD-0.1/GDD-0.1.md`
+  - `global-docs/GDDs/GDD-0.1/GDD-0.1-gaps.md`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-01.md`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-02B.md`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-02C.md`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-03.md`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-03B.md`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-04.md` s/d `GUIDE-TICKET-15.md`
+  - `nodes/pilot-game/tickets/TICKET-02B.md`
+  - `nodes/pilot-game/tickets/TICKET-02C.md`
+  - `nodes/pilot-game/tickets/TICKET-03.md`
+  - `nodes/pilot-game/CHANGELOG.md`
+
 ### [2026-10-04 06:23:00] - Game Design & Development Planning: Master Card Library Balance Overhaul (49 Cards) & Combat Rules Pipeline
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
 - **Konteks:** "audit cards, apakah sudah balance, masuk akal, dan bisa bersinergitas", "a1. jangan ada slot modifier... a2. hapus masons ward, zealot ascension, sneaky strike, force fist. heavy crossbow kurangi dmg... a3. perbaiki, buat lebih balance a4. buatkan b. buatlah balance, seperti pada clash royale... c. tidak apa jika tidak sesuai gdd jika membuat balancing lebih baik... d. perbaiki sinergitas e. tidak apa, nanti list saja... f. recreate implementation plannya"

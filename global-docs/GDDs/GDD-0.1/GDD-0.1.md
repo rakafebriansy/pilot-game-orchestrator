@@ -16,34 +16,72 @@ Siklus inti permainan dirancang untuk terus memicu ketegangan dan pemikiran stra
 1. **Pre-Battle (Deck Assembly):** Pemain mempersiapkan *deck* berisi tepat **15 kartu** (5 di tangan, 10 di *draw pile*) dengan 15 kartu starter yang didapat saat pertama install.
 2. **Exploration / Traversal:** Pemain bergerak bebas di *overworld*, atau memilih rute melalui node/tile chapter (referensi: *Slay the Spire*). Saat memasuki encounter, game berpindah ke fase *Turn-Based Battle*. Transisi dibuat *seamless* (mulus).
 3. **Combat Phase (Turn-based):**
-   - **Start of Turn (Intent Phase):** Seluruh **intensi action dari semua musuh** langsung di-generate dan ditampilkan di atas kepala masing-masing musuh. Ini terjadi **sebelum** pemain bisa menentukan action.
-   - **Player Phase:** Pemain mendapat **1 kartu per giliran** sebagai aksi utama. Pemain **wajib memainkan kartu** — skip turn tidak diperbolehkan. Semua pergerakan (berpindah posisi atau dodge) juga dilakukan menggunakan kartu berlabel *movement* — **tidak ada aksi gratis di luar kartu**. Pemain bisa menggunakan item konsumsi (*Free Action*).
-   - **Enemy Phase:** Musuh mengeksekusi niat mereka secara berurutan dengan urutan yang sepenuhnya acak (*totally random*). Jika pemain sudah berada di luar jangkauan (*dodge*), serangan musuh gagal secara natural.
+   - **Fase 1: `IntentPhase` (Fase Sebelum / Niat):** Seluruh intensi aksi dari semua musuh langsung di-generate dan ditampilkan secara transparan di atas kepala masing-masing musuh sebelum pemain menentukan aksi utama. Pada fase ini, pemain dapat memainkan kartu taktis instan atau kartu pembatal niat musuh berlabel *IntentPhase* (e.g., *Teleport*, *Sand Burial*, *Clear Weather*, *Gravity Lift*, *Anger*, *Roar*, *Hex*, *Crumbling Foundation*, *Page Fetcher*, *Blood Sacrifice*).
+   - **Fase 2: `PlayerPhase` (Fase Utama):** Pemain memainkan **tepat 1 kartu aksi utama** per giliran (Attack, Defense, Movement, Trap, Summon) untuk merespons ancaman musuh atau melancarkan ofensif. Pemain **wajib memainkan kartu** — skip turn tidak diperbolehkan. Semua pergerakan dilakukan melalui kartu tipe *Movement* (**tidak ada aksi gerak gratis non-kartu**). Penggunaan item konsumsi (*Consumable*) bersifat *Free Action*.
+   - **Fase 3: `EnemyPhase`:** Musuh mengeksekusi niat aksi mereka secara berurutan dengan urutan yang sepenuhnya acak (*totally random*). Jika pemain telah berpindah posisi keluar dari jangkauan (*dodge/reposition*), serangan musuh gagal secara natural (*whiff*).
+   - **Fase 4: `RoundResetPhase` (Fase Akhir / Resolusi Akhir Ronde):** Eksekusi berkala status kerusakan berkelanjutan (*DoT: Bleed, Burn*), pembersihan decoy batu, inisialisasi klon bayangan (*Clone*), kedaluwarsa sisa Shield yang tidak terpakai, dan pemulihan giliran untuk ronde berikutnya.
 4. **Post-Wave Progression:** Saat satu gelombang usai, pemain diberikan tiga opsi kartu baru. Pemain harus memilih satu (*drafting*) untuk memperkuat atau memodifikasi gaya main di gelombang selanjutnya.
 5. **Death & Reset (Roguelike Cycle):** Jika pemain mati, run dimulai ulang dari awal. Namun, poin yang dikumpulkan dari run sebelumnya bisa digunakan untuk membeli *starter upgrade* permanen. Pertumbuhan kekuatan dibatasi agar karakter tidak *overpowered* di dalam run — kekuatan utama bertumpu pada *starter/base stat*.
 
 ## 4. Mechanics & Systems
 ### 4.1. Combat & Tactical System
-- **Cost System (1 Turn, 1 Kartu):** Setiap giliran pemain hanya bisa memainkan **1 kartu**. Pemain **wajib** memainkan kartu dan tidak boleh skip turn.
+- **Cost System (1 Turn, 1 Kartu):** Setiap giliran pemain hanya bisa memainkan **1 kartu** aksi utama. Pemain **wajib** memainkan kartu dan tidak boleh skip turn.
 - **Semua Aksi via Kartu:** Seluruh aksi termasuk pergerakan direpresentasikan dalam kartu. Tidak ada aksi non-kartu.
-- **Enemy Intent:** Konsep telegraf visual 100% transparan. Di awal setiap giliran, **seluruh intensi action dari semua musuh** langsung di-generate sekaligus dan ditampilkan di atas kepala masing-masing musuh — **sebelum** pemain bisa menentukan action. Setiap musuh hanya memiliki **1 intent per giliran** (tidak ada multi-intent).
+- **Urutan Kalkulasi Damage (Damage Calculation Pipeline):**
+  $$\text{Final Damage} = \Big[ (\text{Base Damage} + \text{Flat Modifiers}) \times (1 + \sum \text{Percentage Multipliers}) \Big] - \text{Target Shield}$$
+  - *Base Damage:* Nilai damage dasar kartu.
+  - *Flat Modifiers (Penambahan Tetap):* $+ \text{Hex Damage}$ ($+2\text{ Flat}$), $+ \text{Fracture Stacks}$ ($+3\text{ Flat per Stack}$), $+ \text{Empowered Buff}$.
+  - *Percentage Multipliers (Pengali Persentase - Dihitung Aditif):* $+ \text{Strength Buff}$ ($+25\%$), $+ \text{Vulnerable Debuff}$ ($+40\%$), $- \text{Weak Debuff}$ ($-25\%$).
+  - *Mitigasi Shield:* Shield menyerap damage terlebih dahulu sebelum HP berkurang. Sisa shield hangus di akhir ronde (`RoundResetPhase`).
+  - *Armor Piercing & Bleed:* Serangan penembus zirah (*Piercing Shoot*) dan kerusakan *Bleed* menembus Shield langsung memotong HP target (*Direct to HP*).
+- **Aturan Stacking & Durasi Status:**
+  - *Refresh Duration:* Menerapkan status yang sama pada unit yang sudah memiliki status tersebut akan me-*refresh* durasinya ke durasi kartu baru.
+  - *Stacking Khusus:* Status bertumpuk seperti `Fracture` menumpuk jumlah stack (maksimal 3 stack).
+  - *Durasi Shield:* Shield bertahan hingga akhir ronde berjalan (`RoundResetPhase`) dan tidak persisten antar ronde baru.
+- **Aturan Stun & Diminishing Returns (Anti-Perma Stun):**
+  - Unit yang terkena status `Stun` atau `Freeze` kehilangan 1 giliran aksinya.
+  - *Stun Immunity Window:* Setelah pulih dari Stun/Freeze, unit mendapatkan kekebalan status Stun selama **1 ronde penuh** guna mencegah eksploitasi *perma-stun lock*.
+- **Mekanik Physics & Wall Slam (Collision):**
+  - Jika dorongan (*Knockback*) menyebabkan unit menabrak rintangan pilar batu, dinding batas arena, atau unit lain, gerakan unit langsung terhenti (*Collision Halt*), menerima bonus tabrakan **$+4\text{ Bonus Damage}$**, dan terkena status **`Stun` (1 turn)**.
+- **Standar Pembeda Jarak (Distance Scheme):**
+  - *`CastRange` (Jarak Lempar / Range Caster):* Jangkauan pemain (Nabu) memilih ubin/target sasaran di atas grid $15 \times 15$ ($0 = \text{Self/Pada Diri Sendiri}$, $1 = \text{Melee Bersebelahan}$, $2\text{--}5 = \text{Tembakan Ranged}$, $\text{Global} = \text{Tanpa Batasan Grid}$).
+  - *`AoERadius` (Radius Area Efek / AoE):* Luas dan bentuk sebaran efek di sekeliling titik sasaran ($0 = \text{Single Target/1 Petak}$, $1 = \text{Area } 3 \times 3$, $2 = \text{Area } 5 \times 5$, $\text{Cone Arc} = \text{Busur 3 Petak Melee}$, $\text{Linear Line} = \text{Garis Piercing Lurus}$, $\text{Global} = \text{Seluruh Arena}$).
+- **Enemy Intent:** Konsep telegraf visual 100% transparan. Di awal setiap giliran, **seluruh intensi action dari semua musuh** langsung di-generate sekaligus dan ditampilkan di atas kepala masing-masing musuh — **sebelum** pemain menentukan action. Setiap musuh hanya memiliki **1 intent per giliran** (tidak ada multi-intent).
 - **Skill Casting (Manual Targeting):** Kartu dimainkan dengan cara **klik dan drag ke target** atau dikembalikan ke deck. Tidak ada auto-lock. Pemain harus secara manual mengarahkan ke target.
-- **Dodging (Evasion):** Bertahan bukan berarti menggunakan perisai, melainkan memposisikan ulang karakter (*repositioning*) dari ubin yang akan menjadi sasaran serangan musuh.
-- **Bush / Stealth Mechanic:** Ada area berupa semak (*bush*) yang bisa dimasuki oleh pemain maupun musuh. Lebar bush hanya **1 tile** (selebar pemain), panjangnya bervariasi. Saat karakter berada di dalam bush, musuh tidak bisa men-*targeting* karakter tersebut saat gilirannya. Musuh harus bergerak hingga **minimal 2 tile** dari posisi bush yang ditempati untuk bisa mendapatkan target. Mekanik ini berlaku simetris — jika musuh berada di dalam bush, pemain pun tidak bisa menarget musuh tersebut dari kejauhan.
+- **Bush / Stealth Mechanic:** Ada area berupa semak (*bush*) yang bisa dimasuki oleh pemain maupun musuh. Lebar bush hanya **1 tile** (selebar pemain), panjangnya bervariasi. Saat karakter berada di dalam bush, musuh tidak bisa men-*targeting* karakter tersebut saat gilirannya jika jaraknya $\ge 2\text{ tile}$. Musuh harus bergerak hingga tepat **1 tile (bersebelahan)** dari posisi bush yang ditempati untuk bisa mendeteksi/menargetkan karakter. Mekanik ini berlaku simetris — jika musuh berada di dalam bush, pemain pun tidak bisa menarget musuh tersebut dari jarak $\ge 2\text{ tile}$.
 
 ### 4.2. Card & Deck System
 - **Deck Limitations:** Terbatas hanya **15 kartu** saat pertempuran berlangsung (5 di tangan, 10 di *draw pile*). Tidak ada rarity pada kartu.
 - **Discard & Reshuffle:** Kartu yang telah dimainkan masuk ke *discard pile*. Jika *draw pile* habis, seluruh kartu di *discard pile* dikocok ulang dan menjadi *draw pile* baru secara otomatis, tanpa penalti.
-- **Tipe-Tipe Kartu:** Ada 4 tipe kartu utama yang bersifat universal (bisa dipakai oleh pemain maupun musuh):
-  - **Movement:** Memanipulasi posisi (contoh: dash, teleport). Jarak bervariasi dari 1 tile hingga teleport kemana saja. Kartu lambat vs instan juga bervariasi.
-  - **Offense:** Memberikan damage atau melemahkan musuh (contoh: single attack, AoE, damage over time, serangan ranged lambat hingga instan).
-  - **Defense:** Menjaga HP (contoh: shield, armor boost, regen).
-  - **Status Modifier:** Modifikasi statistik karakter atau musuh yang menempel ke kartu Offense, Defense, dan Movement (contoh: attack up, stun, slow, armor break).
-- **Starter Deck Pemain:** Pemain mendapat 15 kartu starter saat pertama kali install yang bersumber dari **Buku Sakti (*Grimoire*)** yang dibawanya. Variasi kartu dibuat oleh masing-masing anggota tim.
+- **Master Card Library (49 Kartu Lengkap):** Seluruh kartu permainan terbagi ke dalam 6 arketipe taktis dengan peran spesifik:
+  1. *Core Tactical Library (14 Kartu Inti Nabu - `CARD-001` s/d `CARD-014`):* Teleport, Decoy, Frost, Heavy Rain, Fog, Storm, Clear Weather, Skeleton Army, Throwing Blade, Sand Burial, Clone, Dash, Super Punch, Gravity Lift.
+  2. *Combat, Aggro & Status Debuff (9 Kartu - `CARD-015` s/d `CARD-023`):* Thorn, Roar, Offering, Anger, Slash, Leg Sweep, Whip, Death Stare, Immolate.
+  3. *Spatial, Physics & Stance Mastery (5 Kartu - `CARD-024` s/d `CARD-028`):* Brace, Scaffold Leap, Collapsing Archway, Echo of the First Tongue, Crumbling Foundation.
+  4. *Tactical Weaponry & Precision (3 Kartu - `CARD-029` s/d `CARD-031`):* Tangled Overgrowth, Piercing Shoot, Serrated Dagger.
+  5. *Grimoire, Occult & Combo Synergy (8 Kartu - `CARD-032` s/d `CARD-039`):* Counter Attack, Energy Slash, Shadow Step, Hex, Page Fetcher, Blood Sacrifice, Star Burst Stream, Foolish Archiver.
+  6. *Elemental Magic, Hazards & Traps (10 Kartu - `CARD-040` s/d `CARD-049`):* Static Rune, Chain Lightning, Earthen Bulwark, Rolling Boulder, Machete Cleave, Heavy Crossbow, Campfire Spark, Ember Trap, Purifying Splash, Aqua Snare.
+- **Skema Aksi & Pembatasan Kartu:**
+  - *ActionType:* `Attack`, `Defense`, `Movement`, `StatusModifier`, `Utility`.
+  - *TargetArea:* `SingleTarget`, `LinearLine`, `RadiusArea`, `ConeArc`, `SelfOnly`, `GlobalAllEnemies`, `GroundTile`.
+  - *PhaseRestriction:* `IntentPhase`, `PlayerPhase`, `RoundResetPhase`.
+- **Katalog Status Effects Baku:**
+  - *Freeze:* Target kehilangan 1 giliran + ubin menjadi licin (+1 movement cost).
+  - *Wet:* Menurunkan pergerakan (-1 Move) dan melipatgandakan damage petir / chain reaction.
+  - *Burn:* DoT api (2-3 Dmg/turn).
+  - *Bleed:* DoT fisik (2 Dmg/turn) yang menembus Shield langsung ke HP (*Direct to HP*).
+  - *Immobilize:* Membatalkan seluruh pergerakan target pada giliran aktif.
+  - *Vulnerable:* Target menerima $+40\%$ damage ekstra dari seluruh serangan.
+  - *Weak:* Target mengalami penurunan output serangan sebesar $-25\%$.
+  - *Strength:* Meningkatkan seluruh damage serangan sebesar $+25\%$.
+  - *Stun:* Kehilangan 1 aksi giliran + memicu 1 ronde *Stun Immunity Window*.
+  - *Fracture:* Menumpuk debuff per hit ($+3\text{ Flat Dmg}$ per stack, max 3 stacks).
+  - *Hex:* Menambahkan $+2\text{ Flat Dmg}$ pada setiap serangan yang masuk ke target.
+  - *Resonance:* Kartu non-Exhaust berikutnya terpicu dua kali (replikasi ke-2 bernilai 50% efektivitas).
+- **Starter Deck Pemain:** Starter deck Nabu berisi kumpulan kartu yang bersumber dari **Buku Sakti (*Grimoire*)** yang dibawanya (mengacu pada *Core Tactical Library* 14 kartu Nabu).
 - **Rewards:** Mekanisme "Pilih 1 dari 3" seusai pertarungan agar deck bisa dikustomisasi secara progresif.
 - **Blind/Cursed Abilities:** Pemain dihadapkan pada pilihan *ability* acak yang bersifat misteri. *High Risk - High Reward*, memberikan skill tambahan sekaligus handicap (kutukan/*debuff*).
-- **Spell Usage Limits:** Sebagian spell/skill memiliki limitasi pemakaian — ada yang beberapa kali per run, sekali pakai, atau permanen.
-- **AoE:** Dampak AoE tergantung pada kartu masing-masing. Jumlah tile maksimum tidak dibatasi untuk menjaga kreativitas.
+- **Spell Usage Limits:** Sebagian spell/skill memiliki limitasi pemakaian — ada yang beberapa kali per run, sekali pakai (*Exhaust*), atau permanen.
+- **AoE:** Dampak AoE dihitung sesuai parameter `AoERadius` pada kartu masing-masing.
 
 ### 4.3. Health & Inventory Resources
 - **Player Hitpoints:** HP berupa **angka dan bar health (persentase)**. Jika HP mencapai nol, men-trigger status *Game Over*. HP permanen (selama run) bersifat fixed, namun tidak menutup kemungkinan bertambah menggunakan mekanik selama run (contoh: kartu yang menambah max health dalam satu stage).
@@ -151,7 +189,7 @@ Siklus inti permainan dirancang untuk terus memicu ketegangan dan pemikiran stra
   - SFX buka / tutup peti reward
 
 ## 7. Narrative & Story Delivery
-- **Karakter Utama:** Karakter utama bersenjatakan **Buku Sakti (*Grimoire*)** sebagai senjata utama sekaligus elemen visual ikonik (selaras dengan latar Menara Babel sebagai arsip pengetahuan). Nama karakter final belum ditentukan (setiap anggota tim mengusulkan 1 nama).
+- **Karakter Utama:** Karakter utama bernama **Nabu** (Sang Juru Tulis / The Scribe of the Archive), bersenjatakan **Buku Sakti (*Grimoire*)** sebagai senjata utama sekaligus elemen visual ikonik (selaras dengan latar Menara Babel sebagai arsip pengetahuan).
 - **Penyampaian Cerita:** Cerita di-*deliver* melalui **lingkungan** (*environmental storytelling*). Narasi muncul saat pemain berinteraksi dengan benda-benda dalam game (buku, artefak, relik perpustakaan), bukan melalui cutscene ekspositori. Cerita dirancang oleh Game Designer.
 
 ## 8. Technical Specifications
@@ -165,8 +203,8 @@ Siklus inti permainan dirancang untuk terus memicu ketegangan dan pemikiran stra
 - **Business Model:** Premium (Buy-to-Play).
 - **Target Perilisan MVP:** Scope dibatasi **sekecil mungkin** agar realistis diselesaikan oleh tim pemula. MVP hanya difokuskan pada **1 map statis dengan bentuk permainan berupa beruntun (wave/gelombang musuh)**. Fokus utamanya adalah memoles *core combat loop* di satu arena, menguji satu set kartu starter, dan 1 set boss. Fitur-fitur kompleks (seperti eksplorasi overworld, procedural generation, roguelike run utuh, dan narasi bercabang) ditarik keluar dari MVP dan ditunda untuk iterasi berikutnya.
 
-## 10. Team Assignments (Outstanding)
-- **Variasi Kartu:** Dibuat oleh masing-masing anggota tim, kemudian disetor.
+## 10. Team Assignments
+- **Variasi & Library Kartu:** ✅ **Selesai** (Master Card Library berisi 49 kartu unik dengan skema parameter baku, sistem kalkulasi damage, dan katalog status effect telah dirumuskan).
 - **UI/UX Flow & HUD:** Didefinisikan oleh Game Designer.
 - **Visual Art & Assets:** Visual Artist memproduksi aset berdasarkan panduan art style (*Arco* + *Signalis* + *Dead Cells*, dominan gelap aksen kuning-oranye, tema Babel/Mesopotamia).
 - **Audio Assets Production:** Audio Designer memproduksi file audio berdasarkan daftar penempatan BGM & SFX yang telah disepakati.

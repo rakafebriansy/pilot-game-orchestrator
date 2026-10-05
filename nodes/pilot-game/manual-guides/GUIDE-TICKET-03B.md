@@ -42,34 +42,54 @@ using PilotGame.Core.Events;
 namespace PilotGame.Core.Data
 {
     /// <summary>
-    /// Mesin matematika kalkulasi damage, mitigasi shield, dan status effects (Pure C#).
+    /// <summary>
+    /// Mesin matematika kalkulasi damage, mitigasi shield, dan status effects (Pure C# Non-MonoBehaviour).
     /// </summary>
     public class CombatMathEngine
     {
+        // Menyimpan daftar efek status aktif untuk setiap unit berdasarkan unitId
         private readonly Dictionary<int, List<ActiveStatusEffect>> _unitStatusEffects = new();
 
         /// <summary>
-        /// Menghitung damage akhir setelah diserap oleh Shield target.
+        /// Menghitung kalkulasi damage akhir dengan mitigasi Shield:
+        /// 1. Shield menyerap damage mentah terlebih dahulu (1 Shield = 1 Damage).
+        /// 2. Sisa damage yang tidak terserap Shield akan menembus langsung ke HP.
+        /// 3. Mengembalikan struct DamagePayload berisi finalDamage dan remainingShield.
         /// </summary>
         public DamagePayload CalculateDamage(int targetUnitId, int rawDamage, int targetShield)
         {
+            // Hitung seberapa banyak damage yang diserap shield (maksimal sebesar shield yang ada)
             int absorbedByShield = Math.Min(rawDamage, targetShield);
+
+            // Sisa damage yang menembus ke HP (jika rawDamage > targetShield)
             int finalDamage = Math.Max(0, rawDamage - targetShield);
+
+            // Sisa shield target setelah menyerap damage
             int remainingShield = Math.Max(0, targetShield - rawDamage);
 
             return new DamagePayload(targetUnitId, finalDamage, remainingShield);
         }
 
+        /// <summary>
+        /// Menghitung jarak grid ortogonal (Manhattan Distance: |x1 - x2| + |y1 - y2|).
+        /// Digunakan untuk pengukuran range kartu, pergerakan, dan targeting grid taktis.
+        /// </summary>
         public int CalculateManhattanDistance(Vector2Int a, Vector2Int b)
         {
             return Math.Abs(a.x - b.x) + Math.Abs(a.y - b.y);
         }
 
+        /// <summary>
+        /// Mengecek apakah koordinat target berada dalam jangkauan range ortogonal dari posisi asal.
+        /// </summary>
         public bool IsInRange(Vector2Int origin, Vector2Int target, int range)
         {
             return CalculateManhattanDistance(origin, target) <= range;
         }
 
+        /// <summary>
+        /// Menerapkan efek status abnormal ke unit target dan memicu event OnStatusEffectApplied.
+        /// </summary>
         public void ApplyStatusEffect(int unitId, StatusEffectType type, int duration)
         {
             if (!_unitStatusEffects.ContainsKey(unitId))
@@ -81,6 +101,10 @@ namespace PilotGame.Core.Data
             CombatEvents.OnStatusEffectApplied?.Invoke(unitId, type, duration);
         }
 
+        /// <summary>
+        /// Mengurangi sisa durasi seluruh efek status aktif saat pergantian ronde (Round Reset Phase).
+        /// Menggunakan iterasi terbalik (backward loop) agar aman saat menghapus elemen yang durasinya habis.
+        /// </summary>
         public void TickStatusEffects()
         {
             foreach (var kvp in _unitStatusEffects)
@@ -88,6 +112,7 @@ namespace PilotGame.Core.Data
                 int unitId = kvp.Key;
                 var list = kvp.Value;
 
+                // Loop dari indeks terakhir ke 0 untuk mencegah CollectionModifiedException saat RemoveAt
                 for (int i = list.Count - 1; i >= 0; i--)
                 {
                     var effect = list[i];
@@ -95,11 +120,13 @@ namespace PilotGame.Core.Data
 
                     if (effect.RemainingDuration <= 0)
                     {
+                        // Durasi habis -> Picu event kedaluwarsa dan hapus dari list aktif
                         CombatEvents.OnStatusEffectExpired?.Invoke(unitId, effect.Type);
                         list.RemoveAt(i);
                     }
                     else
                     {
+                        // Update nilai struct yang telah dimodifikasi kembali ke list
                         list[i] = effect;
                     }
                 }
@@ -128,9 +155,14 @@ namespace PilotGame.Cards
 {
     /// <summary>
     /// Validator keabsahan eksekusi kartu (Pure C# - Stateless).
+    /// Memastikan kartu memenuhi semua aturan sebelum dimainkan (Fase, Jarak, Stealth, Target Valid).
     /// </summary>
     public static class CardPlayValidator
     {
+        /// <summary>
+        /// Mengevaluasi apakah suatu kartu sah untuk dimainkan pada koordinat target tertentu.
+        /// Mengembalikan false dan alasan kegagalan jika ada aturan yang dilanggar.
+        /// </summary>
         public static bool CanPlayCard(
             CardData card,
             Vector2Int casterPos,
@@ -141,43 +173,45 @@ namespace PilotGame.Cards
         {
             failureReason = string.Empty;
 
+            // 0. Validasi Eksistensi Data Kartu
             if (card == null)
             {
-                failureReason = "Kartu tidak valid.";
+                failureReason = "Kartu tidak valid atau bernilai null.";
                 return false;
             }
 
-            // 1. Validasi Fase
+            // 1. Validasi Batasan Fase (Contoh: Kartu aksi hanya boleh dimainkan saat PlayerPhase)
             if (card.PhaseRestriction != currentPhase)
             {
                 failureReason = $"Kartu hanya dapat dimainkan pada fase: {card.PhaseRestriction}.";
                 return false;
             }
 
-            // 2. Validasi Batas Grid
+            // 2. Validasi Batas Arena Grid 15x15
             if (!grid.IsInsideGrid(targetCoord))
             {
-                failureReason = "Target berada di luar arena.";
+                failureReason = "Target berada di luar batas arena pertempuran.";
                 return false;
             }
 
-            // 3. Validasi Jangkauan Jarak Manhattan
+            // 3. Validasi Jarak Jangkauan (Manhattan Distance |x1-x2| + |y1-y2|)
             int distance = Mathf.Abs(casterPos.x - targetCoord.x) + Mathf.Abs(casterPos.y - targetCoord.y);
             if (distance > card.Range)
             {
-                failureReason = $"Target berada di luar jangkauan kartu ({card.Range} petak).";
+                failureReason = $"Target berada di luar jangkauan kartu ({card.Range} petak). Jarak saat ini: {distance}.";
                 return false;
             }
 
-            // 4. Validasi Aturan Stealth Bush (GDD §4.1)
-            if (grid.IsStealthed(targetCoord) && distance > 2)
+            // 4. Validasi Aturan Semak Siluman (Stealth Bush - GDD §4.1):
+            // Unit di dalam semak taktis tidak dapat ditarget dari jarak >= 2 petak (hanya bisa pada jarak 1 petak bersebelahan)
+            if (grid.IsStealthed(targetCoord) && distance >= 2)
             {
-                failureReason = "Target bersembunyi di dalam semak (harus berada dalam jarak <= 2 petak).";
+                failureReason = "Target tersamarkan di dalam semak taktis (harus berada tepat 1 petak bersebelahan).";
                 return false;
             }
 
-            // 5. Validasi Tipe Area
-            if (card.ActionType == CardActionType.Attack && card.AreaType == TargetAreaType.SingleTarget)
+            // 5. Validasi Sasaran Kartu Serangan Target Tunggal (SingleTarget)
+            if (card.ActionType == CardActionType.Attack && card.TargetArea == TargetAreaType.SingleTarget)
             {
                 int occupant = grid.GetOccupant(targetCoord);
                 if (occupant == 0)
@@ -187,23 +221,30 @@ namespace PilotGame.Cards
                 }
             }
 
+            // 6. Validasi Kartu Pergerakan (Movement): Ubin tujuan harus kosong dan tidak berupa rintangan
             if (card.ActionType == CardActionType.Movement)
             {
                 if (!grid.IsWalkable(targetCoord))
                 {
-                    failureReason = "Ubin tujuan tidak dapat ditempati.";
+                    failureReason = "Ubin tujuan terhalang rintangan atau sudah ditempati unit lain.";
                     return false;
                 }
             }
 
+            // Seluruh validasi lulus -> Kartu sah untuk dimainkan
             return true;
         }
 
+        /// <summary>
+        /// Menghasilkan daftar seluruh koordinat ubin yang sah sebagai target kartu saat ini.
+        /// Digunakan oleh sistem visualisasi Tilemap Highlight saat pemain mengarahkan kartu (Hover).
+        /// </summary>
         public static List<Vector2Int> GetValidTargetTiles(CardData card, Vector2Int casterPos, GridDataModel grid)
         {
             List<Vector2Int> validTiles = new List<Vector2Int>();
             if (card == null) return validTiles;
 
+            // Pindai seluruh petak arena 15x15
             for (int x = 0; x < GridDataModel.Width; x++)
             {
                 for (int y = 0; y < GridDataModel.Height; y++)
@@ -211,9 +252,12 @@ namespace PilotGame.Cards
                     Vector2Int coord = new Vector2Int(x, y);
                     int dist = Mathf.Abs(casterPos.x - coord.x) + Mathf.Abs(casterPos.y - coord.y);
 
+                    // Saring hanya petak dalam radius jangkauan kartu
                     if (dist <= card.Range)
                     {
-                        if (grid.IsStealthed(coord) && dist > 2) continue;
+                        // Lewati petak semak siluman jika jarak >= 2 petak (hanya bisa terlihat pada jarak 1 petak)
+                        if (grid.IsStealthed(coord) && dist >= 2) continue;
+
                         validTiles.Add(coord);
                     }
                 }

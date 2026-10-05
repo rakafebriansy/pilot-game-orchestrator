@@ -70,43 +70,60 @@ using PilotGame.Grid;
 
 namespace PilotGame.Spawner
 {
+    /// <summary>
+    /// Mengatur penempatan musuh gelombang pertempuran secara dinamis berdasarkan lantai (GDD §4.6).
+    /// </summary>
     public class CombatWaveSpawner : MonoBehaviour
     {
         [SerializeField] private List<WaveCompositionData> _wavePool = new();
 
+        /// <summary>
+        /// Men-spawn sekumpulan musuh untuk lantai tertentu:
+        /// - Memilih komposisi gelombang yang sesuai dengan lantai.
+        /// - Mencari koordinat acak yang walkable di paruh kanan arena.
+        /// - Menandai Grid Occupant dan men-spawn GameObject musuh dengan offset +0.5f.
+        /// </summary>
         public List<Vector2Int> SpawnWave(int floorNumber, GridDataModel grid, Transform unitParent)
         {
             List<Vector2Int> spawnedPositions = new List<Vector2Int>();
             var wave = SelectWaveForFloor(floorNumber);
             if (wave == null) return spawnedPositions;
 
-            int currentUnitId = 2; // Nabu = 1
+            // Alokasi ID Unit: ID 1 = Pemain (Nabu), ID 2 s/d 6 = Slot 5 Musuh
+            int currentUnitId = 2;
 
             foreach (var entry in wave.EnemySpawns)
             {
                 for (int i = 0; i < entry.Count; i++)
                 {
+                    // Cari ubin valid yang belum ditempati dan bukan rintangan
                     Vector2Int spawnPos = FindRandomWalkableTile(grid);
-                    if (spawnPos == new Vector2Int(-1, -1)) break;
+                    if (spawnPos == new Vector2Int(-1, -1)) break; // Berhenti jika tidak ada ubin kosong
 
+                    // Registrasikan okupansi unit ke dalam data model grid
                     grid.SetOccupant(spawnPos, currentUnitId);
                     spawnedPositions.Add(spawnPos);
 
                     // Instantiate Prefab musuh jika ada
                     if (entry.Enemy.CharacterPrefab != null)
                     {
+                        // Posisi world pivot di tengah petak (coord + 0.5f)
                         Vector3 worldPos = new Vector3(spawnPos.x + 0.5f, spawnPos.y + 0.5f, 0);
                         Instantiate(entry.Enemy.CharacterPrefab, worldPos, Quaternion.identity, unitParent);
                     }
 
                     currentUnitId++;
-                    if (currentUnitId > 6) return spawnedPositions; // Max 5 musuh (ID 2..6)
+                    // Batas keras kapasitas musuh per gelombang (Maksimal 5 musuh: ID 2..6)
+                    if (currentUnitId > 6) return spawnedPositions;
                 }
             }
 
             return spawnedPositions;
         }
 
+        /// <summary>
+        /// Memilih konfigurasi gelombang yang valid untuk rentang nomor lantai tertentu.
+        /// </summary>
         private WaveCompositionData SelectWaveForFloor(int floor)
         {
             var validWaves = _wavePool.FindAll(w => floor >= w.MinFloor && floor <= w.MaxFloor);
@@ -114,20 +131,25 @@ namespace PilotGame.Spawner
             return validWaves[Random.Range(0, validWaves.Count)];
         }
 
+        /// <summary>
+        /// Mencari petak acak yang walkable dengan batas maksimal 50 percobaan (Safety loop).
+        /// Memprioritaskan penempatan di separuh kanan arena (X: 4 s/d Width-1) agar pemain memiliki ruang bernapas di awal giliran.
+        /// </summary>
         private Vector2Int FindRandomWalkableTile(GridDataModel grid)
         {
             for (int attempt = 0; attempt < 50; attempt++)
             {
-                int x = Random.Range(4, GridDataModel.Width); // Spawn di separuh kanan arena
+                int x = Random.Range(4, GridDataModel.Width); // Separuh kanan grid
                 int y = Random.Range(0, GridDataModel.Height);
                 Vector2Int coord = new Vector2Int(x, y);
 
+                // Pastikan ubin berada dalam grid, bukan pilar/lubang, dan belum ada unit lain
                 if (grid.IsWalkable(coord))
                 {
                     return coord;
                 }
             }
-            return new Vector2Int(-1, -1);
+            return new Vector2Int(-1, -1); // Menandakan grid penuh / tidak ditemukan petak kosong
         }
     }
 }

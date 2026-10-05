@@ -39,11 +39,11 @@ Kedua class ini adalah **Logic Layer** — tidak boleh mengandung MonoBehaviour 
   - Cek `card.PhaseRestriction` vs `currentPhase`.
   - Cek `IsInRange(playerPos, targetCoord, card.Range)`.
   - Cek target tile sesuai `card.AreaType` (misal `SingleTarget` harus ada occupant jika attack).
-  - Cek StealthBush rule (GDD §4.1): Jika unit target berada di `TileType.StealthBush`, tidak boleh ditarget kecuali `CalculateManhattanDistance(playerPos, targetCoord) <= 2`.
+  - Cek StealthBush rule (GDD §4.1): Jika unit target berada di `TileType.StealthBush`, tidak boleh ditarget kecuali `CalculateManhattanDistance(playerPos, targetCoord) <= 1` (jarak 1 petak bersebelahan).
   - Return false + alasan jika tidak valid.
 - [ ] Method `List<Vector2Int> GetValidTargetTiles(CardData card, Vector2Int playerPos, GridDataModel grid)`:
   - Berdasarkan `card.AreaType` dan `card.Range`, hitung semua koordinat valid yang bisa dijadikan target.
-  - Saring target yang berada di `StealthBush` di luar jarak 2 petak.
+  - Saring target yang berada di `StealthBush` di luar jarak 1 petak (jarak >= 2 petak tidak terlihat).
   - Untuk kartu bertipe Movement non-teleport: gunakan kalkulasi rute collision (berhenti sebelum rintangan).
   - Digunakan oleh `CardHandController` saat hover kartu untuk preview highlight.
 - [ ] Integrasi: `CardPlayValidator` dipanggil oleh `PlayerPhaseState` sebelum broadcast `OnCardPlayed`.

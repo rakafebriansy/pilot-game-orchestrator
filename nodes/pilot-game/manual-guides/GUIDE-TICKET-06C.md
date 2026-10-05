@@ -57,21 +57,31 @@ namespace PilotGame.UI
             _playerGridPos = pos;
         }
 
+        /// <summary>
+        /// Dipanggil saat kursor mouse memasuki area kartu di tangan.
+        /// Menghitung petak valid dan mengirim event permintaan highlight ke Tilemap.
+        /// </summary>
         public void OnCardHoverEnter(CardData card)
         {
             if (card == null || _gridModel == null) return;
 
+            // 1. Dapatkan daftar seluruh koordinat valid sesuai jenis kartu, jangkauan, dan rintangan grid
             List<Vector2Int> targetTiles = CardPlayValidator.GetValidTargetTiles(card, _playerGridPos, _gridModel);
 
+            // 2. Tentukan warna styling highlight (Biru untuk Gerak, Hijau untuk Serangan/Target)
             HighlightType style = card.ActionType == CardActionType.Movement
                 ? HighlightType.MovementRange
                 : HighlightType.ValidCardTarget;
 
+            // 3. Kirim payload via Event Bus agar GridTilemapView merender highlight
             CombatEvents.OnHighlightTilesRequested?.Invoke(
                 new TileHighlightRequest(targetTiles.ToArray(), style)
             );
         }
 
+        /// <summary>
+        /// Dipanggil saat kursor keluar dari kartu untuk membersihkan seluruh highlight ubin.
+        /// </summary>
         public void OnCardHoverExit()
         {
             CombatEvents.OnClearAllHighlights?.Invoke();
@@ -106,6 +116,10 @@ namespace PilotGame.UI
             StartCoroutine(DissolveRoutine(cardElement, onComplete));
         }
 
+        /// <summary>
+        /// Coroutine menganimasikan kartu: memudar (fade out), membesar sedikit (scale up),
+        /// dan melayang ke atas (translate Y) secara simultan.
+        /// </summary>
         private IEnumerator DissolveRoutine(VisualElement element, System.Action onComplete)
         {
             float duration = 0.35f;
@@ -113,15 +127,23 @@ namespace PilotGame.UI
 
             while (elapsed < duration)
             {
+                // Normalisasi rasio progress animasi [0.0 s/d 1.0]
                 float t = elapsed / duration;
+
+                // 1. Opacity berkurang dari 1.0 -> 0.0 (efek memudar terbakar)
                 element.style.opacity = 1f - t;
+
+                // 2. Scale membesar sedikit 1.0 -> 1.2x (efek ekspansi pelepasan energi)
                 element.style.scale = new Scale(Vector3.one * (1f + (t * 0.2f)));
+
+                // 3. Translasi vertikal melayang ke atas sebesar 60px
                 element.style.translate = new Translate(0, -t * 60f);
 
                 elapsed += Time.deltaTime;
                 yield return null;
             }
 
+            // Panggil callback setelah animasi tuntas (misal: hapus elemen kartu dari root UI)
             onComplete?.Invoke();
         }
     }

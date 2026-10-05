@@ -93,12 +93,20 @@ Shader "PilotGame/2D/DangerTilePulse"
 
             float4 frag(Varyings input) : SV_Target
             {
+                // Mengambil sampel tekstur dasar sprite
                 float4 texColor = _MainTex.Sample(sampler_MainTex, input.uv);
                 
-                // Gelombang sinus untuk denyut ritmis halus 0.0 s/d 1.0
+                // KALKULASI GELOMBANG SINUS (PULSING):
+                // 1. _Time.y menghasilkan waktu dalam detik sejak scene dimulai.
+                // 2. sin(_Time.y * _PulseSpeed) menghasilkan osilasi antara [-1.0 s/d +1.0].
+                // 3. (+ 1.0) * 0.5 menormalisasi rentang nilai ke [0.0 s/d 1.0] (0 = Base, 1 = Peak).
                 float pulseFactor = (sin(_Time.y * _PulseSpeed) + 1.0) * 0.5;
+
+                // Interpolasi linear (lerp) antara warna dasar merah dan warna puncak kuning/oranye
+                // Dikalikan _GlowIntensity untuk efek visual URP Bloom/Glow yang kontras
                 float4 dangerColor = lerp(_BaseColor, _PulseColor, pulseFactor) * _GlowIntensity;
 
+                // Menggabungkan tekstur sprite, warna bahaya berdenyut, dan vertex color
                 return texColor * dangerColor * input.color;
             }
             ENDHLSL

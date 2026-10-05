@@ -114,16 +114,22 @@ namespace PilotGame.UI
             DrawToFullHand();
         }
 
+        /// <summary>
+        /// Menarik kartu hingga mencapai kapasitas tangan (5 kartu).
+        /// Jika Draw Pile habis, Discard Pile otomatis dikocok ulang ke Draw Pile tanpa penalti.
+        /// </summary>
         public void DrawToFullHand()
         {
             while (_hand.Count < _handCapacity)
             {
+                // Jika Draw Pile kosong, periksa apakah Discard Pile memiliki kartu untuk di-reshuffle
                 if (_drawPile.Count == 0)
                 {
-                    if (_discardPile.Count == 0) break;
+                    if (_discardPile.Count == 0) break; // Tidak ada kartu tersisa di deck
                     ReshuffleDiscardIntoDraw();
                 }
 
+                // Ambil kartu teratas dari Draw Pile dan masukkan ke tangan
                 CardData drawnCard = _drawPile[0];
                 _drawPile.RemoveAt(0);
                 _hand.Add(drawnCard);
@@ -146,6 +152,9 @@ namespace PilotGame.UI
             Shuffle(_drawPile);
         }
 
+        /// <summary>
+        /// Algoritma Fisher-Yates Shuffle murni untuk mengacak susunan kartu secara merata dan tidak bias.
+        /// </summary>
         private void Shuffle<T>(List<T> list)
         {
             for (int i = list.Count - 1; i > 0; i--)
@@ -173,6 +182,7 @@ namespace PilotGame.UI
 {
     /// <summary>
     /// Mengontrol visualisasi elemen UI Toolkit dan event Drag-and-Drop kartu.
+    /// Menjembatani interaksi antarmuka pengguna (UI) dengan sistem pertempuran taktis.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class CardHandController : MonoBehaviour
@@ -197,6 +207,9 @@ namespace PilotGame.UI
             RefreshHandVisuals();
         }
 
+        /// <summary>
+        /// Menyusun ulang representasi visual elemen kartu pada antarmuka tangan (Hand Container).
+        /// </summary>
         public void RefreshHandVisuals()
         {
             if (_handContainer == null || _deckManager == null) return;
@@ -209,6 +222,9 @@ namespace PilotGame.UI
             }
         }
 
+        /// <summary>
+        /// Membuat VisualElement kartu baru lengkap dengan binding event pointer down & up.
+        /// </summary>
         private VisualElement CreateCardElement(CardData card)
         {
             var cardBox = new VisualElement();
@@ -227,7 +243,7 @@ namespace PilotGame.UI
             cardBox.Add(title);
             cardBox.Add(desc);
 
-            // Register Pointer Drag Events
+            // Registrasi Callback Pointer UI Toolkit untuk mekanik Drag-and-Drop
             cardBox.RegisterCallback<PointerDownEvent>(evt => OnStartDrag(card, cardBox));
             cardBox.RegisterCallback<PointerUpEvent>(evt => OnEndDrag(card, evt.position));
 
@@ -240,15 +256,19 @@ namespace PilotGame.UI
             element.AddToClassList("card-dragging");
         }
 
+        /// <summary>
+        /// Mengeksekusi penjatuhan kartu (Drop) ke arena saat pointer dilepaskan.
+        /// </summary>
         private void OnEndDrag(CardData card, Vector2 screenPos)
         {
             if (_draggedCard == null) return;
 
-            // Konversi posisi pointer layar ke koordinat Grid World
+            // Konversi posisi pointer UI Toolkit (asal: kiri-atas) ke posisi layar Unity Screen (asal: kiri-bawah),
+            // kemudian lakukan raycast proyeksi koordinat ke bidang dunia 2D (ScreenToWorldPoint).
             Vector3 worldPos = _mainCamera.ScreenToWorldPoint(new Vector3(screenPos.x, Screen.height - screenPos.y, 10f));
             Vector2Int gridCoord = new Vector2Int(Mathf.FloorToInt(worldPos.x), Mathf.FloorToInt(worldPos.y));
 
-            // Broadcast kartu dimainkan
+            // Siarkan event bahwa pemain memainkan kartu pada koordinat grid tersebut
             CombatEvents.OnCardPlayed?.Invoke(card, gridCoord);
             _draggedCard = null;
         }

@@ -65,16 +65,19 @@ namespace PilotGame.UI
             _phaseBannerLabel = root.Q<Label>("phase-banner-label");
             _energyLabel = root.Q<Label>("energy-label");
 
+            // Berlangganan event transisi fase untuk memicu pembaruan HUD
             CombatEvents.OnPhaseChanged += HandlePhaseChanged;
         }
 
         private void OnDisable()
         {
+            // Unsubscribe untuk mencegah memory leak dan akses UI null saat scene ditutup
             CombatEvents.OnPhaseChanged -= HandlePhaseChanged;
         }
 
         private void HandlePhaseChanged(CombatPhase phase)
         {
+            // Menentukan teks banner sesuai siklus 4 fase pertempuran taktis
             string bannerText = phase switch
             {
                 CombatPhase.IntentPhase => "✦ ENEMY INTENT PHASE ✦",
@@ -84,22 +87,29 @@ namespace PilotGame.UI
                 _ => string.Empty
             };
 
+            // Menampilkan banner transisi fase dengan animasi kilau/flash
             if (_phaseBannerLabel != null && _phaseBannerContainer != null)
             {
                 _phaseBannerLabel.text = bannerText;
                 StartCoroutine(FlashBannerRoutine());
             }
 
+            // Memperbarui indikator aksi: 1 aksi tersedia hanya saat giliran pemain (GDD §4.1)
             if (_energyLabel != null)
             {
                 _energyLabel.text = phase == CombatPhase.PlayerPhase ? "Action: 1 / 1" : "Action: 0 / 1";
             }
         }
 
+        /// <summary>
+        /// Coroutine untuk memunculkan banner fase selama 1.2 detik lalu menyembunyikannya kembali.
+        /// </summary>
         private IEnumerator FlashBannerRoutine()
         {
+            // Menghapus kelas 'banner-hidden' agar transisi opacity/translate USS aktif (muncul)
             _phaseBannerContainer.RemoveFromClassList("banner-hidden");
             yield return new WaitForSeconds(1.2f);
+            // Menambahkan kembali kelas 'banner-hidden' untuk menyembunyikan banner
             _phaseBannerContainer.AddToClassList("banner-hidden");
         }
     }
@@ -140,21 +150,29 @@ namespace PilotGame.UI
             CombatEvents.OnPhaseChanged -= HandlePhaseChanged;
         }
 
+        /// <summary>
+        /// Menangani event saat musuh telah menentukan niat serangannya di Intent Phase.
+        /// </summary>
         private void HandleIntentDecided(int enemyId, Vector2Int targetCoord)
         {
+            // Hanya perbarui badge jika ID musuh cocok dengan komponen presenter ini
             if (enemyId == _enemyId && _badgeContainer != null)
             {
                 _badgeContainer.SetActive(true);
                 if (_intentIconImage != null)
                 {
+                    // Tampilkan ikon niat serang (Pedang) di atas kepala unit
                     _intentIconImage.sprite = _attackIntentIcon;
                 }
             }
         }
 
+        /// <summary>
+        /// Menangani pembersihan badge saat pergantian putaran pertempuran.
+        /// </summary>
         private void HandlePhaseChanged(Core.Data.CombatPhase phase)
         {
-            // Sembunyikan badge saat musuh telah selesai mengeksekusi niat
+            // Sembunyikan badge saat musuh telah selesai mengeksekusi niat pada RoundResetPhase
             if (phase == Core.Data.CombatPhase.RoundResetPhase && _badgeContainer != null)
             {
                 _badgeContainer.SetActive(false);

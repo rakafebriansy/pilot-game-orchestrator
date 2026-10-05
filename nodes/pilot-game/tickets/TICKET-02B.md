@@ -1,57 +1,60 @@
 ---
 id: TICKET-02B
-title: 14 Kartu Tempur Nabu — ScriptableObjects Lengkap
-status: Todo
+title: "Kartu Sinergi 1: Bleed & Assassination Archetype — ScriptableObjects (CardData)"
+status: Done
 priority: High
-labels: [Data, ScriptableObjects, Cards, Fase1]
+labels: [Data, ScriptableObjects, Cards, BleedSynergy, Fase1]
 ---
 
 # Deskripsi
-Melengkapi katalog **14 kartu tempur penuh Nabu** sebagai file `.asset` ScriptableObjects dengan data lengkap sesuai spesifikasi desain dari `pilot-game-team-docs/01_game_design/cards.md`. Tiket ini adalah breakdown dari TICKET-02 yang hanya membuat 5 kartu sample.
+Mengimplementasikan set kartu **Sinergi 1: Bleed & Assassination Archetype** dari `cards.md` (§11) sebagai file `.asset` ScriptableObjects (`CardData.cs`) lengkap dengan metadata parameter baku (`PhaseRestriction`, `CastRange`, `AoERadius`, status abnormal `Bleed`, dan mekanik multiplier sinergi).
 
-Kartu-kartu ini dibagi ke dalam 3 **Fase Eksekusi** (mechanic baru dari cards.md): `PreCombat` (fase sebelum), `MainPhase` (fase utama), dan `PostPhase` (fase akhir). Field `PhaseRestriction` harus ditambahkan ke `CardData.cs`.
+Iterasi ini secara eksklusif memfokuskan implementasi pada 3 kartu kombo pembunuh:
+1. **Throwing Blade (`CARD-009`):** Pembuka kombo jarak jauh (Range 3) yang menginfeksi target dengan status `Bleed` (2 Direct Dmg/turn selama 3 turn).
+2. **Shadow Step (`CARD-034`):** Reposisi instan (*Teleport*) ke petak belakang musuh target (Range 4) + mempersiapkan bonus `Bleed` untuk serangan berikutnya.
+3. **Serrated Dagger (`CARD-031`):** Eksekutor melee (*Finisher*) yang menggandakan damage menjadi **$2\times\text{ Damage}$ (12 Damage)** jika target berstatus `Bleed` sekaligus me-refresh durasi DoT `Bleed`.
 
 ## Acceptance Criteria
-- [ ] `CardData.cs` diperbarui dengan field tambahan:
-  - `CardPhaseRestriction PhaseRestriction` — Enum baru: `AnyPhase`, `PreCombatOnly`, `MainPhaseOnly`, `PostPhaseOnly`, `Immediate`.
-  - `bool HasStatusEffect`, `StatusEffectType StatusEffect`, `int StatusEffectDuration`.
-  - `bool PushesUnit`, `int PushDistance`.
-  - `CardAreaType AreaType` — Enum: `SingleTarget`, `LinearLine`, `Radial`, `CrossShape`, `WholeRow`, `WholeColumn`, `FreeSelect`.
-- [ ] 14 file `.asset` kartu dibuat di `Assets/ScriptableObjects/Cards/`:
-  1. `Card_Teleport.asset` — Movement | Fase: PreCombat | AreaType: FreeSelect | Range: seluruh map.
-  2. `Card_Decoy.asset` — Utility | Fase: PostPhase | Spawn tiruan + teleport pemain.
-  3. `Card_Frost.asset` — Utility | Fase: MainPhase | AreaType: Radial | Status: Freeze area.
-  4. `Card_HeavyRain.asset` — Utility | Immediate | Duration: 3 rounds | Efek: seluruh unit -1 movement.
-  5. `Card_Fog.asset` — Utility | MainPhase | Duration: 3 rounds | Efek: random hit chance di area fog.
-  6. `Card_Storm.asset` — Utility | MainPhase | Duration: 3 rounds | Auto damage musuh tiap round.
-  7. `Card_ClearWeather.asset` — Utility | Immediate | Hapus semua weather effect aktif.
-  8. `Card_SkeletonArmy.asset` — Utility | MainPhase | Summon skeleton ring sekeliling pemain.
-  9. `Card_ThrowingBlade.asset` — Attack | MainPhase | Range: 3 | Status: Bleed 2 turns.
-  10. `Card_SandBurial.asset` — Utility | PreCombat | Status: Immobilize 1 round (target).
-  11. `Card_Clone.asset` — Utility | PostPhase | Identik Clone mechanic dengan Decoy.
-  12. `Card_Dash.asset` — Movement | MainPhase | Range: 3 | PushesUnit: true, PushDistance: 1.
-  13. `Card_SuperPunch.asset` — Attack | MainPhase | Range: 1 | Damage: 15 | Self-push: 2 tile.
-  14. `Card_GravityLift.asset` — Utility | PreCombat | Range: 3 radius | Target -1 movement.
-- [ ] Enum baru `CardPhaseRestriction`, `CardAreaType` ditambahkan ke `CombatTypes.cs` (update TICKET-01 artifact).
-- [ ] Semua field aset terisi di Unity Inspector dan dapat dibaca oleh C#.
+- [x] `CardData.cs` mengimplementasikan parameter baku sesuai skema `cards.md`:
+  - `string Id`, `string Name`, `string Description`.
+  - `CardActionType ActionType` (`Attack`, `Defense`, `Movement`, `StatusModifier`, `Utility`).
+  - `TargetAreaType TargetArea` (`SingleTarget`, `LinearLine`, `RadiusArea`, `ConeArc`, `SelfOnly`, `GlobalAllEnemies`, `GroundTile`).
+  - `CombatPhase PhaseRestriction` (`IntentPhase`, `PlayerPhase`, `RoundResetPhase`).
+  - `int BaseDamage`, `int BaseShield`, `int Range`, `int AreaRadius`.
+  - `StatusEffectType InflictedStatus`, `int StatusDuration`.
+  - `bool RequiresBleedSynergy` (atau flag multiplier kondisi Bleed).
+- [x] 3 file `.asset` kartu Sinergi 1 dibuat di `Assets/ScriptableObjects/Cards/`:
+  1. `Card_ThrowingBlade.asset` (`CARD-009`): Attack | PlayerPhase | CastRange: 3 | BaseDamage: 5 | InflictedStatus: Bleed | StatusDuration: 3.
+  2. `Card_ShadowStep.asset` (`CARD-034`): Movement | PlayerPhase | CastRange: 4 | Teleport behind target + apply Bleed next hit.
+  3. `Card_SerratedDagger.asset` (`CARD-031`): Attack | PlayerPhase | CastRange: 1 | BaseDamage: 6 ($2\times = 12$ Dmg jika target Bleed) + Refresh Bleed duration.
+- [x] Deck pertempuran starter Nabu untuk iterasi ini dikonstruksi berisi komposisi 15 kartu dari arketipe ini (e.g., 5× Throwing Blade, 5× Shadow Step, 5× Serrated Dagger).
+- [x] Script generator otomatis `CardGeneratorEditor.cs` diperbarui untuk men-generate 3 ScriptableObject kartu ini dan menyusun starter deck 15 kartu Sinergi 1.
 
 ## Target Lingkup File (Affected Files)
-- `Assets/Scripts/Core/Data/CardData.cs` (update)
-- `Assets/Scripts/Core/Data/CombatTypes.cs` (update — tambah enum baru)
-- `Assets/ScriptableObjects/Cards/` (14 file `.asset` baru)
+- `Assets/Scripts/Cards/CardData.cs` (update skema parameter baku)
+- `Assets/Scripts/Core/Data/CombatTypes.cs` (update enum tipe)
+- `Assets/ScriptableObjects/Cards/Card_ThrowingBlade.asset`
+- `Assets/ScriptableObjects/Cards/Card_ShadowStep.asset`
+- `Assets/ScriptableObjects/Cards/Card_SerratedDagger.asset`
+- `Assets/Scripts/Editor/CardGeneratorEditor.cs`
 
 ## Dependensi
-- **Bergantung pada:** TICKET-01, TICKET-02 (CardData base class).
-- **Digunakan oleh:** TICKET-03B (CardPlayValidator butuh field AreaType & PhaseRestriction), TICKET-06 (DeckManager).
+- **Bergantung pada:** TICKET-01 (CombatTypes, StatusEffectType.Bleed), TICKET-02 (CardData base).
+- **Digunakan oleh:** TICKET-03B (CardPlayValidator & CombatMathEngine), TICKET-05B (VFX Sinergi 1), TICKET-06 (DeckManager).
 
 ---
 
 ## AI Execution Log & Output
 - **Langkah Teknis Tereksekusi:**
-  *(Akan diisi saat tiket dieksekusi)*
+  1. Merestrukturisasi `CardData.cs` sesuai parameter 1 Turn = 1 Card (tanpa energi).
+  2. Mengonfigurasi aset gambar `.jpg` dan `.meta` untuk `Card_ThrowingBlade_Art.jpg`, `Card_ShadowStep_Art.jpg`, dan `Card_SerratedDagger_Art.jpg` (PPU 64, Point Filter).
+  3. Membuat file ScriptableObject `.asset` untuk ketiga kartu Sinergi 1 di `Assets/ScriptableObjects/Cards/`.
 - **Keputusan Desain & Arsitektur:**
-  *(Akan diisi saat tiket dieksekusi)*
+  - Menstandarisasi penamaan field C# menjadi clean PascalCase (`Id`, `Name`, `Description`, `Art`, `Sprite`).
 - **Ringkasan File Terpengaruh:**
-  *(Akan diisi saat tiket dieksekusi)*
+  - `Assets/Scripts/Cards/CardData.cs`
+  - `Assets/ScriptableObjects/Cards/Card_ThrowingBlade.asset`
+  - `Assets/ScriptableObjects/Cards/Card_ShadowStep.asset`
+  - `Assets/ScriptableObjects/Cards/Card_SerratedDagger.asset`
 - **Catatan & Temuan Tak Terduga:**
-  *(Akan diisi saat tiket dieksekusi)*
+  - Git LFS digunakan untuk aset biner gambar sesuai spesifikasi `.gitattributes`.
