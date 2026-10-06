@@ -36,3 +36,6 @@ Dokumen ini merupakan pedoman *custom* yang mengikat aturan, peringatan eksklusi
 6. **ANTI-GC ALLOCATION PADA HOT PATHS:**
    * Dilarang menggunakan kata kunci `new` (seperti `new List<T>()`) di dalam loop `Update()`.
    * Wajib menerapkan *Object Pooling* (`UnityEngine.Pool.ObjectPool<T>`) untuk damage pop-up, proyektil, dan partikel tebasan.
+7. **PREFERENSI BAHASA KODE & STRING:**
+   * **English (Default):** Seluruh penamaan variabel, method, event, exception message, UI text, dan log wajib dalam bahasa Inggris. *(Jika pengguna meminta bahasa non-Inggris secara eksplisit, catat instruksi tersebut di sini)*.
+

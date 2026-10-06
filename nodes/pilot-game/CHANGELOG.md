@@ -31,6 +31,32 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 ## Log Perubahan (Pilot Game)
 
+### [2026-10-06 17:41:00] - Guideline: Sinkronisasi Pembaruan Framework AI Orchestrator Template (Fail-Fast, No Magic Numbers, Language Preference & TDD Workflow)
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "ai-orchestrator-template sudah saya update, bawalah perubahan/update nya ke pilot-game-ai-orchestrator tanpa merusak kemajuan yang sudah ada pada project"
+- **Perubahan:**
+  - `[Added]` Menambahkan berkas root signature `ORCHESTRATOR_WATERMARK.txt` dari template.
+  - `[Changed]` Memperbarui `global-guidelines/coding.md` dengan kebijakan Fail-Fast mutlak (larangan silent fallback / mock di kode produksi), larangan Magic Numbers & standarisasi konstanta (`SCREAMING_SNAKE_CASE`), serta preferensi bahasa Inggris sebagai standar baku (*English by Default*).
+  - `[Changed]` Memperbarui `global-guidelines/error-handling.md` dengan prinsip Fail-Fast & larangan menyembunyikan galat (*No Error Masking* / *No Silent Catch*).
+  - `[Changed]` Memperbarui `global-guidelines/security.md` dengan penegasan Zero Hardcoded Secrets & larangan fallback semu pada kredensial.
+  - `[Changed]` Memperbarui `global-guidelines/testing.md` dengan alur baku Test-Driven Development (TDD) siklus 6 tahap (Analisis DoD -> Red -> Green -> Refactor & Fix -> Quality Check -> Finish) serta aturan Anti-Overfitting pada test suite lama.
+  - `[Changed]` Memperbarui `nodes/_template/main.md` dan `nodes/_template/guidelines/project-context.md` sesuai versi template terbaru.
+  - `[Changed]` Mengintegrasikan aturan Preferensi Bahasa Inggris ke dalam `nodes/pilot-game/guidelines/project-context.md` tanpa merusak aturan fundamental Unity 2D & arsitektur Pilot Game yang sudah ada.
+  - `[Changed]` Memperbarui SOP eksekusi seksi E (Sequential Execution Gate & TDD) pada `nodes/pilot-game/main.md` dengan tetap mempertahankan status operasional aktif (`MODE 2: PROMPT-DRIVEN`).
+  - `[Changed]` Memperbarui dokumentasi root `README.md` dengan deskripsi 4 fase Prompt dan proteksi direktori Graphify.
+- **Path File:**
+  - `ORCHESTRATOR_WATERMARK.txt`
+  - `README.md`
+  - `global-guidelines/coding.md`
+  - `global-guidelines/error-handling.md`
+  - `global-guidelines/security.md`
+  - `global-guidelines/testing.md`
+  - `nodes/_template/guidelines/project-context.md`
+  - `nodes/_template/main.md`
+  - `nodes/pilot-game/guidelines/project-context.md`
+  - `nodes/pilot-game/main.md`
+  - `nodes/pilot-game/CHANGELOG.md`
+
 ### [2026-10-06 17:13:00] - Implementation & Ticket: TICKET-03B Combat Math Engine, Card Play Validator, Stealth Helper & In-Code String Refactor
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
 - **Konteks:** "kvp itu apa", "bagaimana jika _grid.IsStealthed(playerCoordinate) && distanceToPlayer >= 2 digabung ke dalam isstealthed?", "kerjakan di guide ticket", "ubah semua string dengan bahasa inggris", "commit push Tubbies Pilot Game", "ikuti commit message rule"

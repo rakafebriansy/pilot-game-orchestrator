@@ -6,7 +6,7 @@ Selamat datang di ekosistem **AI Orchestrator**. Berbeda dengan sekadar *prompti
 
 ## 🚀 Cara Penggunaan
 
-Proses pengembangan dengan Orchestrator ini dibagi menjadi dua fase Prompt.
+Proses pengembangan dan interaksi dengan Orchestrator ini dibagi menjadi 4 fase Prompt utama: Inisialisasi (*Startup*), Penambahan Node (*Scaling*), Pengerjaan Tugas (*Execution*), dan Tanya-Jawab Implementasi (*Knowledge Q&A*).
 
 ### FASE 1: Startup Prompt (Inisialisasi Proyek)
 Gunakan salah satu *prompt* di bawah ini hanya **satu kali** di awal proyek (tergantung apakah proyek Anda hanya satu aplikasi tunggal atau gabungan dari beberapa aplikasi/node). Tujuannya adalah menginisialisasi seluruh dokumen kosong di `docs/` dan menyiapkan pedoman proyek Anda.
@@ -42,7 +42,7 @@ Berbekal informasi di atas, JANGAN MENULIS KODE APLIKASI SAMA SEKALI. Lakukan la
    e. Berdasarkan tipe aplikasi (Backend, Web, Mobile, Game), rancang seluruh arsitektur menggunakan PlantUML (ERD, Flowchart, State Diagram, User Journey, Use Case). Simpan kode arsitektur tersebut sebagai file-file `.puml` terpisah secara eksplisit di dalam folder `docs/diagrams/` (untuk Node) atau `global-docs/diagrams/` (untuk Global), lalu tautkan (link) file tersebut ke dalam `prd.md` dan `system-design.md` sesuai pedoman.
    f. Buat `nodes/[nama-proyek]/docs/development-planning.md` yang merancang daftar backlog tiket (TICKET-XX.md) yang harus dikerjakan di fase pertama.
    g. Tuliskan entri log inisialisasi awal ke dalam file `nodes/[nama-proyek]/CHANGELOG.md` menggunakan templat dari `global-docs/templates/changelog_entry_template.md` yang mencatat tanggal, status pembuatan node, dan ringkasan arsitektur dasar yang baru saja ditetapkan.
-   h. Sinkronisasi Graf (KONDISIONAL): JIKA pengguna menyetujui penggunaan Graphify di tahap awal, masuk ke dalam direktori *Path Codebase* dan jalankan perintah `graphify build` di terminal untuk membangun Knowledge Graph perdana.
+   h. Sinkronisasi Graf (KONDISIONAL): JIKA pengguna menyetujui penggunaan Graphify di tahap awal, masuk ke dalam direktori *Path Codebase* dan jalankan perintah `graphify build` di terminal untuk membangun Knowledge Graph perdana. DILARANG KERAS menjalankan `graphify build` atau membuat direktori `.graphify` di dalam repositori orchestrator (`ai-orchestrator-template/`).
 
 Setelah seluruh dokumen mandatory terlengkapi dan fase di atas selesai sempurna, berikan saya rangkuman singkat terkait struktur baru yang terbentuk dan tanyakan persetujuan saya sebelum kita masuk ke mode eksekusi tiket harian!
 
@@ -87,7 +87,7 @@ Berbekal informasi di atas, JANGAN MENULIS KODE APLIKASI SAMA SEKALI. Lakukan la
    e. Berdasarkan tipe aplikasi (Backend, Web, Mobile, Game), rancang seluruh arsitektur menggunakan PlantUML (ERD, Flowchart, State Diagram, User Journey, Use Case). Simpan kode arsitektur tersebut sebagai file-file `.puml` terpisah secara eksplisit di dalam folder `docs/diagrams/` spesifik milik node tersebut, lalu tautkan (link) file tersebut ke dalam prd.md and system-design.md sesuai pedoman.
    f. Buat `nodes/[nama-node]/docs/development-planning.md` yang merancang daftar backlog tiket (TICKET-XX.md) yang harus dikerjakan di fase pertama node ini.
    g. Tuliskan entri log inisialisasi awal ke dalam file `nodes/[nama-node]/CHANGELOG.md` menggunakan templat dari `global-docs/templates/changelog_entry_template.md` yang mencatat tanggal, status pembuatan node, dan ringkasan arsitektur dasar yang baru saja ditetapkan.
-   h. Sinkronisasi Graf (KONDISIONAL): JIKA pengguna menyetujui penggunaan Graphify di tahap awal, setelah selesai memproses sebuah Node, masuk ke dalam direktori *Path Codebase* dari node tersebut dan jalankan perintah `graphify build` di terminal untuk membangun Knowledge Graph lokal node tersebut.
+   h. Sinkronisasi Graf (KONDISIONAL): JIKA pengguna menyetujui penggunaan Graphify di tahap awal, setelah selesai memproses sebuah Node, masuk ke dalam direktori *Path Codebase* dari node tersebut dan jalankan perintah `graphify build` di terminal untuk membangun Knowledge Graph lokal node tersebut. DILARANG KERAS menjalankan `graphify build` atau membuat direktori `.graphify` di dalam repositori orchestrator (`ai-orchestrator-template/`).
 
 Setelah seluruh dokumen mandatory terlengkapi dan fase di atas selesai sempurna, berikan saya rangkuman singkat terkait struktur baru yang terbentuk dan tanyakan persetujuan saya sebelum kita masuk ke mode eksekusi tiket harian!
 
@@ -124,7 +124,7 @@ Berbekal informasi di atas, JANGAN MENULIS KODE APLIKASI SAMA SEKALI. Lakukan la
    e. Rancang seluruh arsitektur node baru menggunakan PlantUML secara eksplisit di dalam folder `nodes/[nama-node-baru]/docs/diagrams/`, lalu tautkan file tersebut ke dalam dokumen yang relevan.
    f. Buat `nodes/[nama-node-baru]/docs/development-planning.md` untuk backlog tiket node baru ini.
    g. Tuliskan entri log inisialisasi awal ke dalam file `nodes/[nama-node-baru]/CHANGELOG.md` menggunakan templat `global-docs/templates/changelog_entry_template.md`.
-   h. Sinkronisasi Graf (KONDISIONAL): JIKA ekosistem ini terdeteksi menggunakan Graphify (dari langkah 0), masuk ke dalam direktori *Path Codebase* node baru tersebut dan jalankan perintah `graphify build` di terminal untuk membangun Knowledge Graph.
+   h. Sinkronisasi Graf (KONDISIONAL): JIKA ekosistem ini terdeteksi menggunakan Graphify (dari langkah 0), masuk ke dalam direktori *Path Codebase* node baru tersebut dan jalankan perintah `graphify build` di terminal untuk membangun Knowledge Graph. DILARANG KERAS menjalankan perintah ini atau membuat direktori `.graphify` di dalam direktori orchestrator (`ai-orchestrator-template/`).
 
 Setelah penambahan Node selesai, berikan saya rangkuman arsitektur ekosistem terbaru dan tanyakan persetujuan saya sebelum kita masuk ke mode eksekusi tiket harian!
 ```
