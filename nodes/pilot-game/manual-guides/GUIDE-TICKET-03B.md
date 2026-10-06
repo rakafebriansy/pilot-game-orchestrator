@@ -107,11 +107,9 @@ namespace PilotGame.Core.Data
         /// </summary>
         public void TickStatusEffects()
         {
-            foreach (var kvp in _unitStatusEffects)
+            // Menggunakan Tuple Deconstruction (unitId, list) pada Dictionary
+            foreach (var (unitId, list) in _unitStatusEffects)
             {
-                int unitId = kvp.Key;
-                var list = kvp.Value;
-
                 // Loop dari indeks terakhir ke 0 untuk mencegah CollectionModifiedException saat RemoveAt
                 for (int i = list.Count - 1; i >= 0; i--)
                 {
@@ -176,21 +174,21 @@ namespace PilotGame.Cards
             // 0. Validasi Eksistensi Data Kartu
             if (card == null)
             {
-                failureReason = "Kartu tidak valid atau bernilai null.";
+                failureReason = "Card data is invalid or null.";
                 return false;
             }
 
             // 1. Validasi Batasan Fase (Contoh: Kartu aksi hanya boleh dimainkan saat PlayerPhase)
             if (card.PhaseRestriction != currentPhase)
             {
-                failureReason = $"Kartu hanya dapat dimainkan pada fase: {card.PhaseRestriction}.";
+                failureReason = $"Card can only be played during phase: {card.PhaseRestriction}.";
                 return false;
             }
 
             // 2. Validasi Batas Arena Grid 15x15
             if (!grid.IsInsideGrid(targetCoord))
             {
-                failureReason = "Target berada di luar batas arena pertempuran.";
+                failureReason = "Target is outside grid arena boundaries.";
                 return false;
             }
 
@@ -198,15 +196,15 @@ namespace PilotGame.Cards
             int distance = Mathf.Abs(casterPos.x - targetCoord.x) + Mathf.Abs(casterPos.y - targetCoord.y);
             if (distance > card.Range)
             {
-                failureReason = $"Target berada di luar jangkauan kartu ({card.Range} petak). Jarak saat ini: {distance}.";
+                failureReason = $"Target is out of card range ({card.Range} tiles). Current distance: {distance}.";
                 return false;
             }
 
-            // 4. Validasi Aturan Semak Siluman (Stealth Bush - GDD §4.1):
-            // Unit di dalam semak taktis tidak dapat ditarget dari jarak >= 2 petak (hanya bisa pada jarak 1 petak bersebelahan)
-            if (grid.IsStealthed(targetCoord) && distance >= 2)
+            // 4. Validasi Aturan Semak Siluman (Stealth Bush - GDD §4.1 via helper terpusat):
+            // Unit di dalam semak taktis tidak dapat ditarget jika tersamarkan dari sudut pandang caster (jarak >= 2 petak)
+            if (grid.IsTargetStealthed(casterPos, targetCoord))
             {
-                failureReason = "Target tersamarkan di dalam semak taktis (harus berada tepat 1 petak bersebelahan).";
+                failureReason = "Target is stealthed in tactical bush (must be adjacent at 1 tile distance).";
                 return false;
             }
 
@@ -216,7 +214,7 @@ namespace PilotGame.Cards
                 int occupant = grid.GetOccupant(targetCoord);
                 if (occupant == 0)
                 {
-                    failureReason = "Serangan target tunggal membutuhkan musuh di ubin target.";
+                    failureReason = "Single target attack requires an occupant at the target tile.";
                     return false;
                 }
             }
@@ -226,7 +224,7 @@ namespace PilotGame.Cards
             {
                 if (!grid.IsWalkable(targetCoord))
                 {
-                    failureReason = "Ubin tujuan terhalang rintangan atau sudah ditempati unit lain.";
+                    failureReason = "Destination tile is blocked by an obstacle or occupied by another unit.";
                     return false;
                 }
             }
@@ -255,8 +253,8 @@ namespace PilotGame.Cards
                     // Saring hanya petak dalam radius jangkauan kartu
                     if (dist <= card.Range)
                     {
-                        // Lewati petak semak siluman jika jarak >= 2 petak (hanya bisa terlihat pada jarak 1 petak)
-                        if (grid.IsStealthed(coord) && dist >= 2) continue;
+                        // Lewati petak jika tersamarkan di semak siluman dari sudut pandang caster
+                        if (grid.IsTargetStealthed(casterPos, coord)) continue;
 
                         validTiles.Add(coord);
                     }

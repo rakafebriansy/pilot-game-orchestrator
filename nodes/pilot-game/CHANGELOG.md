@@ -31,6 +31,28 @@ Setiap penambahan log versi terbaru **WAJIB MUTLAK** diletakkan di baris **PALIN
 
 ## Log Perubahan (Pilot Game)
 
+### [2026-10-06 17:13:00] - Implementation & Ticket: TICKET-03B Combat Math Engine, Card Play Validator, Stealth Helper & In-Code String Refactor
+> **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
+- **Konteks:** "kvp itu apa", "bagaimana jika _grid.IsStealthed(playerCoordinate) && distanceToPlayer >= 2 digabung ke dalam isstealthed?", "kerjakan di guide ticket", "ubah semua string dengan bahasa inggris", "commit push Tubbies Pilot Game", "ikuti commit message rule"
+- **Perubahan:**
+  - `[Added]` Mengimplementasikan `CombatMathEngine.cs` (Pure C#) untuk kalkulasi perisai/damage final, jarak Manhattan, pengecekan radius range, dan siklus hidup status effect terisolasi.
+  - `[Added]` Mengimplementasikan helper relasional `GridDataModel.IsTargetStealthed(observerCoord, targetCoord)` untuk enkapsulasi aturan semak taktis (jarak >= 2 petak tidak terlihat, jarak 1 petak terlihat).
+  - `[Added]` Mengimplementasikan `CardPlayValidator.cs` (Pure C#) untuk validasi kelayakan memainkan kartu (`CanPlayCard`) dan kalkulasi ubin target yang sah (`GetValidTargetTiles`).
+  - `[Added]` Menulis unit testing `CombatMathTests.cs` dan menambahkan test case semak siluman pada `GridLogicTests.cs` (EditMode suite).
+  - `[Changed]` Menstandarkan seluruh *in-code string literals* (pesan error, UI failure reason, debug log) pada seluruh manual guides dan codebase ke dalam bahasa Inggris baku.
+  - `[Changed]` Memperbarui status [TICKET-03B.md](file:///Users/raka/Developer/repositories/projects/tubbies-studio-org/pilot-game-dir/pilot-game-ai-orchestrator/nodes/pilot-game/tickets/TICKET-03B.md) menjadi `Done` beserta checklist acceptance criteria dan ringkasan teknis di `AI Execution Log & Output`.
+- **Path File:**
+  - `Assets/Scripts/Cards/CardPlayValidator.cs`
+  - `Assets/Scripts/Core/Data/CombatMathEngine.cs`
+  - `Assets/Tests/EditMode/CombatMathTests.cs`
+  - `Assets/Scripts/Grid/GridDataModel.cs`
+  - `Assets/Scripts/Units/EnemyAICalculator.cs`
+  - `Assets/Tests/EditMode/GridLogicTests.cs`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-03.md`
+  - `nodes/pilot-game/manual-guides/GUIDE-TICKET-03B.md`
+  - `nodes/pilot-game/tickets/TICKET-03B.md`
+  - `nodes/pilot-game/CHANGELOG.md`
+
 ### [2026-10-05 16:20:00] - Architecture, Game Design & Implementation: 15x15 Grid Spasial, Enemy AI AoE Shapes, Stealth Bush Distance Rule & MVP Asset Datasets
 > **Trigger:** Prompt Driven | **Branch:** `main` | **Repo:** `pilot-game-ai-orchestrator`
 - **Konteks:** "kenapa di jarak > 2 petak tak bisa melihat?", "buat >=, lihat bisa di 1 petak saja", "kan berbeda beda nanti jenis serangannya tergantung game designer. bisa kotak, lingkaran, belah ketupat, salib dan bentuk2 lainnya. buatlah skalabel", "buatlah IsOffsetInShape di GUIDE-TICKET-03.md error jika salah satu type di GUIDE-TICKET-01.md tidak diimplementasikan", "commit push, update ticket dan changelog dari manual update saya"

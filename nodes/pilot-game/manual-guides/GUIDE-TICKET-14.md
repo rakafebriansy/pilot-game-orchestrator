@@ -97,14 +97,14 @@ namespace PilotGame.Sanctuary
             // 2. Periksa graf dependensi: apakah talenta prasyarat (parent) sudah terbuka?
             if (talent.PrerequisiteTalent != null && !save.UnlockedTalentNodeIds.Contains(talent.PrerequisiteTalent.TalentId))
             {
-                Debug.LogWarning("[Talent] Prasyarat talenta belum terbuka!");
+                Debug.LogWarning("[Talent] Talent prerequisites are not unlocked yet!");
                 return false;
             }
 
             // 3. Periksa kecukupan saldo mata uang meta (Knowledge Shards)
             if (save.TotalKnowledgeShards < talent.ShardCost)
             {
-                Debug.LogWarning("[Talent] Knowledge Shard tidak mencukupi!");
+                Debug.LogWarning("[Talent] Insufficient Knowledge Shards!");
                 return false;
             }
 
@@ -113,7 +113,7 @@ namespace PilotGame.Sanctuary
             save.UnlockedTalentNodeIds.Add(talent.TalentId);
             SaveDataManager.Instance.SaveGame();
 
-            Debug.Log($"[Talent] Berhasil membuka talenta: {talent.TalentName}!");
+            Debug.Log($"[Talent] Successfully unlocked talent: {talent.TalentName}!");
             return true;
         }
     }

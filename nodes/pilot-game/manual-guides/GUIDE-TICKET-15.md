@@ -108,7 +108,7 @@ namespace PilotGame.Meta
             if (level >= 0 && level <= maxUnlocked)
             {
                 SelectedAscensionLevel = level;
-                Debug.Log($"[Ascension] Tingkat kesulitan terpilih: Ascension {level}");
+                Debug.Log($"[Ascension] Selected difficulty: Ascension {level}");
                 return true;
             }
             return false;
@@ -141,7 +141,7 @@ namespace PilotGame.Meta
                 {
                     save.UnlockedAscensionTier++;
                     SaveDataManager.Instance.SaveGame();
-                    Debug.Log($"[Ascension] 🎉 Selamat! Ascension {save.UnlockedAscensionTier} Terbuka!");
+                    Debug.Log($"[Ascension] 🎉 Congratulations! Ascension {save.UnlockedAscensionTier} Unlocked!");
                 }
             }
         }

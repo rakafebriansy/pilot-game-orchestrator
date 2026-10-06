@@ -20,6 +20,7 @@ Tiket ini bergantung pada TICKET-01 (membutuhkan `TileType`, `CombatEvents`, `Ti
   - Method `bool IsInsideGrid(Vector2Int coord)` — mengembalikan false jika di luar batas 15×15.
   - Method `bool IsWalkable(Vector2Int coord)` — false jika di luar grid, `ObstaclePillar`, atau ditempati unit lain.
   - Method `bool IsStealthed(Vector2Int coord)` — mengembalikan true jika `GetTileType(coord) == TileType.StealthBush` (GDD §4.1).
+  - Method `bool IsTargetStealthed(Vector2Int observerCoord, Vector2Int targetCoord)` — mengembalikan true jika target berada di `StealthBush` dan jarak Manhattan >= 2 petak (GDD §4.1).
   - Method `Vector2Int CalculateLinearMoveDestination(Vector2Int start, Vector2Int direction, int distance)` — menghitung titik henti pergerakan; jika jalur melewati tile yang ditempati unit/obstacle, unit akan tertabrak dan berhenti tepat 1 petak di depan rintangan (GDD §4.6 Collision).
   - Method `void SetOccupant(Vector2Int coord, int unitId)` — menetapkan unit (0 untuk kosongkan).
   - Method `int GetOccupant(Vector2Int coord)` — mengembalikan unitId atau 0 jika kosong.

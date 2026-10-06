@@ -115,7 +115,7 @@ namespace PilotGame.UI
         /// </summary>
         private void OnNodeClicked(MapNodeData node)
         {
-            Debug.Log($"[MapScreen] Pemain memilih node: {node.NodeId} ({node.NodeType})");
+            Debug.Log($"[MapScreen] Player selected node: {node.NodeId} ({node.NodeType})");
             node.IsVisited = true;
             node.IsAvailable = false;
 

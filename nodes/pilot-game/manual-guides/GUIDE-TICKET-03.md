@@ -96,6 +96,18 @@ namespace PilotGame.Grid
         }
 
         /// <summary>
+        /// Mengevaluasi apakah target tersamarkan dari sudut pandang pengamat (Line of Sight).
+        /// Target tersamarkan HANYA jika berada di StealthBush DAN jarak Manhattan >= 2 petak (GDD §4.1).
+        /// Jika pengamat berada tepat bersebelahan (jarak 1 petak), target tetap terlihat (mengembalikan false).
+        /// </summary>
+        public bool IsTargetStealthed(Vector2Int observerCoord, Vector2Int targetCoord)
+        {
+            if (!IsStealthed(targetCoord)) return false;
+            int distance = Math.Abs(observerCoord.x - targetCoord.x) + Math.Abs(observerCoord.y - targetCoord.y);
+            return distance >= 2;
+        }
+
+        /// <summary>
         /// Menghitung titik henti pergerakan linear bertahap per petak (Raymarch step-by-step).
         /// Jika jalur menabrak musuh, tembok batas, atau pilar rintangan di tengah jalan,
         /// unit otomatis tertabrak dan berhenti tepat 1 petak di depan rintangan (GDD §4.6 - Path Collision).
@@ -190,18 +202,15 @@ namespace PilotGame.Units
         /// </summary>
         public void PlanLinearAttack(int enemyId, Vector2Int enemyCoord, Vector2Int playerCoord, int attackRange)
         {
-            // 1. Hitung Jarak Manhattan (|x1-x2| + |y1-y2|) antara musuh dan pemain
-            int distanceToPlayer = Math.Abs(enemyCoord.x - playerCoord.x) + Math.Abs(enemyCoord.y - playerCoord.y);
-
-            // 2. Evaluasi Aturan Stealth Bush (GDD §4.1):
-            // Jika pemain berada di dalam semak taktis (StealthBush) dan jarak >= 2 ubin (bukan 1 ubin bersebelahan), AI kehilangan Line of Sight
-            if (_grid.IsStealthed(playerCoord) && distanceToPlayer >= 2)
+            // 1. Evaluasi Aturan Stealth Bush (GDD §4.1 via helper terpusat):
+            // Jika pemain tersamarkan di dalam semak taktis dari sudut pandang musuh (jarak >= 2), AI kehilangan Line of Sight
+            if (_grid.IsTargetStealthed(enemyCoord, playerCoord))
             {
                 // Pemain tersamarkan -> Batalkan niat serangan terarah ke pemain
                 return;
             }
 
-            // 3. Tentukan arah vektor normalisasi (-1, 0, atau 1) menuju pemain
+            // 2. Tentukan arah vektor normalisasi (-1, 0, atau 1) menuju pemain
             Vector2Int direction = new Vector2Int(
                 Math.Sign(playerCoord.x - enemyCoord.x),
                 Math.Sign(playerCoord.y - enemyCoord.y)
@@ -352,6 +361,27 @@ namespace PilotGame.Tests.EditMode
 
             // Harusnya terhenti di (3, 2) tepat 1 petak di depan pilar di (4, 2)
             Assert.AreEqual(new Vector2Int(3, 2), destination);
+        }
+
+        [Test]
+        public void IsTargetStealthed_ReturnsTrueOnlyIfInBushAndDistanceGreaterThanOrEqualToTwo()
+        {
+            Vector2Int observer = new Vector2Int(0, 0);
+            Vector2Int target = new Vector2Int(2, 0); // Jarak 2 ubin
+            _grid.SetTileType(target, TileType.StealthBush);
+
+            // Jarak >= 2 di semak -> tersamarkan (true)
+            Assert.IsTrue(_grid.IsTargetStealthed(observer, target));
+
+            // Jarak 1 bersebelahan di semak -> tetap terlihat (false)
+            Vector2Int adjacentTarget = new Vector2Int(1, 0);
+            _grid.SetTileType(adjacentTarget, TileType.StealthBush);
+            Assert.IsFalse(_grid.IsTargetStealthed(observer, adjacentTarget));
+
+            // Jarak 2 di lantai normal -> tidak tersamarkan (false)
+            Vector2Int normalTarget = new Vector2Int(0, 2);
+            _grid.SetTileType(normalTarget, TileType.NormalFloor);
+            Assert.IsFalse(_grid.IsTargetStealthed(observer, normalTarget));
         }
 
         [Test]

@@ -126,7 +126,7 @@ namespace PilotGame.UI
                 descLbl.AddToClassList("card-desc");
 
                 var selectBtn = new Button(() => OnCardSelected(card));
-                selectBtn.text = "Pilih Kartu Ini";
+                selectBtn.text = "Select This Card";
                 selectBtn.AddToClassList("draft-select-btn");
 
                 cardBox.Add(nameLbl);
@@ -144,7 +144,7 @@ namespace PilotGame.UI
         /// </summary>
         private void OnCardSelected(CardData chosenCard)
         {
-            Debug.Log($"[Draft] Pemain menambahkan kartu: {chosenCard.Name} ke deck!");
+            Debug.Log($"[Draft] Player added card: {chosenCard.Name} to deck!");
             // Tambahkan ke starter deck / draw pile
             CloseDraftScreen();
         }

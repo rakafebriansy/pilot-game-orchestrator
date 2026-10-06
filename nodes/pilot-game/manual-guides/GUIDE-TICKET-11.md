@@ -112,7 +112,7 @@ namespace PilotGame.Map
         {
             int heal = CalculateHealAmount(maxHP);
             currentHP = Mathf.Min(maxHP, currentHP + heal); // Cegah over-heal melampaui MaxHP
-            Debug.Log($"[Campfire] Pemain pulih sebesar +{heal} HP (HP sekarang: {currentHP}/{maxHP})");
+            Debug.Log($"[Campfire] Player healed for +{heal} HP (Current HP: {currentHP}/{maxHP})");
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace PilotGame.Map
         /// </summary>
         public void UpgradeCard(CardData baseCard, CardData upgradedCard)
         {
-            Debug.Log($"[Campfire] Kartu {baseCard.Name} berhasil ditingkatkan menjadi {upgradedCard.Name}!");
+            Debug.Log($"[Campfire] Card {baseCard.Name} successfully upgraded to {upgradedCard.Name}!");
         }
     }
 }

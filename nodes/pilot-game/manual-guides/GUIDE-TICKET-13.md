@@ -89,7 +89,7 @@ namespace PilotGame.Persistence
         {
             string json = JsonUtility.ToJson(CurrentSave, true);
             File.WriteAllText(SaveFilePath, json);
-            Debug.Log($"[SaveDataManager] Progres tersimpan ke: {SaveFilePath}");
+            Debug.Log($"[SaveDataManager] Progress saved to: {SaveFilePath}");
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace PilotGame.Persistence
             {
                 string json = File.ReadAllText(SaveFilePath);
                 CurrentSave = JsonUtility.FromJson<GameSaveData>(json);
-                Debug.Log("[SaveDataManager] Save data berhasil dimuat!");
+                Debug.Log("[SaveDataManager] Save data loaded successfully!");
             }
             else
             {
@@ -144,7 +144,7 @@ namespace PilotGame.Persistence
 
             // 2. Akumulasi total Shards
             int totalShards = floorPoints + killPoints + goldPoints;
-            Debug.Log($"[Expedition] Hasil konversi: {floorReached} Lantai + {enemiesKilled} Kill + {goldRemaining} Gold = {totalShards} Shards");
+            Debug.Log($"[Expedition] Conversion result: {floorReached} Floors + {enemiesKilled} Kills + {goldRemaining} Gold = {totalShards} Shards");
 
             // 3. Simpan langsung ke Save Data persisten
             if (SaveDataManager.Instance != null)

@@ -144,7 +144,7 @@ namespace PilotGame.EditorTools
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log("[MVPDatasetGeneratorEditor] Sukses membuat & memperbarui 3 Kartu, 1 Musuh, dan 1 Consumable MVP!");
+            Debug.Log("[MVPDatasetGeneratorEditor] Successfully created & updated 3 MVP Cards, 1 Enemy, and 1 Consumable!");
         }
 
         private static void EnsureFolders()

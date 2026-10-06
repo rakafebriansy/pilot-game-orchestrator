@@ -115,7 +115,7 @@ namespace PilotGame.Units
 
         private void TriggerEnrageTransformation()
         {
-            Debug.Log($"[BossAI] {_bossData.Name} memasuki FASE MURKA (ENRAGE)!");
+            Debug.Log($"[BossAI] {_bossData.Name} enters ENRAGE PHASE!");
             // Tambahkan partikel aura merah menyala dan suara raungan boss
         }
 

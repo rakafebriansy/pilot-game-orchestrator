@@ -175,7 +175,7 @@ namespace PilotGame.UI
         {
             if (GoldManager.Instance != null && GoldManager.Instance.TrySpendGold(price))
             {
-                Debug.Log($"[Shop] Berhasil membeli kartu: {card.Name}");
+                Debug.Log($"[Shop] Successfully purchased card: {card.Name}");
                 itemBox.SetEnabled(false);
                 itemBox.AddToClassList("sold-out"); // Visual feedback sold out
                 UpdateGoldDisplay(GoldManager.Instance.CurrentGold);
@@ -190,7 +190,7 @@ namespace PilotGame.UI
         {
             if (GoldManager.Instance != null && GoldManager.Instance.TrySpendGold(_purgeCost))
             {
-                Debug.Log("[Shop] Membuka modal hapus kartu dari deck!");
+                Debug.Log("[Shop] Opening deck card purge modal!");
                 _purgeCost += 25; // Eskalasi biaya untuk penggunaan berikutnya
                 _purgeDeckButton.text = $"Purge Deck ({_purgeCost} G)";
                 UpdateGoldDisplay(GoldManager.Instance.CurrentGold);

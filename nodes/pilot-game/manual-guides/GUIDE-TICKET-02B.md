@@ -188,7 +188,7 @@ namespace PilotGame.EditorTools
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log("[CardGeneratorEditor] Sukses membuat Kartu Sinergi 1 (Bleed & Assassination) dengan data & sprite art lengkap!");
+            Debug.Log("[CardGeneratorEditor] Successfully created Synergy 1 Cards (Bleed & Assassination) with full data & sprite art!");
         }
 
         private static void CreateCard(

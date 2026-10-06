@@ -93,7 +93,7 @@ namespace PilotGame.Inventory
             // 2. Pasang item baru ke slot aktif dan keluarkan dari Stash
             StashItems.Remove(item);
             WearableSlots[targetSlotIndex] = item;
-            Debug.Log($"[Inventory] Berhasil memasang {item.Name} di slot {targetSlotIndex + 1}");
+            Debug.Log($"[Inventory] Successfully equipped {item.Name} to slot {targetSlotIndex + 1}");
             return true;
         }
 
@@ -157,7 +157,7 @@ namespace PilotGame.UI
                 var nameLbl = new Label(equip.Name);
                 var descLbl = new Label(equip.Description);
                 var claimBtn = new Button(() => ClaimLoot(equip));
-                claimBtn.text = "Ambil & Simpan ke Stash";
+                claimBtn.text = "Claim & Store to Stash";
 
                 box.Add(nameLbl);
                 box.Add(descLbl);
@@ -172,7 +172,7 @@ namespace PilotGame.UI
         private void ClaimLoot(EquipmentData equip)
         {
             _inventory.StashItems.Add(equip);
-            Debug.Log($"[BossLoot] Item {equip.Name} tersimpan di Stash Sanctuary!");
+            Debug.Log($"[BossLoot] Item {equip.Name} stored in Sanctuary Stash!");
             gameObject.SetActive(false);
         }
     }

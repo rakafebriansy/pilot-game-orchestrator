@@ -307,7 +307,7 @@ namespace PilotGame.Core.FSM
             }
             else
             {
-                Debug.LogWarning($"[PlayerPhase] Kartu tidak sah: {reason}");
+                Debug.LogWarning($"[PlayerPhase] Invalid card play: {reason}");
             }
         }
 

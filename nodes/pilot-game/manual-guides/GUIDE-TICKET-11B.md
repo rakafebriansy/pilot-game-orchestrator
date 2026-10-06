@@ -102,7 +102,7 @@ namespace PilotGame.Map
 
             // 4. Siarkan event notifikasi
             CombatEvents.OnCheckpointPlaced?.Invoke(nodeId);
-            Debug.Log($"[Checkpoint] Checkpoint aktif di Node {nodeId}. Mengorbankan kartu: {sacrificedCard.Name}. Sisa slot: {AvailableCheckpoints}");
+            Debug.Log($"[Checkpoint] Checkpoint activated at Node {nodeId}. Sacrificed card: {sacrificedCard.Name}. Remaining slots: {AvailableCheckpoints}");
 
             return true;
         }

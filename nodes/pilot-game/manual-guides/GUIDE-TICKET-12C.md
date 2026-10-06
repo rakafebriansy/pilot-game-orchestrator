@@ -86,7 +86,7 @@ namespace PilotGame.Arena
                 }
             }
 
-            Debug.Log($"[BiomeManager] Memasang Bioma: {selected.BiomeName} untuk Lantai {floorNumber}");
+            Debug.Log($"[BiomeManager] Applying Biome: {selected.BiomeName} for Floor {floorNumber}");
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace PilotGame.Arena
                 Instantiate(_smokeParticlePrefab, worldPos, Quaternion.identity);
             }
 
-            Debug.Log($"[DynamicTile] Semak di koordinat ({coord.x}, {coord.y}) telah terbakar!");
+            Debug.Log($"[DynamicTile] Bush at coordinate ({coord.x}, {coord.y}) has been burned!");
         }
     }
 }
