@@ -15,6 +15,11 @@ Secara rinci, sebuah dokumen Design System wajib memuat komponen-komponen beriku
 *   **Animasi & Interaksi:** Durasi waktu dan kurva transisi.
 *   **Standar Aksesibilitas (a11y):** Kontras warna dan readability.
 
+### Prinsip Anti-AI-Slop dalam Perancangan Design System
+1. **Berakar pada Domain Produk (Product-Specific Intent):** Hindari estetika SaaS generik (mesh gradien ungu/biru, efek *glassmorphism* tebal, *glowing borders*, kartu berulang identik). Tentukan arah visual berbasis kebutuhan tugas pengguna nyata.
+2. **Hierarki Grayscale First:** Pastikan struktur dan keterbacaan komponen berfungsi sempurna dalam monokrom/hitam-putih sebelum menetapkan palet warna dan dekorasi.
+3. **Pencegahan Over-Decoration:** Komponen harus dirancang fungsional, memuat seluruh variasi status (*loading/empty/error*), memenuhi kontras WCAG AA, dan mematuhi seluruh hukum Anti-Slop di `global-guidelines/ui-and-assets.md`.
+
 ---
 
 ## 🎨 PILOT GAME DESIGN SYSTEM (DARK MESOPOTAMIAN FANTASY)

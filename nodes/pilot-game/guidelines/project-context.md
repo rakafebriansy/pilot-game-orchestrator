@@ -38,4 +38,6 @@ Dokumen ini merupakan pedoman *custom* yang mengikat aturan, peringatan eksklusi
    * Wajib menerapkan *Object Pooling* (`UnityEngine.Pool.ObjectPool<T>`) untuk damage pop-up, proyektil, dan partikel tebasan.
 7. **PREFERENSI BAHASA KODE & STRING:**
    * **English (Default):** Seluruh penamaan variabel, method, event, exception message, UI text, dan log wajib dalam bahasa Inggris. *(Jika pengguna meminta bahasa non-Inggris secara eksplisit, catat instruksi tersebut di sini)*.
+8. **KEPATUHAN ANTI-AI-SLOP:**
+   * Wajib mematuhi standar Anti-AI-Slop global (`coding.md`, `ui-and-assets.md`, `testing.md`, `error-handling.md`).
 
