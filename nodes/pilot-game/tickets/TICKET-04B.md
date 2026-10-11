@@ -1,7 +1,7 @@
 ---
 id: TICKET-04B
 title: Camera Post-Processing, URP 2D Lighting & Audio Environment
-status: Todo
+status: In Progress
 priority: High
 labels: [View, Camera, URP, Lighting, Audio, Domain1, Fase1]
 ---

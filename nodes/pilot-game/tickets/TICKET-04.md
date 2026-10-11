@@ -1,7 +1,7 @@
 ---
 id: TICKET-04
 title: Visualisasi Arena & Sistem Highlight Tilemap
-status: Todo
+status: Done
 priority: High
 labels: [View, Tilemap, URP, Environment, Domain1]
 ---
@@ -12,15 +12,15 @@ Membangun struktur visual arena dengan **tiga layer 2D Tilemap** di Unity (Base 
 Tiket ini adalah implementasi "View Layer" (lihat System Design §1) — tidak boleh mengandung logika pertempuran apapun.
 
 ## Acceptance Criteria
-- [ ] Struktur Tilemap terbentuk di dalam scene dengan hierarchy:
+- [x] Struktur Tilemap terbentuk di dalam scene dengan hierarchy:
   ```
   [Arena Grid Root]
   ├── BaseFloor_Tilemap     (Sorting Layer: "Floor", Order: 0)
   ├── Obstacles_Tilemap     (Sorting Layer: "Environment", Order: 1)
   └── HighlightOverlay_Tilemap (Sorting Layer: "Overlay", Order: 2)
   ```
-- [ ] Tilemap dikonfigurasi dengan cell size `(1, 1, 0)` untuk tile 15×15.
-- [ ] `GridTilemapView.cs` (MonoBehaviour):
+- [x] Tilemap dikonfigurasi dengan cell size `(1, 1, 0)` untuk tile 15×15.
+- [x] `GridTilemapView.cs` (MonoBehaviour):
   - `[SerializeField] Tilemap _highlightTilemap` — referensi ke `HighlightOverlay_Tilemap`.
   - `[SerializeField] TileBase _dangerTileSprite` — Ubin merah (enemy intent).
   - `[SerializeField] TileBase _validTileSprite` — Ubin hijau (jangkauan kartu valid).
@@ -29,10 +29,10 @@ Tiket ini adalah implementasi "View Layer" (lihat System Design §1) — tidak b
   - Unsubscribe di `OnDisable()` (mencegah memory leak).
   - Method `RenderHighlights(TileHighlightRequest request)` — mapping `HighlightType` ke tile sprite, konversi `Vector2Int` ke `Vector3Int` untuk Tilemap.
   - Method `ClearHighlights()` — memanggil `_highlightTilemap.ClearAllTiles()`.
-- [ ] Prefab `ArenaGrid_Prefab.prefab` dibuat di `Assets/Prefabs/Arena/` dengan semua komponen Tilemap terkonfigurasi.
-- [ ] Kamera menggunakan `Camera.main` dengan Projection: Orthographic, ukuran disesuaikan agar seluruh grid 15×15 terlihat.
-- [ ] **Verifikasi visual:** Memanggil event `OnHighlightTilesRequested` di Play Mode memunculkan ubin berwarna yang sesuai di Tilemap Overlay.
-- [ ] **URP 2D Lighting:** Minimal satu `Global Light 2D` aktif di scene agar tidak ada objek yang tampil gelap total.
+- [x] Prefab `ArenaGrid_Prefab.prefab` dibuat di `Assets/Prefabs/Arena/` dengan semua komponen Tilemap terkonfigurasi.
+- [x] Kamera menggunakan `Camera.main` dengan Projection: Orthographic, ukuran disesuaikan agar seluruh grid 15×15 terlihat.
+- [x] **Verifikasi visual:** Memanggil event `OnHighlightTilesRequested` di Play Mode memunculkan ubin berwarna yang sesuai di Tilemap Overlay.
+- [x] **URP 2D Lighting:** Minimal satu `Global Light 2D` aktif di scene agar tidak ada objek yang tampil gelap total.
 
 ## Target Lingkup File (Affected Files)
 - `Assets/Scripts/Grid/GridTilemapView.cs`

@@ -40,4 +40,8 @@ Dokumen ini merupakan pedoman *custom* yang mengikat aturan, peringatan eksklusi
    * **English (Default):** Seluruh penamaan variabel, method, event, exception message, UI text, dan log wajib dalam bahasa Inggris. *(Jika pengguna meminta bahasa non-Inggris secara eksplisit, catat instruksi tersebut di sini)*.
 8. **KEPATUHAN ANTI-AI-SLOP:**
    * Wajib mematuhi standar Anti-AI-Slop global (`coding.md`, `ui-and-assets.md`, `testing.md`, `error-handling.md`).
+9. **LARANGAN MUTLAK MENGUBAH / MEMBUAT KODE PROYEK SECARA LANGSUNG (PROHIBITION OF DIRECT CODE MUTATION):**
+   * AI Agent **DILARANG KERAS** memodifikasi, membuat berkas kode baru (`.cs`), atau menghapus kode apapun secara langsung di dalam direktori proyek (`Tubbies Pilot Game`) tanpa adanya instruksi/perintah eksplisit dari pengguna.
+   * AI **DILARANG BERINISIATIF SENDIRI** membuat script pembantu (seperti *editor scripts* atau kode implementasi dini) di dalam proyek.
+   * Seluruh kode implementasi wajib disajikan secara transparan di dalam dokumen panduan manual (`manual-guides/`) untuk dipelajari atau dieksekusi hanya jika diminta secara tegas oleh pengguna.
 
